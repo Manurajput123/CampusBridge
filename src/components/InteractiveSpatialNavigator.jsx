@@ -7,6 +7,7 @@ import {
   Navigation,
   Compass,
   ArrowRight,
+  ArrowLeft,
   ChevronRight,
   Sparkles,
   Layers,
@@ -23,7 +24,9 @@ import {
   Radio,
   FileText,
   Calendar,
-  ExternalLink
+  ExternalLink,
+  Search,
+  Filter
 } from 'lucide-react';
 
 export default function InteractiveSpatialNavigator({
@@ -35,16 +38,24 @@ export default function InteractiveSpatialNavigator({
 }) {
   const { colleges, events, switchUser, registerNewCollege, showToast } = useApp();
 
-  // Navigation Depth Levels: 'EARTH' | 'INDIA' | 'STATE' | 'CITY'
+  // Navigation Depth Levels: 'EARTH' | 'COUNTRY' | 'STATE' | 'CITY'
   const [zoomLevel, setZoomLevel] = useState('EARTH');
   const [selectedCountry, setSelectedCountry] = useState('India');
   const [selectedState, setSelectedState] = useState('Uttar Pradesh');
   const [selectedCity, setSelectedCity] = useState('Ghaziabad');
 
+  // Country Region Filter in Earth View
+  const [countryFilter, setCountryFilter] = useState('ALL'); // 'ALL' | 'ASIA' | 'NORTH_AMERICA' | 'EUROPE' | 'OCEANIA'
+
   // Perspective Lens: 'student' | 'college'
   const [lensMode, setLensMode] = useState('student');
 
-  // Quick "Make Your Own College Page in Ghaziabad" Modal inside Navigator
+  // Attractive Zoom / Radar Hyperspace Warp Animation State
+  const [isWarping, setIsWarping] = useState(false);
+  const [warpTargetName, setWarpTargetName] = useState('India');
+  const [warpTargetCoords, setWarpTargetCoords] = useState('28.6139° N, 77.2090° E');
+
+  // Quick "Make Your Own College Page" Modal
   const [showQuickCreateModal, setShowQuickCreateModal] = useState(false);
   const [quickColName, setQuickColName] = useState('Ghaziabad Institute of Advanced Technology');
   const [quickShortName, setQuickShortName] = useState('GIAT Ghaziabad');
@@ -57,121 +68,409 @@ export default function InteractiveSpatialNavigator({
 
   if (!isOpen) return null;
 
-  // Regional Geography Dataset
-  const GEOGRAPHY_DATA = {
-    India: {
+  // =========================================================================
+  // GLOBAL EDUCATIONAL GEOGRAPHY (ALL MAJOR COUNTRIES AS REQUESTED!)
+  // =========================================================================
+  const GLOBAL_COUNTRIES = [
+    {
+      id: "in",
+      name: "India",
       flag: "🇮🇳",
+      continent: "ASIA",
       tagline: "World's Largest Engineering & University Ecosystem",
-      totalCollegesCount: colleges.length,
+      activeCampuses: 54,
+      latLon: "28.6139° N, 77.2090° E",
+      flagship: true,
       states: [
         {
           name: "Uttar Pradesh",
           code: "UP",
-          region: "Northern India & Western UP Corridor",
-          activeHubs: ["Ghaziabad", "Greater Noida", "Meerut", "Lucknow"],
-          stats: "4 Premier Campuses Active · 150+ Degree Programs",
-          highlight: "Top Inter-Campus Innovation Corridor (Meerut - Ghaziabad - Noida)",
-          priority: true
+          region: "Western UP & NCR Innovation Hub",
+          tagline: "Flagship Inter-Campus Innovation Corridor",
+          priority: true,
+          cities: [
+            {
+              name: "Ghaziabad",
+              district: "Delhi-NCR / Western UP",
+              tag: "NH-24 Industrial & Tech Corridor",
+              perks: [
+                "Direct Namo Bharat RRTS high-speed transit to Meerut & Delhi",
+                "Advanced Robotics, AI & Manufacturing Research Labs",
+                "Cross-Campus Hackathons & Joint Placement Drives"
+              ]
+            },
+            {
+              name: "Greater Noida",
+              district: "Gautam Buddha Nagar",
+              tag: "Knowledge Park Academic Metropolis",
+              perks: [
+                "Apple iOS Academy & Mercedes Industrial Labs",
+                "NIRF Top-Ranked Autonomous Institutions",
+                "Tier-1 IT Placements (Avg ₹8.5+ LPA)"
+              ]
+            },
+            {
+              name: "Meerut",
+              district: "Western UP Hub",
+              tag: "Robotics & Incubation Hub",
+              perks: [
+                "Flagship North India Hackathon Host (MITS Meerut)",
+                "Tier-3 Supercomputing & AI Compute Clusters",
+                "Inter-Campus Student MoUs & Lab Passes"
+              ]
+            }
+          ]
         },
         {
           name: "Delhi NCR",
           code: "DL",
           region: "National Capital Region",
-          activeHubs: ["New Delhi", "Dwarka", "Bawana"],
-          stats: "Premier Govt & Autonomous Universities (DTU, IIIT)",
-          highlight: "Highest Research Output & Average Placement Packages",
-          priority: false
+          tagline: "Premier Govt & Autonomous Institutions",
+          priority: false,
+          cities: [
+            {
+              name: "New Delhi",
+              district: "National Capital",
+              tag: "Tier-1 Premier Institutions",
+              perks: [
+                "DTU Supercomputing Cluster",
+                "High Placement Package Averages (₹18.5 LPA)",
+                "Govt Technology Incubation Grants"
+              ]
+            }
+          ]
         },
         {
           name: "Maharashtra",
           code: "MH",
           region: "Western Technical Hub",
-          activeHubs: ["Pune", "Mumbai"],
-          stats: "COEP Tech Pune & Historical Engineering Hubs",
-          highlight: "Asia's Third Oldest Engineering Heritage",
-          priority: false
+          tagline: "Historic & Modern Tech Hubs",
+          priority: false,
+          cities: [
+            {
+              name: "Pune",
+              district: "Oxford of the East",
+              tag: "Automotive & IT Hub",
+              perks: [
+                "Established 1854 Engineering Legacy",
+                "COEPSAT Space Technology Lab",
+                "Automotive & IT Industry MoUs"
+              ]
+            }
+          ]
+        },
+        {
+          name: "Karnataka",
+          code: "KA",
+          region: "Silicon Valley of India",
+          tagline: "Unicorn Startups & Deep-Tech Clusters",
+          priority: false,
+          cities: [
+            {
+              name: "Bengaluru",
+              district: "Electronic City & Whitefield",
+              tag: "Startup & AI Metropolis",
+              perks: [
+                "India's Unicorn Startup Capital",
+                "Aerospace & AI Research Centers",
+                "Global R&D Corporate Labs"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      id: "us",
+      name: "United States",
+      flag: "🇺🇸",
+      continent: "NORTH_AMERICA",
+      tagline: "Silicon Valley & Global Research Corridor",
+      activeCampuses: 28,
+      latLon: "37.7749° N, 122.4194° W",
+      flagship: false,
+      states: [
+        {
+          name: "California",
+          code: "CA",
+          region: "Silicon Valley & Bay Area",
+          tagline: "Venture Capital & AI Hub",
+          priority: true,
+          cities: [
+            {
+              name: "San Francisco / Silicon Valley",
+              district: "Bay Area",
+              tag: "Global Tech Innovation Capital",
+              perks: [
+                "Generative AI & LLM Engineering Hub",
+                "Stanford & Berkeley Academic Network",
+                "International Tech Hackathons"
+              ]
+            }
+          ]
+        },
+        {
+          name: "Massachusetts",
+          code: "MA",
+          region: "Cambridge Biotech & Robotics Corridor",
+          tagline: "World Premier Science & AI District",
+          priority: false,
+          cities: [
+            {
+              name: "Boston / Cambridge",
+              district: "Kendall Square",
+              tag: "Deep-Tech & Robotics Metropolis",
+              perks: [
+                "MIT & Harvard Innovation Ecosystem",
+                "Autonomous Robotics Research Labs",
+                "Global Biotech Incubators"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      id: "uk",
+      name: "United Kingdom",
+      flag: "🇬🇧",
+      continent: "EUROPE",
+      tagline: "Golden Research Triangle & FinTech Innovation",
+      activeCampuses: 18,
+      latLon: "51.5074° N, 0.1278° W",
+      flagship: false,
+      states: [
+        {
+          name: "England",
+          code: "ENG",
+          region: "London & Silicon Fen",
+          tagline: "Centuries of Academic & Tech Leadership",
+          priority: true,
+          cities: [
+            {
+              name: "London",
+              district: "Tech City / Silicon Roundabout",
+              tag: "Global FinTech & AI Gateway",
+              perks: [
+                "Imperial College & UCL Innovation Hub",
+                "Global Financial Tech Labs",
+                "Pan-European Student Hackathon League"
+              ]
+            },
+            {
+              name: "Oxford & Cambridge",
+              district: "Oxbridge Triangle",
+              tag: "Deep Science Spin-outs",
+              perks: [
+                "Quantum Computing Clusters",
+                "Inter-University Collaborative Colloquiums",
+                "Advanced AI Research Fellowships"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      id: "de",
+      name: "Germany",
+      flag: "🇩🇪",
+      continent: "EUROPE",
+      tagline: "Industry 4.0, Precision Engineering & TU9",
+      activeCampuses: 16,
+      latLon: "48.1351° N, 11.5820° E",
+      flagship: false,
+      states: [
+        {
+          name: "Bavaria",
+          code: "BY",
+          region: "Munich Technical Hub",
+          tagline: "TUM & Automotive Powerhouse",
+          priority: true,
+          cities: [
+            {
+              name: "Munich",
+              district: "Garching Tech Campus",
+              tag: "Automotive & Quantum Corridor",
+              perks: [
+                "BMW & Siemens Advanced Research Clusters",
+                "Industry 4.0 Smart Manufacturing Labs",
+                "EU Cross-Campus Student Pass Network"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      id: "sg",
+      name: "Singapore",
+      flag: "🇸🇬",
+      continent: "ASIA",
+      tagline: "Smart Nation & Southeast Asian AI Gateway",
+      activeCampuses: 12,
+      latLon: "1.3521° N, 103.8198° E",
+      flagship: false,
+      states: [
+        {
+          name: "Central & West",
+          code: "SG",
+          region: "One-North & Kent Ridge",
+          tagline: "NUS & NTU Global AI Corridor",
+          priority: true,
+          cities: [
+            {
+              name: "Kent Ridge & Jurong",
+              district: "One-North Innovation Park",
+              tag: "Asian FinTech & Deep-Tech Hub",
+              perks: [
+                "Biopolis & Fusionopolis R&D Clusters",
+                "ASEAN Inter-University Hackathons",
+                "Global Dual-Degree Research Fellowships"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      id: "ca",
+      name: "Canada",
+      flag: "🇨🇦",
+      continent: "NORTH_AMERICA",
+      tagline: "Quantum Valley & Northern AI Corridor",
+      activeCampuses: 14,
+      latLon: "43.6532° N, 79.3832° W",
+      flagship: false,
+      states: [
+        {
+          name: "Ontario",
+          code: "ON",
+          region: "Toronto-Waterloo Corridor",
+          tagline: "Silicon Valley of the North",
+          priority: true,
+          cities: [
+            {
+              name: "Toronto / Waterloo",
+              district: "Waterloo Quantum Valley",
+              tag: "Quantum Computing & AI Hub",
+              perks: [
+                "Vector Institute for Artificial Intelligence",
+                "Premier Co-op Placement Ecosystem",
+                "Cross-Border Student Research Projects"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      id: "jp",
+      name: "Japan",
+      flag: "🇯🇵",
+      continent: "ASIA",
+      tagline: "Robotics, High-Speed Transit & Supercomputing",
+      activeCampuses: 10,
+      latLon: "35.6762° N, 139.6503° E",
+      flagship: false,
+      states: [
+        {
+          name: "Kanto",
+          code: "KT",
+          region: "Greater Tokyo Metropolis",
+          tagline: "Robotics & Quantum Hardware",
+          priority: true,
+          cities: [
+            {
+              name: "Tokyo",
+              district: "Oookayama / Hongo",
+              tag: "Humanoid Robotics & Supercomputing",
+              perks: [
+                "Fugaku Supercomputing Network Access",
+                "Humanoid Robotics & Mechatronics Labs",
+                "Shinkansen High-Speed Campus Transit"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      id: "au",
+      name: "Australia",
+      flag: "🇦🇺",
+      continent: "OCEANIA",
+      tagline: "Group of Eight & Pacific Tech Network",
+      activeCampuses: 12,
+      latLon: "37.8136° S, 144.9631° E",
+      flagship: false,
+      states: [
+        {
+          name: "Victoria",
+          code: "VIC",
+          region: "Melbourne Academic Precinct",
+          tagline: "Biomedical & Quantum Innovation",
+          priority: true,
+          cities: [
+            {
+              name: "Melbourne",
+              district: "Parkville Innovation Precinct",
+              tag: "Pacific Tech & Research Hub",
+              perks: [
+                "World Top-50 Engineering Faculties",
+                "Asia-Pacific Inter-Collegiate Hackathons",
+                "High Tech Incubator Ecosystem"
+              ]
+            }
+          ]
         }
       ]
     }
-  };
+  ];
 
-  // Cities per State
-  const CITIES_DATA = {
-    "Uttar Pradesh": [
-      {
-        name: "Ghaziabad",
-        district: "Delhi-NCR / Western UP",
-        tag: "NH-24 Industrial & Tech Education Cluster",
-        collegesInCity: colleges.filter(c => c.city.toLowerCase().includes('ghaziabad')),
-        perks: [
-          "Direct RRTS & NH-24 connection to Delhi & Meerut",
-          "Heavy Robotics & Industrial Manufacturing Labs",
-          "Active Cross-Campus Hackathons & Placement Drives"
-        ]
-      },
-      {
-        name: "Greater Noida",
-        district: "Gautam Buddha Nagar",
-        tag: "Knowledge Park Academic Metropolis",
-        collegesInCity: colleges.filter(c => c.city.toLowerCase().includes('noida')),
-        perks: [
-          "Apple iOS Academy & Mercedes Industrial Center",
-          "Autonomous NIRF Top-Ranked Campuses",
-          "High Tech Placement Averages (₹8.5+ LPA)"
-        ]
-      },
-      {
-        name: "Meerut",
-        district: "Western Uttar Pradesh",
-        tag: "Robotics, AI & Incubation Corridor",
-        collegesInCity: colleges.filter(c => c.city.toLowerCase().includes('meerut')),
-        perks: [
-          "Flagship North India Hackathon Host (MITS Meerut)",
-          "Tier-3 Supercomputing Research Labs",
-          "Inter-Campus Student MoUs & Resource Sharing"
-        ]
-      }
-    ],
-    "Delhi NCR": [
-      {
-        name: "New Delhi",
-        district: "National Capital",
-        tag: "Tier-1 Premier Institutions",
-        collegesInCity: colleges.filter(c => c.city.toLowerCase().includes('delhi')),
-        perks: [
-          "DTU Supercomputing Cluster",
-          "Top Placement Tier (₹18.5 LPA Avg)",
-          "Government Research Grants"
-        ]
-      }
-    ],
-    "Maharashtra": [
-      {
-        name: "Pune",
-        district: "Oxford of the East",
-        tag: "Historic & Modern Tech Hub",
-        collegesInCity: colleges.filter(c => c.city.toLowerCase().includes('pune')),
-        perks: [
-          "Established 1854 Engineering Legacy",
-          "COEPSAT Space Technology Lab",
-          "Automotive & IT Hub"
-        ]
-      }
-    ]
-  };
+  // Current active country object
+  const currentCountryObj = GLOBAL_COUNTRIES.find(c => c.name.toLowerCase() === selectedCountry.toLowerCase()) || GLOBAL_COUNTRIES[0];
+  
+  // Current active state object
+  const currentStateObj = currentCountryObj.states.find(s => s.name.toLowerCase() === selectedState.toLowerCase()) || currentCountryObj.states[0];
 
-  const handleCitySelect = (cityName) => {
-    setSelectedCity(cityName);
-    setZoomLevel('CITY');
-  };
+  // Colleges matching selected city
+  const currentCityColleges = colleges.filter(c => 
+    c.city.toLowerCase().includes(selectedCity.toLowerCase()) || 
+    (selectedCountry !== 'India' && c.country?.toLowerCase() === selectedCountry.toLowerCase())
+  );
 
-  const currentCityColleges = colleges.filter(c => c.city.toLowerCase().includes(selectedCity.toLowerCase()));
+  // Events matching selected city
   const currentCityEvents = events.filter(e => 
-    e.hostCity?.toLowerCase().includes(selectedCity.toLowerCase()) || 
+    e.hostCity?.toLowerCase().includes(selectedCity.toLowerCase()) ||
     e.targetColleges?.some(tc => tc.toLowerCase().includes(selectedCity.toLowerCase()))
   );
 
-  // Handle Quick College Creation right inside Ghaziabad
+  // Filtered countries for the Earth selector
+  const filteredCountries = countryFilter === 'ALL' 
+    ? GLOBAL_COUNTRIES 
+    : GLOBAL_COUNTRIES.filter(c => c.continent === countryFilter);
+
+  // Trigger Attractive Warp Zoom Animation
+  const handleSelectCountryWithWarp = (countryObj) => {
+    setWarpTargetName(countryObj.name);
+    setWarpTargetCoords(countryObj.latLon);
+    setIsWarping(true);
+
+    setTimeout(() => {
+      setSelectedCountry(countryObj.name);
+      if (countryObj.states.length > 0) {
+        setSelectedState(countryObj.states[0].name);
+        if (countryObj.states[0].cities.length > 0) {
+          setSelectedCity(countryObj.states[0].cities[0].name);
+        }
+      }
+      setIsWarping(false);
+      setZoomLevel('COUNTRY');
+    }, 650);
+  };
+
+  // Handle Quick College Creation right inside City View
   const handleQuickCreateCollege = (e) => {
     e.preventDefault();
     if (!quickColName.trim()) {
@@ -185,6 +484,7 @@ export default function InteractiveSpatialNavigator({
         shortName: quickShortName || quickColName,
         city: selectedCity,
         state: selectedState,
+        country: selectedCountry,
         address: `${quickLocality}, ${selectedCity}, ${selectedState}`,
         accreditation: quickAccreditation,
         defaultFee: parseInt(quickAnnualFee, 10) || 120000,
@@ -207,24 +507,58 @@ export default function InteractiveSpatialNavigator({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 md:p-6 bg-black/92 backdrop-blur-2xl animate-fade-in overflow-y-auto">
-      <div className="relative w-full max-w-5xl bg-[#090d1a] border border-indigo-500/40 rounded-3xl shadow-[0_0_60px_rgba(99,102,241,0.25)] overflow-hidden my-auto flex flex-col max-h-[94vh]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/95 backdrop-blur-2xl animate-fade-in overflow-y-auto">
+      <div className="relative w-full max-w-5xl bg-[#090d1a] border border-indigo-500/40 rounded-3xl shadow-[0_0_60px_rgba(99,102,241,0.25)] overflow-hidden my-auto flex flex-col max-h-[95vh]">
         
-        {/* Top Floating Cyber Header */}
+        {/* ===================================================================
+            ATTRACTIVE HYPERSPACE / RADAR WARP ANIMATION OVERLAY
+            =================================================================== */}
+        {isWarping && (
+          <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-black/92 backdrop-blur-xl animate-fade-in text-center p-6 pointer-events-none">
+            <div className="relative w-48 h-48 sm:w-60 sm:h-60 flex items-center justify-center">
+              {/* Radial shockwave ripples */}
+              <div className="absolute inset-0 rounded-full border-2 border-indigo-400 animate-ping opacity-60"></div>
+              <div className="absolute inset-4 rounded-full border border-purple-500 animate-ping opacity-40 delay-150"></div>
+              <div className="absolute inset-8 rounded-full border-2 border-cyan-400 animate-spin-slow"></div>
+              <div className="w-24 h-24 rounded-full bg-gradient-to-tr from-indigo-600 via-purple-600 to-cyan-500 flex items-center justify-center text-4xl shadow-[0_0_60px_rgba(99,102,241,0.8)] animate-pulse">
+                🌐
+              </div>
+            </div>
+
+            <div className="mt-6 space-y-2 max-w-md animate-warp-in">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/20 border border-indigo-400 text-indigo-300 font-mono text-xs uppercase tracking-widest">
+                <Zap className="w-3.5 h-3.5 text-cyan-400 animate-pulse" />
+                <span>Radar Lock: {warpTargetName}</span>
+              </div>
+              <h3 className="text-xl sm:text-2xl font-black text-white tracking-wide">
+                Warping Coordinates ➔ {warpTargetName}
+              </h3>
+              <p className="text-xs font-mono text-slate-400">
+                RADAR: {warpTargetCoords} · ALTITUDE: 10,000 KM ➔ 100 KM
+              </p>
+              <div className="text-[11px] text-indigo-300 font-semibold flex items-center justify-center gap-2 pt-1">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                <span>Establishing Inter-Campus Virtual Bridge Link...</span>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Top Header */}
         <div className="p-4 sm:p-5 border-b border-slate-800 bg-slate-950/90 flex items-center justify-between gap-3">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-indigo-600 via-indigo-500 to-purple-600 flex items-center justify-center text-white shadow-lg shadow-indigo-600/40 shrink-0">
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-600 via-indigo-500 to-purple-600 flex items-center justify-center text-white shadow-lg shadow-indigo-600/40 shrink-0">
               <Globe className="w-5 h-5 animate-spin-slow" />
             </div>
             <div>
               <div className="flex items-center gap-2 flex-wrap">
-                <span className="text-sm font-black text-white tracking-wide">CampusBridge Spatial Earth Gateway</span>
+                <span className="text-sm font-black text-white tracking-wide">CampusBridge Spatial Navigator</span>
                 <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/40">
-                  Interactive 3D Radar
+                  Global Campus Radar
                 </span>
               </div>
-              <p className="text-[11px] text-slate-400">
-                Earth ➔ India 🇮🇳 ➔ Uttar Pradesh 📍 ➔ Ghaziabad 🏢 ➔ Student Choice & "Make Your Own Page"
+              <p className="text-[11px] text-slate-400 truncate max-w-md">
+                Earth ➔ Any Country ➔ State Corridor ➔ City Hub ➔ Student Discovery & College Builder
               </p>
             </div>
           </div>
@@ -233,50 +567,52 @@ export default function InteractiveSpatialNavigator({
             {/* Reset to Earth */}
             <button
               onClick={() => setZoomLevel('EARTH')}
-              className="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold border border-slate-700 transition flex items-center gap-1.5"
+              className="px-2.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold border border-slate-700 transition flex items-center gap-1.5"
               title="Reset Orbit to Outer Space Earth View"
             >
               <RotateCcw className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">Orbit View</span>
+              <span className="hidden sm:inline">Earth Orbit</span>
             </button>
 
-            {/* Skip to Dashboard / Close */}
+            {/* Close / Skip */}
             <button
               onClick={onClose}
               className="px-3 py-1.5 rounded-xl bg-indigo-600/30 hover:bg-indigo-600 text-indigo-200 hover:text-white border border-indigo-500/40 text-xs font-bold transition flex items-center gap-1"
-              title="Close Gateway and Explore Platform"
             >
-              <span className="hidden sm:inline">Explore Full Platform</span>
-              <X className="w-4 h-4 ml-0.5" />
+              <span className="hidden sm:inline">Dashboard</span>
+              <X className="w-4 h-4" />
             </button>
           </div>
         </div>
 
-        {/* Dynamic Breadcrumbs Corridor */}
-        <div className="bg-slate-900/90 px-4 sm:px-6 py-2.5 border-b border-slate-800 flex items-center justify-between gap-3 text-xs overflow-x-auto text-slate-400">
-          <div className="flex items-center gap-2 shrink-0">
+        {/* Clickable Breadcrumbs Corridor */}
+        <div className="bg-slate-900/90 px-4 sm:px-6 py-2 border-b border-slate-800 flex items-center justify-between gap-2 text-xs overflow-x-auto text-slate-400">
+          <div className="flex items-center gap-1.5 shrink-0">
             <button
               onClick={() => setZoomLevel('EARTH')}
-              className={`flex items-center gap-1.5 font-bold transition ${zoomLevel === 'EARTH' ? 'text-indigo-400 bg-indigo-500/10 px-2 py-0.5 rounded border border-indigo-500/30' : 'hover:text-white'}`}
+              className={`flex items-center gap-1 px-2 py-0.5 rounded font-bold transition ${zoomLevel === 'EARTH' ? 'text-indigo-400 bg-indigo-500/10 border border-indigo-500/30' : 'hover:text-white'}`}
             >
-              <span>🌍 Planet Earth</span>
+              <span>🌍 Earth</span>
             </button>
 
-            <ChevronRight className="w-3.5 h-3.5 text-slate-600 shrink-0" />
-
-            <button
-              onClick={() => setZoomLevel('INDIA')}
-              className={`flex items-center gap-1.5 font-bold transition ${zoomLevel === 'INDIA' ? 'text-indigo-400 bg-indigo-500/10 px-2 py-0.5 rounded border border-indigo-500/30' : 'hover:text-white'}`}
-            >
-              <span>🇮🇳 India</span>
-            </button>
+            {zoomLevel !== 'EARTH' && (
+              <>
+                <ChevronRight className="w-3 h-3 text-slate-600 shrink-0" />
+                <button
+                  onClick={() => setZoomLevel('COUNTRY')}
+                  className={`flex items-center gap-1 px-2 py-0.5 rounded font-bold transition ${zoomLevel === 'COUNTRY' ? 'text-indigo-400 bg-indigo-500/10 border border-indigo-500/30' : 'hover:text-white'}`}
+                >
+                  <span>{currentCountryObj.flag} {currentCountryObj.name}</span>
+                </button>
+              </>
+            )}
 
             {(zoomLevel === 'STATE' || zoomLevel === 'CITY') && (
               <>
-                <ChevronRight className="w-3.5 h-3.5 text-slate-600 shrink-0" />
+                <ChevronRight className="w-3 h-3 text-slate-600 shrink-0" />
                 <button
                   onClick={() => setZoomLevel('STATE')}
-                  className={`font-bold transition ${zoomLevel === 'STATE' ? 'text-indigo-400 bg-indigo-500/10 px-2 py-0.5 rounded border border-indigo-500/30' : 'hover:text-white'}`}
+                  className={`flex items-center gap-1 px-2 py-0.5 rounded font-bold transition ${zoomLevel === 'STATE' ? 'text-indigo-400 bg-indigo-500/10 border border-indigo-500/30' : 'hover:text-white'}`}
                 >
                   <span>📍 {selectedState}</span>
                 </button>
@@ -285,27 +621,26 @@ export default function InteractiveSpatialNavigator({
 
             {zoomLevel === 'CITY' && (
               <>
-                <ChevronRight className="w-3.5 h-3.5 text-slate-600 shrink-0" />
-                <span className="font-bold text-white bg-indigo-600/30 px-2 py-0.5 rounded border border-indigo-500/50 flex items-center gap-1">
+                <ChevronRight className="w-3 h-3 text-slate-600 shrink-0" />
+                <span className="font-bold text-white bg-indigo-600/30 px-2 py-0.5 rounded border border-indigo-500/50">
                   🏢 {selectedCity} Hub
                 </span>
               </>
             )}
           </div>
 
-          {/* Perspective Lens Switcher (Idea Contribution) */}
-          <div className="hidden sm:flex items-center gap-1 p-1 rounded-xl bg-slate-950 border border-slate-800 shrink-0">
-            <span className="text-[10px] text-slate-400 px-1 font-mono uppercase">Lens:</span>
+          {/* Perspective Lens Toggle */}
+          <div className="flex items-center gap-1 p-0.5 rounded-lg bg-slate-950 border border-slate-800 shrink-0">
             <button
               onClick={() => setLensMode('student')}
-              className={`px-2 py-1 rounded-lg text-[11px] font-bold transition flex items-center gap-1 ${lensMode === 'student' ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-400 hover:text-white'}`}
+              className={`px-2 py-0.5 rounded text-[11px] font-bold transition flex items-center gap-1 ${lensMode === 'student' ? 'bg-indigo-600 text-white' : 'text-slate-400 hover:text-white'}`}
             >
               <GraduationCap className="w-3 h-3" />
               <span>Student</span>
             </button>
             <button
               onClick={() => setLensMode('college')}
-              className={`px-2 py-1 rounded-lg text-[11px] font-bold transition flex items-center gap-1 ${lensMode === 'college' ? 'bg-purple-600 text-white shadow-sm' : 'text-slate-400 hover:text-white'}`}
+              className={`px-2 py-0.5 rounded text-[11px] font-bold transition flex items-center gap-1 ${lensMode === 'college' ? 'bg-purple-600 text-white' : 'text-slate-400 hover:text-white'}`}
             >
               <Building2 className="w-3 h-3" />
               <span>College Admin</span>
@@ -314,207 +649,189 @@ export default function InteractiveSpatialNavigator({
         </div>
 
         {/* Spatial Content Body */}
-        <div className="p-4 sm:p-6 overflow-y-auto flex-1 space-y-6">
+        <div className="p-4 sm:p-6 overflow-y-auto flex-1 space-y-5">
           
           {/* ===================================================================
-              LEVEL 1: EARTH VIEW
+              LEVEL 1: EARTH VIEW (GLOBAL COUNTRIES SELECTOR)
               =================================================================== */}
           {zoomLevel === 'EARTH' && (
-            <div className="space-y-8 text-center py-4">
+            <div className="space-y-6 text-center py-2 animate-fade-in">
               
-              {/* Rotating Holographic Earth Visualization with India Pulsing Target */}
-              <div className="relative w-64 h-64 sm:w-80 sm:h-80 mx-auto flex items-center justify-center">
+              {/* Rotating 3D Globe with Telemetry */}
+              <div className="relative w-52 h-52 sm:w-64 sm:h-64 mx-auto flex items-center justify-center">
                 {/* Orbital atmospheric glow */}
-                <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-indigo-600/35 via-purple-600/25 to-cyan-400/30 blur-2xl animate-pulse pointer-events-none"></div>
+                <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-indigo-600/30 via-purple-600/20 to-cyan-400/25 blur-2xl animate-pulse pointer-events-none"></div>
                 
-                {/* Outer Coordinate Ring */}
-                <div className="absolute inset-[-12px] rounded-full border border-indigo-500/20 border-dashed animate-spin-slow pointer-events-none"></div>
+                {/* Outer Dashed Orbit Ring */}
+                <div className="absolute inset-[-10px] rounded-full border border-indigo-500/20 border-dashed animate-spin-slow pointer-events-none"></div>
 
-                {/* Globe sphere */}
-                <div className="relative w-56 h-56 sm:w-72 sm:h-72 rounded-full bg-gradient-to-br from-slate-950 via-indigo-950/80 to-[#050814] border-2 border-indigo-500/50 shadow-[inset_0_0_50px_rgba(99,102,241,0.4)] flex flex-col items-center justify-center overflow-hidden">
+                {/* Globe Sphere */}
+                <div className="relative w-44 h-44 sm:w-56 sm:h-56 rounded-full bg-gradient-to-br from-slate-950 via-indigo-950/70 to-[#050814] border-2 border-indigo-500/40 shadow-[inset_0_0_40px_rgba(99,102,241,0.3)] flex flex-col items-center justify-center overflow-hidden">
                   
                   {/* Continental Grid Mesh Lines */}
-                  <div className="absolute inset-0 rounded-full border border-indigo-500/25 scale-90 pointer-events-none"></div>
-                  <div className="absolute inset-0 rounded-full border border-purple-500/20 scale-75 pointer-events-none"></div>
-                  <div className="absolute w-full h-[1px] bg-indigo-500/30 top-1/2 pointer-events-none"></div>
-                  <div className="absolute h-full w-[1px] bg-indigo-500/30 left-1/2 pointer-events-none"></div>
-                  <div className="absolute w-full h-[1px] bg-indigo-500/20 top-1/4 pointer-events-none"></div>
-                  <div className="absolute w-full h-[1px] bg-indigo-500/20 top-3/4 pointer-events-none"></div>
+                  <div className="absolute inset-0 rounded-full border border-indigo-500/20 scale-90 pointer-events-none"></div>
+                  <div className="absolute inset-0 rounded-full border border-purple-500/15 scale-75 pointer-events-none"></div>
+                  <div className="absolute w-full h-[1px] bg-indigo-500/25 top-1/2 pointer-events-none"></div>
+                  <div className="absolute h-full w-[1px] bg-indigo-500/25 left-1/2 pointer-events-none"></div>
 
-                  {/* Lat/Lon crosshair animation */}
-                  <div className="absolute top-4 left-6 text-[9px] font-mono text-indigo-400/70 tracking-widest pointer-events-none">
-                    ORBIT ALT: 640 KM
-                  </div>
-                  <div className="absolute top-4 right-6 text-[9px] font-mono text-cyan-400/70 tracking-widest pointer-events-none">
-                    FOV: 120°
-                  </div>
-
-                  {/* Pulsing Hotspot for India (Clickable) */}
+                  {/* Pulsing Hotspot for India (Flagship Hub) */}
                   <div
-                    onClick={() => setZoomLevel('INDIA')}
-                    className="cursor-pointer group relative flex flex-col items-center p-3 sm:p-4 rounded-2xl bg-indigo-950/85 border border-indigo-400 shadow-2xl hover:scale-115 transition duration-300 z-10"
-                    title="Click to Zoom into India"
+                    onClick={() => handleSelectCountryWithWarp(GLOBAL_COUNTRIES[0])}
+                    className="cursor-pointer group relative flex flex-col items-center p-2.5 sm:p-3 rounded-2xl bg-indigo-950/90 border border-indigo-400 shadow-xl hover:scale-115 transition duration-300 z-10"
+                    title="Click for Hyperspace Zoom into India Hub"
                   >
-                    <span className="text-3xl sm:text-4xl group-hover:scale-110 transition">🇮🇳</span>
-                    <span className="text-xs font-black text-white mt-1">India Hub</span>
-                    <span className="text-[10px] text-emerald-400 font-bold flex items-center gap-1 mt-0.5">
+                    <span className="text-2xl sm:text-3xl">🇮🇳</span>
+                    <span className="text-[11px] font-black text-white mt-0.5">India Hub</span>
+                    <span className="text-[9px] text-emerald-400 font-bold flex items-center gap-1 mt-0.5">
                       <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
-                      54+ Colleges Connected
+                      54+ Colleges
                     </span>
-                    <span className="text-[9px] text-indigo-300 underline mt-1 group-hover:text-white">
-                      Click to Enter Corridor ➔
+                    <span className="text-[9px] text-indigo-300 underline mt-0.5 group-hover:text-white">
+                      Click to Enter ➔
                     </span>
                   </div>
 
-                  <div className="absolute bottom-3 text-[10px] text-slate-400 font-mono tracking-wider pointer-events-none">
-                    RADAR: LAT 28.6139° N, LON 77.2090° E
+                  <div className="absolute bottom-2 text-[9px] text-slate-500 font-mono tracking-wider pointer-events-none">
+                    ORBIT RADAR: 8 GLOBAL HUBS
                   </div>
                 </div>
               </div>
 
-              {/* Headline & Mission statement */}
-              <div className="max-w-xl mx-auto space-y-3">
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 text-xs font-semibold">
-                  <Sparkles className="w-3.5 h-3.5 text-indigo-400" />
-                  <span>Choose Your Educational Jurisdiction & Campus Corridor</span>
-                </div>
-
-                <h2 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
-                  Start from Earth ➔ Zoom into India & Your City
+              {/* Headline */}
+              <div className="max-w-lg mx-auto space-y-1.5">
+                <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight">
+                  Select Any Country on Earth to Explore or Build Campuses
                 </h2>
-                
-                <p className="text-xs sm:text-sm text-slate-300 leading-relaxed font-normal">
-                  {lensMode === 'student' ? (
-                    <>As a <strong>Student</strong>, navigate to <strong>Uttar Pradesh ➔ Ghaziabad</strong> to discover colleges, transparent fees, inter-college hackathons, and single-pass lab permissions.</>
-                  ) : (
-                    <>As a <strong>College Representative</strong>, navigate to your city (Ghaziabad, Noida, Meerut) to <strong>make your own page</strong>, broadcast invitations, and verify external students.</>
-                  )}
+                <p className="text-xs text-slate-300 leading-relaxed">
+                  Click on <strong>India 🇮🇳</strong> to enter the Western UP (Ghaziabad, Greater Noida, Meerut) corridor, or choose any other country worldwide.
                 </p>
-
-                <div className="pt-2 flex flex-wrap items-center justify-center gap-3">
-                  <button
-                    onClick={() => setZoomLevel('INDIA')}
-                    className="px-6 py-3 rounded-2xl bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-600 hover:opacity-95 text-white font-bold text-xs shadow-xl shadow-indigo-600/30 transition inline-flex items-center gap-2"
-                  >
-                    <span>Zoom In to India 🇮🇳</span>
-                    <ArrowRight className="w-4 h-4" />
-                  </button>
-
-                  <button
-                    onClick={() => {
-                      setSelectedState('Uttar Pradesh');
-                      setSelectedCity('Ghaziabad');
-                      setZoomLevel('CITY');
-                    }}
-                    className="px-5 py-3 rounded-2xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-bold text-xs transition inline-flex items-center gap-2"
-                  >
-                    <span>Direct Jump to Ghaziabad Hub 🏢</span>
-                    <ArrowRight className="w-3.5 h-3.5 text-indigo-400" />
-                  </button>
-                </div>
               </div>
 
-              {/* Contributed Innovation Highlights Grid (Idea Contribution) */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-4 max-w-4xl mx-auto text-left">
-                <div className="p-3.5 rounded-2xl bg-slate-900/60 border border-slate-800/80 space-y-1">
-                  <div className="flex items-center gap-2 text-indigo-400 font-bold text-xs">
-                    <Navigation className="w-4 h-4" />
-                    <span>Namo Bharat RRTS Radar</span>
-                  </div>
-                  <p className="text-[11px] text-slate-400 leading-relaxed">
-                    Live transit travel times: Meerut ➔ Ghaziabad in 22 mins, enabling cross-college attendance.
-                  </p>
-                </div>
+              {/* Continent Filter Chips */}
+              <div className="flex flex-wrap items-center justify-center gap-1.5 text-xs">
+                {[
+                  { id: 'ALL', label: 'All Countries (8)' },
+                  { id: 'ASIA', label: 'Asia (3)' },
+                  { id: 'NORTH_AMERICA', label: 'North America (2)' },
+                  { id: 'EUROPE', label: 'Europe (2)' },
+                  { id: 'OCEANIA', label: 'Oceania (1)' }
+                ].map((f) => (
+                  <button
+                    key={f.id}
+                    onClick={() => setCountryFilter(f.id)}
+                    className={`px-3 py-1 rounded-xl font-semibold transition text-[11px] ${countryFilter === f.id ? 'bg-indigo-600 text-white shadow-sm' : 'bg-slate-900 text-slate-400 hover:text-white border border-slate-800'}`}
+                  >
+                    {f.label}
+                  </button>
+                ))}
+              </div>
 
-                <div className="p-3.5 rounded-2xl bg-slate-900/60 border border-slate-800/80 space-y-1">
-                  <div className="flex items-center gap-2 text-purple-400 font-bold text-xs">
-                    <Building2 className="w-4 h-4" />
-                    <span>Make Your Own Page</span>
-                  </div>
-                  <p className="text-[11px] text-slate-400 leading-relaxed">
-                    College administrators in Ghaziabad can claim or create custom verified portals in 60 seconds.
-                  </p>
-                </div>
+              {/* Compact, De-congested Countries Grid (All Countries Available!) */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 max-w-4xl mx-auto text-left">
+                {filteredCountries.map((country) => (
+                  <div
+                    key={country.id}
+                    onClick={() => handleSelectCountryWithWarp(country)}
+                    className={`p-3.5 rounded-2xl border cursor-pointer hover:border-indigo-400 hover:scale-102 transition flex flex-col justify-between space-y-2 group ${country.flagship ? 'bg-indigo-950/30 border-indigo-500/60 shadow-lg ring-1 ring-indigo-500/40' : 'bg-slate-900/60 border-slate-800 hover:bg-slate-850'}`}
+                  >
+                    <div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-2xl group-hover:scale-110 transition">{country.flag}</span>
+                        {country.flagship ? (
+                          <span className="text-[9px] font-bold text-emerald-400 bg-emerald-500/20 px-1.5 py-0.5 rounded border border-emerald-500/30">
+                            ★ Primary Hub
+                          </span>
+                        ) : (
+                          <span className="text-[9px] font-mono text-slate-400 bg-slate-800 px-1.5 py-0.5 rounded">
+                            {country.activeCampuses} Campuses
+                          </span>
+                        )}
+                      </div>
 
-                <div className="p-3.5 rounded-2xl bg-slate-900/60 border border-slate-800/80 space-y-1">
-                  <div className="flex items-center gap-2 text-emerald-400 font-bold text-xs">
-                    <ShieldCheck className="w-4 h-4" />
-                    <span>Shared Campus Labs</span>
+                      <h4 className="text-sm font-black text-white mt-1.5">{country.name}</h4>
+                      <p className="text-[10px] text-slate-400 line-clamp-1">{country.tagline}</p>
+                    </div>
+
+                    <div className="pt-2 border-t border-slate-800/80 flex items-center justify-between text-[11px] font-bold text-indigo-400 group-hover:text-indigo-300">
+                      <span>Explore Hub</span>
+                      <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition" />
+                    </div>
                   </div>
-                  <p className="text-[11px] text-slate-400 leading-relaxed">
-                    Access high-end hardware, supercomputers, and robotics suites across Western UP institutions.
-                  </p>
-                </div>
+                ))}
               </div>
 
             </div>
           )}
 
           {/* ===================================================================
-              LEVEL 2: INDIA LEVEL (SELECT STATE: UP, DELHI, MAHARASHTRA)
+              LEVEL 2: COUNTRY VIEW (STATES & CORRIDORS)
               =================================================================== */}
-          {zoomLevel === 'INDIA' && (
-            <div className="space-y-6 animate-fade-in">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-4">
-                <div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs font-bold text-indigo-400 uppercase tracking-wider">Level 02: Country View</span>
-                    <span className="text-xs text-slate-500">· 🇮🇳 Republic of India</span>
+          {zoomLevel === 'COUNTRY' && (
+            <div className="space-y-5 animate-fade-in">
+              {/* Back button & Country Header */}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-3">
+                <div className="flex items-center gap-3">
+                  <button
+                    onClick={() => setZoomLevel('EARTH')}
+                    className="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition flex items-center gap-1.5 text-xs font-semibold"
+                    title="Return to Earth View"
+                  >
+                    <ArrowLeft className="w-4 h-4" />
+                    <span>Back to Earth</span>
+                  </button>
+
+                  <div>
+                    <h2 className="text-xl sm:text-2xl font-black text-white flex items-center gap-2">
+                      <span>{currentCountryObj.flag} {currentCountryObj.name}</span>
+                      <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/40">
+                        {currentCountryObj.states.length} State Corridors
+                      </span>
+                    </h2>
+                    <p className="text-xs text-slate-400">{currentCountryObj.tagline}</p>
                   </div>
-                  <h2 className="text-2xl font-black text-white mt-0.5">Select Your State / Educational Zone</h2>
-                  <p className="text-xs text-slate-400">
-                    Select <strong>Uttar Pradesh (UP)</strong> to access the Ghaziabad, Greater Noida, and Meerut campus networks.
-                  </p>
                 </div>
 
-                <button
-                  onClick={() => setZoomLevel('EARTH')}
-                  className="self-start text-xs text-slate-400 hover:text-white flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-800 border border-slate-700 transition"
-                >
-                  <RotateCcw className="w-3.5 h-3.5" />
-                  <span>Back to Earth Orbit</span>
-                </button>
+                <span className="text-xs font-mono text-slate-400 self-start sm:self-auto">
+                  RADAR: {currentCountryObj.latLon}
+                </span>
               </div>
 
-              {/* State Cards Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {GEOGRAPHY_DATA.India.states.map((st) => (
+              {/* State Corridors Grid */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3.5">
+                {currentCountryObj.states.map((st) => (
                   <div
                     key={st.name}
                     onClick={() => {
                       setSelectedState(st.name);
+                      if (st.cities.length > 0) setSelectedCity(st.cities[0].name);
                       setZoomLevel('STATE');
                     }}
-                    className={`glass-card p-6 rounded-2xl border cursor-pointer hover:scale-102 transition flex flex-col justify-between space-y-4 ${st.name === 'Uttar Pradesh' ? 'border-indigo-500/80 bg-indigo-950/30 shadow-xl ring-1 ring-indigo-500/50' : 'border-slate-800 hover:border-slate-700'}`}
+                    className={`p-4 rounded-2xl border cursor-pointer hover:border-indigo-400 hover:scale-101 transition flex flex-col justify-between space-y-3 ${st.priority ? 'bg-indigo-950/30 border-indigo-500/70 shadow-lg ring-1 ring-indigo-500/40' : 'bg-slate-900/60 border-slate-800'}`}
                   >
                     <div>
-                      <div className="flex items-center justify-between text-xs mb-3">
-                        <span className="font-bold text-white px-2.5 py-1 rounded-lg bg-indigo-500/20 border border-indigo-500/30">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 text-[10px] font-bold">
                           {st.code} State Hub
                         </span>
-                        {st.name === 'Uttar Pradesh' && (
-                          <span className="text-[10px] font-bold text-emerald-400 flex items-center gap-1 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
-                            ★ Primary Active Corridor
+                        {st.priority && (
+                          <span className="text-[10px] font-bold text-emerald-400 flex items-center gap-1">
+                            ★ Primary Corridor
                           </span>
                         )}
                       </div>
 
-                      <h3 className="text-xl font-black text-white">{st.name}</h3>
-                      <div className="text-xs text-indigo-300 font-semibold mt-0.5">{st.region}</div>
-                      <p className="text-xs text-slate-300 mt-2.5 leading-relaxed">{st.stats}</p>
+                      <h3 className="text-base font-black text-white">{st.name}</h3>
+                      <div className="text-xs text-indigo-300 font-semibold">{st.region}</div>
+                      <p className="text-[11px] text-slate-400 mt-1 leading-relaxed">{st.tagline}</p>
 
-                      <div className="mt-4 p-2.5 rounded-xl bg-slate-900/60 border border-slate-800 text-[11px] text-slate-300 flex items-center gap-2">
-                        <MapPin className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
-                        <span>Hubs: {st.activeHubs.join(', ')}</span>
-                      </div>
-
-                      <div className="mt-2 p-2.5 rounded-xl bg-indigo-950/40 border border-indigo-500/20 text-[11px] text-indigo-200">
-                        {st.highlight}
+                      <div className="mt-3 p-2 rounded-xl bg-slate-950/60 border border-slate-800/80 text-[10px] text-slate-300 flex items-center gap-1.5">
+                        <MapPin className="w-3 h-3 text-indigo-400 shrink-0" />
+                        <span>Cities: {st.cities.map(c => c.name).join(', ')}</span>
                       </div>
                     </div>
 
-                    <div className="pt-3 border-t border-slate-800 flex items-center justify-between text-xs font-bold text-indigo-400">
-                      <span>Explore Cities in {st.name}</span>
+                    <div className="pt-2 border-t border-slate-800 flex items-center justify-between text-xs font-bold text-indigo-400">
+                      <span>Explore {st.cities.length} Cities</span>
                       <ArrowRight className="w-4 h-4" />
                     </div>
                   </div>
@@ -524,81 +841,172 @@ export default function InteractiveSpatialNavigator({
           )}
 
           {/* ===================================================================
-              LEVEL 3: STATE LEVEL (SELECT CITY: GHAZIABAD, NOIDA, MEERUT)
+              LEVEL 3: STATE LEVEL (WITH EXPLICIT "CAMPUSBRIDGE" VISUAL BRIDGE!)
               =================================================================== */}
           {zoomLevel === 'STATE' && (
-            <div className="space-y-6 animate-fade-in">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-4">
-                <div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs font-bold text-indigo-400 uppercase tracking-wider">Level 03: State Clusters</span>
-                    <span className="text-xs text-slate-500">· {selectedState}, India</span>
+            <div className="space-y-5 animate-fade-in">
+              {/* Back Navigation Bar */}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-3">
+                <div className="flex items-center gap-3">
+                  <button
+                    onClick={() => setZoomLevel('COUNTRY')}
+                    className="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition flex items-center gap-1.5 text-xs font-semibold"
+                    title={`Back to ${currentCountryObj.name}`}
+                  >
+                    <ArrowLeft className="w-4 h-4" />
+                    <span>Back to {currentCountryObj.name}</span>
+                  </button>
+
+                  <div>
+                    <h2 className="text-xl sm:text-2xl font-black text-white flex items-center gap-2">
+                      <span>📍 {currentStateObj.name}</span>
+                      <span className="text-xs text-slate-400 font-normal">· {currentCountryObj.name}</span>
+                    </h2>
+                    <p className="text-xs text-slate-400">Select a city hub like <strong>Ghaziabad</strong> to view campus networks or make a college page.</p>
                   </div>
-                  <h2 className="text-2xl font-black text-white mt-0.5">Select a City / District in {selectedState}</h2>
-                  <p className="text-xs text-slate-400">
-                    Choose <strong>Ghaziabad</strong>, <strong>Greater Noida</strong>, or <strong>Meerut</strong> to view specific engineering institutes and resources.
-                  </p>
                 </div>
 
                 <button
-                  onClick={() => setZoomLevel('INDIA')}
-                  className="self-start text-xs text-slate-400 hover:text-white flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-800 border border-slate-700 transition"
+                  onClick={() => setZoomLevel('EARTH')}
+                  className="text-xs text-slate-400 hover:text-white flex items-center gap-1 self-start sm:self-auto"
                 >
-                  <RotateCcw className="w-3.5 h-3.5" />
-                  <span>Back to States</span>
+                  <RotateCcw className="w-3 h-3" />
+                  <span>Earth Orbit</span>
                 </button>
               </div>
 
-              {/* Transit Corridor Visualizer for UP (Contributed Idea) */}
-              {selectedState === 'Uttar Pradesh' && (
-                <div className="p-4 rounded-2xl bg-gradient-to-r from-purple-950/60 via-indigo-950/50 to-slate-900 border border-indigo-500/30 flex items-center justify-between flex-wrap gap-3 text-xs shadow-lg">
-                  <div className="flex items-center gap-2 text-indigo-300 font-bold">
-                    <Navigation className="w-4 h-4 text-indigo-400 animate-pulse" />
-                    <span>Namo Bharat RRTS & Expressway Corridor Transit:</span>
+              {/* ===================================================================
+                  THE "CAMPUSBRIDGE" VIRTUAL BRIDGE INFRASTRUCTURE VISUALIZER
+                  (Directly Reflecting the User's Vision & Project Name!)
+                  =================================================================== */}
+              {selectedCountry === 'India' && selectedState === 'Uttar Pradesh' && (
+                <div className="p-4 rounded-2xl bg-gradient-to-r from-slate-950 via-indigo-950/70 to-purple-950/70 border border-indigo-500/40 relative overflow-hidden shadow-xl">
+                  {/* Glowing Energy Beam Moving Across Bridge Deck */}
+                  <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-cyan-400 to-transparent animate-bridge-beam"></div>
+
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
+                    <div className="flex items-center gap-2">
+                      <div className="w-7 h-7 rounded-lg bg-indigo-600/30 border border-indigo-500/40 flex items-center justify-center text-sm shadow-sm">
+                        🌉
+                      </div>
+                      <div>
+                        <h4 className="text-xs font-black text-white uppercase tracking-wider flex items-center gap-2">
+                          <span>CampusBridge Regional Inter-College Highway</span>
+                          <span className="px-1.5 py-0.2 rounded bg-indigo-500/20 text-indigo-300 text-[9px] font-mono border border-indigo-500/30">
+                            VIRTUAL BRIDGE ACTIVE
+                          </span>
+                        </h4>
+                        <p className="text-[11px] text-slate-400">
+                          Rapid Namo Bharat RRTS & Expressway Link: Sharing Hackathons, Labs & Pool Placements
+                        </p>
+                      </div>
+                    </div>
+
+                    <span className="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20 self-start sm:self-auto">
+                      ⚡ Active Inter-Campus MoU Link
+                    </span>
                   </div>
-                  <div className="flex items-center gap-2 font-mono text-[11px] text-white flex-wrap">
-                    <span className="px-2.5 py-1 rounded-lg bg-slate-800 border border-slate-700">Meerut (MITS)</span>
-                    <span className="text-indigo-400 font-bold">⚡ 45km (22 mins) ➔</span>
-                    <span className="px-2.5 py-1 rounded-lg bg-indigo-600 font-black shadow-md border border-indigo-400">Ghaziabad (GEA)</span>
-                    <span className="text-indigo-400 font-bold">⚡ 25km (18 mins) ➔</span>
-                    <span className="px-2.5 py-1 rounded-lg bg-slate-800 border border-slate-700">Greater Noida (NIET)</span>
+
+                  {/* Bridge Arch Graphic connecting the 3 Key Hubs */}
+                  <div className="relative py-2 px-3">
+                    {/* Bridge Suspension Line */}
+                    <div className="absolute top-1/2 left-8 right-8 h-[2px] -translate-y-1/2 bg-slate-800 rounded-full">
+                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-indigo-400 to-transparent w-2/5 animate-bridge-beam rounded-full"></div>
+                    </div>
+
+                    {/* Bridge Nodes */}
+                    <div className="relative flex items-center justify-between z-10">
+                      {/* Node 1: Meerut */}
+                      <button
+                        onClick={() => { setSelectedCity('Meerut'); setZoomLevel('CITY'); }}
+                        className="flex flex-col items-center group cursor-pointer text-center"
+                      >
+                        <div className="w-8 h-8 rounded-full bg-slate-900 border-2 border-indigo-500 group-hover:scale-110 group-hover:border-cyan-400 transition flex items-center justify-center text-xs shadow-md">
+                          🏛️
+                        </div>
+                        <span className="text-[11px] font-bold text-white mt-1 group-hover:text-indigo-300">Meerut (MITS)</span>
+                        <span className="text-[9px] text-slate-400">Incubation Node</span>
+                      </button>
+
+                      {/* Bridge Span 1 */}
+                      <div className="text-[10px] font-mono text-indigo-300 bg-slate-950/90 px-2 py-0.5 rounded border border-indigo-500/30 shadow-sm flex items-center gap-1">
+                        <span>⚡ 45 km</span>
+                        <span className="text-slate-500">·</span>
+                        <span className="text-emerald-400 font-bold">22 mins</span>
+                      </div>
+
+                      {/* Node 2: Ghaziabad (Active Focal Hub) */}
+                      <button
+                        onClick={() => { setSelectedCity('Ghaziabad'); setZoomLevel('CITY'); }}
+                        className="flex flex-col items-center group cursor-pointer text-center"
+                      >
+                        <div className="w-10 h-10 rounded-full bg-indigo-600 border-2 border-indigo-300 group-hover:scale-110 transition flex items-center justify-center text-sm shadow-[0_0_20px_rgba(99,102,241,0.6)]">
+                          🏢
+                        </div>
+                        <span className="text-[11px] font-black text-indigo-200 mt-1 group-hover:text-white">Ghaziabad (GEA)</span>
+                        <span className="text-[9px] text-emerald-400 font-bold">★ Central Node</span>
+                      </button>
+
+                      {/* Bridge Span 2 */}
+                      <div className="text-[10px] font-mono text-purple-300 bg-slate-950/90 px-2 py-0.5 rounded border border-purple-500/30 shadow-sm flex items-center gap-1">
+                        <span>⚡ 25 km</span>
+                        <span className="text-slate-500">·</span>
+                        <span className="text-emerald-400 font-bold">18 mins</span>
+                      </div>
+
+                      {/* Node 3: Greater Noida */}
+                      <button
+                        onClick={() => { setSelectedCity('Greater Noida'); setZoomLevel('CITY'); }}
+                        className="flex flex-col items-center group cursor-pointer text-center"
+                      >
+                        <div className="w-8 h-8 rounded-full bg-slate-900 border-2 border-purple-500 group-hover:scale-110 group-hover:border-purple-300 transition flex items-center justify-center text-xs shadow-md">
+                          🎓
+                        </div>
+                        <span className="text-[11px] font-bold text-white mt-1 group-hover:text-purple-300">Gr. Noida (NIET)</span>
+                        <span className="text-[9px] text-slate-400">Knowledge Park</span>
+                      </button>
+                    </div>
                   </div>
                 </div>
               )}
 
               {/* Cities Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {CITIES_DATA[selectedState]?.map((city) => (
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
+                {currentStateObj.cities.map((city) => (
                   <div
                     key={city.name}
-                    onClick={() => handleCitySelect(city.name)}
-                    className={`glass-card p-6 rounded-2xl border cursor-pointer hover:border-indigo-400 transition flex flex-col justify-between space-y-4 ${city.name === 'Ghaziabad' ? 'border-indigo-500/80 bg-indigo-950/30 ring-1 ring-indigo-500/50 shadow-xl' : 'border-slate-800 hover:border-slate-700'}`}
+                    onClick={() => {
+                      setSelectedCity(city.name);
+                      setZoomLevel('CITY');
+                    }}
+                    className={`p-4 rounded-2xl border cursor-pointer hover:border-indigo-400 transition flex flex-col justify-between space-y-3 ${city.name === 'Ghaziabad' ? 'bg-indigo-950/30 border-indigo-500/80 ring-1 ring-indigo-500/40 shadow-xl' : 'bg-slate-900/60 border-slate-800'}`}
                   >
                     <div>
-                      <div className="flex items-center justify-between text-xs mb-2">
-                        <span className="font-bold text-white px-2 py-0.5 rounded bg-slate-800 border border-slate-700">
+                      <div className="flex items-center justify-between text-xs mb-1.5">
+                        <span className="font-bold text-white px-2 py-0.5 rounded bg-slate-800 text-[10px] border border-slate-700">
                           {city.district}
                         </span>
-                        <span className="text-xs font-bold text-indigo-400 flex items-center gap-1">
-                          <Building2 className="w-3.5 h-3.5" />
-                          {city.collegesInCity.length} College{city.collegesInCity.length !== 1 ? 's' : ''}
-                        </span>
+                        {city.name === 'Ghaziabad' && (
+                          <span className="text-[10px] font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded">
+                            ★ Primary Hub
+                          </span>
+                        )}
                       </div>
 
-                      <h3 className="text-xl font-black text-white">{city.name}</h3>
-                      <div className="text-xs text-indigo-300 font-semibold mt-0.5">{city.tag}</div>
+                      <h3 className="text-lg font-black text-white">{city.name}</h3>
+                      <div className="text-xs text-indigo-300 font-medium">{city.tag}</div>
 
-                      <div className="mt-3.5 space-y-2">
-                        {city.perks.map((p, idx) => (
+                      <div className="mt-2.5 space-y-1">
+                        {city.perks.slice(0, 2).map((p, idx) => (
                           <div key={idx} className="text-[11px] text-slate-300 flex items-start gap-1.5">
                             <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 mt-1 shrink-0"></span>
-                            <span>{p}</span>
+                            <span className="line-clamp-1">{p}</span>
                           </div>
                         ))}
                       </div>
                     </div>
 
-                    <div className="pt-3 border-t border-slate-800 flex items-center justify-between text-xs font-bold text-indigo-400">
+                    <div className="pt-2 border-t border-slate-800 flex items-center justify-between text-xs font-bold text-indigo-400">
                       <span>Enter {city.name} Hub</span>
                       <ArrowRight className="w-4 h-4" />
                     </div>
@@ -609,41 +1017,57 @@ export default function InteractiveSpatialNavigator({
           )}
 
           {/* ===================================================================
-              LEVEL 4: CITY LEVEL (GHAZIABAD) - DUAL PATHWAY: STUDENT VS COLLEGE
+              LEVEL 4: CITY LEVEL (GHAZIABAD OR ANY CITY) - DUAL PATHWAY & QUICK BUILDER
               =================================================================== */}
           {zoomLevel === 'CITY' && (
-            <div className="space-y-6 animate-fade-in">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-4">
-                <div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs font-bold text-emerald-400 uppercase tracking-wider">Level 04: Local Campus Hub</span>
-                    <span className="text-xs text-slate-500">· {selectedState}, India</span>
+            <div className="space-y-5 animate-fade-in">
+              {/* Back Navigation Bar */}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-3">
+                <div className="flex items-center gap-3">
+                  <button
+                    onClick={() => setZoomLevel('STATE')}
+                    className="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition flex items-center gap-1.5 text-xs font-semibold"
+                    title={`Back to ${selectedState}`}
+                  >
+                    <ArrowLeft className="w-4 h-4" />
+                    <span>Back to {selectedState}</span>
+                  </button>
+
+                  <div>
+                    <h2 className="text-xl sm:text-2xl font-black text-white flex items-center gap-2">
+                      <span>🏢 {selectedCity} Campus Hub</span>
+                      <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-indigo-600/30 text-indigo-300 border border-indigo-500/40">
+                        {currentCityColleges.length} Verified
+                      </span>
+                    </h2>
+                    <p className="text-xs text-slate-400">{selectedState}, {selectedCountry}</p>
                   </div>
-                  <h2 className="text-2xl font-black text-white flex items-center gap-2 mt-0.5">
-                    <span>Campuses in {selectedCity}</span>
-                    <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-indigo-600/30 text-indigo-300 border border-indigo-500/40">
-                      {currentCityColleges.length} Verified Institutions
-                    </span>
-                  </h2>
                 </div>
 
-                <button
-                  onClick={() => setZoomLevel('STATE')}
-                  className="self-start text-xs text-slate-400 hover:text-white flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-800 border border-slate-700 transition"
-                >
-                  <RotateCcw className="w-3.5 h-3.5" />
-                  <span>Back to Cities</span>
-                </button>
+                <div className="flex items-center gap-2 self-start sm:self-auto">
+                  <button
+                    onClick={() => setZoomLevel('COUNTRY')}
+                    className="text-xs text-slate-400 hover:text-white flex items-center gap-1 px-2.5 py-1 rounded-lg bg-slate-900 border border-slate-800"
+                  >
+                    <span>{currentCountryObj.name}</span>
+                  </button>
+                  <button
+                    onClick={() => setZoomLevel('EARTH')}
+                    className="text-xs text-slate-400 hover:text-white flex items-center gap-1 px-2.5 py-1 rounded-lg bg-slate-900 border border-slate-800"
+                  >
+                    <span>Earth Orbit</span>
+                  </button>
+                </div>
               </div>
 
-              {/* ACTION CALLOUT: Student Choice vs College Choice (The User's Core Vision!) */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-5 rounded-3xl bg-slate-900/90 border border-slate-800 shadow-xl">
+              {/* DUAL PATHWAY: As a Student vs As a College (De-congested & Sharp!) */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
                 {/* Pathway A: As a Student */}
-                <div className={`p-4 rounded-2xl border space-y-3 transition ${lensMode === 'student' ? 'bg-indigo-950/40 border-indigo-500/50' : 'bg-slate-950/50 border-slate-800'}`}>
+                <div className={`p-4 rounded-2xl border space-y-2 transition ${lensMode === 'student' ? 'bg-indigo-950/40 border-indigo-500/50' : 'bg-slate-950/50 border-slate-800'}`}>
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2 text-indigo-300 font-bold text-xs uppercase tracking-wide">
                       <GraduationCap className="w-4 h-4 text-indigo-400" />
-                      <span>Path 1: Are You a Student?</span>
+                      <span>Are You a Student?</span>
                     </div>
                     <span className="text-[10px] font-bold text-indigo-400 bg-indigo-500/10 px-2 py-0.5 rounded">
                       Student Access
@@ -651,51 +1075,48 @@ export default function InteractiveSpatialNavigator({
                   </div>
 
                   <p className="text-xs text-slate-300 leading-relaxed">
-                    Explore colleges in {selectedCity}, verify annual fee structures, view cross-college hackathons, or request access to high-end laboratory equipment with a digital pass.
+                    Explore colleges in {selectedCity}, verify fee structures, view cross-college hackathons, or request access to high-end labs.
                   </p>
 
-                  <div className="pt-2 flex items-center gap-2">
+                  <div className="pt-1 flex items-center gap-2">
                     <button
                       onClick={() => setLensMode('student')}
-                      className={`px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1 ${lensMode === 'student' ? 'bg-indigo-600 text-white' : 'bg-slate-800 text-slate-300 hover:text-white'}`}
+                      className={`px-3 py-1 rounded-xl text-xs font-bold transition ${lensMode === 'student' ? 'bg-indigo-600 text-white' : 'bg-slate-800 text-slate-300 hover:text-white'}`}
                     >
-                      <span>Activate Student View</span>
+                      Student Lens Active
                     </button>
                     <button
-                      onClick={() => {
-                        onClose();
-                        setActiveTab('explore');
-                      }}
-                      className="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold border border-slate-700 transition"
+                      onClick={() => { onClose(); setActiveTab('explore'); }}
+                      className="px-3 py-1 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold border border-slate-700"
                     >
-                      Browse All Directory
+                      Full Directory ➔
                     </button>
                   </div>
                 </div>
 
-                {/* Pathway B: As a College Representative ("Make Your Own Page in Ghaziabad!") */}
-                <div className={`p-4 rounded-2xl border space-y-3 transition ${lensMode === 'college' ? 'bg-purple-950/40 border-purple-500/50' : 'bg-slate-950/50 border-slate-800'}`}>
+                {/* Pathway B: As a College ("Make Your Own Page") */}
+                <div className={`p-4 rounded-2xl border space-y-2 transition ${lensMode === 'college' ? 'bg-purple-950/40 border-purple-500/50' : 'bg-slate-950/50 border-slate-800'}`}>
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2 text-purple-300 font-bold text-xs uppercase tracking-wide">
                       <Building2 className="w-4 h-4 text-purple-400" />
-                      <span>Path 2: Are You a College Official?</span>
+                      <span>Are You a College Official?</span>
                     </div>
                     <span className="text-[10px] font-bold text-purple-300 bg-purple-500/20 px-2 py-0.5 rounded border border-purple-500/30">
-                      College Authority
+                      Make Your Page
                     </span>
                   </div>
 
                   <p className="text-xs text-slate-300 leading-relaxed">
-                    Is your institute located in {selectedCity}? Make your own custom college page, add your degree programs, broadcast event invitations, and manage external student access.
+                    Make your own college page in {selectedCity}, add degree programs, broadcast event circulars, and approve external student passes.
                   </p>
 
-                  <div className="pt-2 flex flex-wrap items-center gap-2">
+                  <div className="pt-1 flex flex-wrap items-center gap-2">
                     <button
                       onClick={() => setShowQuickCreateModal(true)}
-                      className="px-3.5 py-1.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs shadow-md transition flex items-center gap-1.5"
+                      className="px-3.5 py-1 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs shadow-md transition flex items-center gap-1.5"
                     >
                       <Plus className="w-3.5 h-3.5" />
-                      <span>+ Make Your College Page in {selectedCity}</span>
+                      <span>+ Make College Page in {selectedCity}</span>
                     </button>
 
                     <button
@@ -703,7 +1124,7 @@ export default function InteractiveSpatialNavigator({
                         onClose();
                         onRegisterCollegeInCity(selectedCity, selectedState);
                       }}
-                      className="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold border border-slate-700 transition"
+                      className="px-3 py-1 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold border border-slate-700"
                     >
                       Admin Studio
                     </button>
@@ -711,75 +1132,61 @@ export default function InteractiveSpatialNavigator({
                 </div>
               </div>
 
-              {/* Verified Institutions in Selected City */}
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-sm font-bold text-white flex items-center gap-2">
+              {/* Verified Institutions in Selected City (De-congested Cards) */}
+              <div className="space-y-3">
+                <div className="flex items-center justify-between text-xs">
+                  <h3 className="font-bold text-white flex items-center gap-1.5">
                     <Building2 className="w-4 h-4 text-indigo-400" />
-                    <span>Verified Institutions Located in {selectedCity}:</span>
+                    <span>Institutions in {selectedCity} ({currentCityColleges.length}):</span>
                   </h3>
-                  <span className="text-xs text-slate-400 font-mono">
-                    Showing {currentCityColleges.length} Campus{currentCityColleges.length !== 1 ? 'es' : ''}
-                  </span>
+                  <span className="text-slate-400 font-mono">Verified Infrastructure</span>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
                   {currentCityColleges.map((col) => (
                     <div
                       key={col.id}
-                      className="glass-card p-5 rounded-2xl border border-slate-800 hover:border-indigo-500/50 flex flex-col justify-between space-y-4 transition"
+                      className="glass-card p-4 rounded-2xl border border-slate-800 hover:border-indigo-500/50 flex flex-col justify-between space-y-3"
                     >
                       <div>
-                        <div className="flex items-start justify-between gap-3 mb-2">
-                          <div className="flex items-center gap-3">
+                        <div className="flex items-start justify-between gap-2.5">
+                          <div className="flex items-center gap-2.5">
                             <img
                               src={col.logo}
                               alt={col.name}
-                              className="w-12 h-12 rounded-xl object-cover border border-slate-700 shadow-sm"
+                              className="w-10 h-10 rounded-xl object-cover border border-slate-700"
                             />
                             <div>
-                              <h4 className="text-base font-bold text-white leading-tight">{col.name}</h4>
-                              <div className="text-xs text-indigo-300 font-medium">{col.accreditation} · {col.city}</div>
+                              <h4 className="text-sm font-bold text-white leading-tight">{col.name}</h4>
+                              <div className="text-[11px] text-indigo-300 font-medium">{col.accreditation} · {col.city}</div>
                             </div>
                           </div>
-                          <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 shrink-0">
+                          <span className="px-2 py-0.5 rounded text-[9px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 shrink-0">
                             Verified
                           </span>
                         </div>
 
-                        <p className="text-xs text-slate-300 line-clamp-2 leading-relaxed mt-2">
-                          {col.about}
-                        </p>
-
-                        <div className="grid grid-cols-2 gap-2 mt-3 p-2.5 rounded-xl bg-slate-900/60 border border-slate-800 text-xs">
+                        {/* Clean Data Badges (No congestion!) */}
+                        <div className="grid grid-cols-2 gap-2 mt-3 p-2 rounded-xl bg-slate-900/60 border border-slate-800 text-xs">
                           <div>
-                            <span className="text-[10px] text-slate-400 block">CSE Annual Fee</span>
+                            <span className="text-[9px] text-slate-400 block">CSE Annual Fee</span>
                             <strong className="text-white">₹{col.courses[0]?.annualFee?.toLocaleString()}/yr</strong>
                           </div>
                           <div>
-                            <span className="text-[10px] text-slate-400 block">Avg Placement</span>
+                            <span className="text-[9px] text-slate-400 block">Avg Package</span>
                             <strong className="text-emerald-400">{col.placementStats?.avgPackage}</strong>
                           </div>
-                        </div>
-
-                        {/* Facilities Chip */}
-                        <div className="mt-2.5 flex flex-wrap gap-1">
-                          {col.facilities?.slice(0, 2).map((fac, fIdx) => (
-                            <span key={fIdx} className="text-[10px] text-slate-300 px-2 py-0.5 rounded bg-slate-800/80 border border-slate-700/60">
-                              ✓ {fac}
-                            </span>
-                          ))}
                         </div>
                       </div>
 
                       {/* Action buttons */}
-                      <div className="pt-3 border-t border-slate-800 flex items-center justify-between gap-2">
+                      <div className="pt-2 border-t border-slate-800 flex items-center gap-2">
                         <button
                           onClick={() => {
                             onClose();
                             onSelectCollege(col.id);
                           }}
-                          className="flex-1 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold flex items-center justify-center gap-1.5 transition shadow-md"
+                          className="flex-1 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold flex items-center justify-center gap-1.5 transition"
                         >
                           <GraduationCap className="w-3.5 h-3.5" />
                           <span>Explore as Student</span>
@@ -791,68 +1198,56 @@ export default function InteractiveSpatialNavigator({
                             onClose();
                             setActiveTab('admin');
                           }}
-                          className="py-2 px-3 rounded-xl bg-purple-950/60 hover:bg-purple-900/80 text-purple-300 hover:text-white text-xs font-semibold border border-purple-500/40 transition flex items-center gap-1"
-                          title="Manage Authority as Official"
+                          className="py-1.5 px-3 rounded-xl bg-purple-950/60 hover:bg-purple-900/80 text-purple-300 text-xs font-semibold border border-purple-500/40 transition"
                         >
-                          <Building2 className="w-3.5 h-3.5" />
-                          <span>Manage Page</span>
+                          Admin Studio
                         </button>
                       </div>
                     </div>
                   ))}
                 </div>
 
-                {/* If no colleges in city */}
+                {/* If no colleges registered in this city yet */}
                 {currentCityColleges.length === 0 && (
-                  <div className="p-8 text-center bg-slate-900/40 rounded-2xl border border-slate-800 space-y-3">
-                    <Building2 className="w-10 h-10 text-slate-600 mx-auto" />
-                    <h4 className="text-base font-bold text-white">No Registered Campuses in {selectedCity} Yet</h4>
+                  <div className="p-6 text-center bg-slate-900/40 rounded-2xl border border-slate-800 space-y-2">
+                    <Building2 className="w-8 h-8 text-slate-600 mx-auto" />
+                    <h4 className="text-sm font-bold text-white">No Campuses Registered in {selectedCity} Yet</h4>
                     <p className="text-xs text-slate-400 max-w-sm mx-auto">
-                      Be the pioneer to establish and claim an official college page in {selectedCity}!
+                      Be the first college representative in {selectedCity} to establish a custom page!
                     </p>
                     <button
                       onClick={() => setShowQuickCreateModal(true)}
-                      className="px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold shadow-lg"
+                      className="px-4 py-1.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold shadow-md"
                     >
-                      + Make Your College Page in {selectedCity}
+                      + Make College Page in {selectedCity}
                     </button>
                   </div>
                 )}
               </div>
 
-              {/* Shared Inter-College Events & Labs in Selected City (Contributed Idea) */}
+              {/* Shared Events & Labs in Selected City */}
               {currentCityEvents.length > 0 && (
-                <div className="p-4 rounded-2xl bg-indigo-950/30 border border-indigo-500/30 space-y-3">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2 text-indigo-300 font-bold text-xs uppercase tracking-wide">
-                      <Calendar className="w-4 h-4 text-indigo-400" />
-                      <span>Upcoming Inter-College Events in {selectedCity} Hub:</span>
-                    </div>
-                    <button
-                      onClick={() => {
-                        onClose();
-                        setActiveTab('events');
-                      }}
-                      className="text-xs text-indigo-400 hover:underline"
-                    >
-                      View All Events ➔
+                <div className="p-3.5 rounded-2xl bg-indigo-950/30 border border-indigo-500/30 space-y-2">
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="text-indigo-300 font-bold uppercase tracking-wide flex items-center gap-1.5">
+                      <Calendar className="w-3.5 h-3.5 text-indigo-400" />
+                      <span>Upcoming Events in {selectedCity}:</span>
+                    </span>
+                    <button onClick={() => { onClose(); setActiveTab('events'); }} className="text-indigo-400 hover:underline">
+                      All Events ➔
                     </button>
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
                     {currentCityEvents.map(evt => (
-                      <div key={evt.id} className="p-3 rounded-xl bg-slate-900/80 border border-slate-800 text-xs space-y-1.5">
-                        <div className="font-bold text-white flex items-center justify-between">
-                          <span className="truncate">{evt.title}</span>
-                          <span className="px-2 py-0.5 rounded text-[10px] bg-emerald-500/20 text-emerald-300 font-bold shrink-0">
-                            {evt.prizePool}
-                          </span>
+                      <div key={evt.id} className="p-2.5 rounded-xl bg-slate-900/80 border border-slate-800 flex items-center justify-between gap-2">
+                        <div className="min-w-0">
+                          <div className="font-bold text-white truncate">{evt.title}</div>
+                          <div className="text-[10px] text-indigo-300 truncate">🏛️ {evt.hostCollegeName}</div>
                         </div>
-                        <div className="text-[11px] text-indigo-300">🏛️ {evt.hostCollegeName} · {evt.hostCity}</div>
-                        <div className="text-[10px] text-slate-400 flex items-center gap-1">
-                          <Clock className="w-3 h-3 text-slate-500" />
-                          <span>{evt.date}</span>
-                        </div>
+                        <span className="px-2 py-0.5 rounded text-[10px] bg-emerald-500/20 text-emerald-300 font-bold shrink-0">
+                          {evt.prizePool}
+                        </span>
                       </div>
                     ))}
                   </div>
@@ -864,18 +1259,18 @@ export default function InteractiveSpatialNavigator({
 
         </div>
 
-        {/* Footer tip */}
+        {/* Footer tip & Quick Proceed */}
         <div className="p-3 bg-slate-950/90 border-t border-slate-800 text-center text-[11px] text-slate-400 flex items-center justify-between px-6">
           <div className="flex items-center gap-2">
             <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-            <span>Interactive Spatial Gateway: Earth ➔ India ➔ UP ➔ Ghaziabad ➔ Discover & Make College Pages.</span>
+            <span>CampusBridge Multi-Campus Radar: 8 Global Hubs & Western UP Transit Highway.</span>
           </div>
 
           <button
             onClick={onClose}
             className="text-indigo-400 hover:text-white font-semibold flex items-center gap-1 transition"
           >
-            <span>Proceed to Full Site</span>
+            <span>Proceed to Dashboard</span>
             <ArrowRight className="w-3 h-3" />
           </button>
         </div>
@@ -902,7 +1297,7 @@ export default function InteractiveSpatialNavigator({
             </div>
 
             <p className="text-xs text-slate-400 leading-relaxed">
-              Register your institution in <strong>{selectedCity}, {selectedState}</strong>. Your custom college page will go live instantly on CampusBridge with your degree courses and event broadcasting privileges.
+              Register your institution in <strong>{selectedCity}, {selectedState} ({selectedCountry})</strong>. Your custom college page will go live immediately on CampusBridge.
             </p>
 
             <form onSubmit={handleQuickCreateCollege} className="space-y-3 text-xs">
@@ -991,9 +1386,10 @@ export default function InteractiveSpatialNavigator({
                 <button
                   type="button"
                   onClick={() => setShowQuickCreateModal(false)}
-                  className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold"
+                  className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold flex items-center gap-1"
                 >
-                  Cancel
+                  <ArrowLeft className="w-3.5 h-3.5" />
+                  <span>Back</span>
                 </button>
                 <button
                   type="submit"

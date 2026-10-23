@@ -58,3 +58,55 @@
 ::-webkit-scrollbar-thumb:hover {
   background: #475569;
 }
+
+/* Animations for Spatial Radar, Hyperspace Zoom & Inter-College Bridges */
+@keyframes spinSlow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+.animate-spin-slow {
+  animation: spinSlow 32s linear infinite;
+}
+
+@keyframes reverseSpinSlow {
+  from { transform: rotate(360deg); }
+  to { transform: rotate(0deg); }
+}
+.animate-reverse-spin {
+  animation: reverseSpinSlow 40s linear infinite;
+}
+
+@keyframes bridgeBeam {
+  0% { transform: translateX(-100%); opacity: 0; }
+  50% { opacity: 1; }
+  100% { transform: translateX(200%); opacity: 0; }
+}
+.animate-bridge-beam {
+  animation: bridgeBeam 2.4s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+@keyframes radarSweep {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+.animate-radar-sweep {
+  animation: radarSweep 4s linear infinite;
+}
+
+@keyframes warpZoom {
+  0% { transform: scale(0.6); opacity: 0; filter: blur(8px); }
+  40% { transform: scale(1.08); opacity: 0.9; filter: blur(2px); }
+  100% { transform: scale(1); opacity: 1; filter: blur(0px); }
+}
+.animate-warp-in {
+  animation: warpZoom 0.55s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes glowPulsar {
+  0%, 100% { opacity: 0.4; transform: scale(0.98); }
+  50% { opacity: 0.85; transform: scale(1.04); }
+}
+.animate-glow-pulsar {
+  animation: glowPulsar 3s ease-in-out infinite;
+}
+
