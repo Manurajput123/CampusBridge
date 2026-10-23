@@ -506,19 +506,9 @@ export default function InteractiveSpatialNavigator({
     }
   };
 
-  const handleExitToDashboard = () => {
-    if (onClose) onClose();
-    if (setActiveTab) setActiveTab('home');
-  };
-
   return (
-    <div className="min-h-[calc(100vh-4rem)] w-full bg-[#060914] text-slate-100 flex flex-col justify-between relative overflow-hidden">
-      {/* Ambient Cosmic Starfield Glows */}
-      <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-indigo-600/10 blur-[150px] rounded-full pointer-events-none"></div>
-      <div className="absolute top-1/2 right-1/4 w-[600px] h-[600px] bg-purple-600/10 blur-[160px] rounded-full pointer-events-none"></div>
-      <div className="absolute bottom-10 left-1/3 w-[400px] h-[400px] bg-cyan-600/10 blur-[140px] rounded-full pointer-events-none"></div>
-
-      <div className="relative w-full flex flex-col flex-1">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/95 backdrop-blur-2xl animate-fade-in overflow-y-auto">
+      <div className="relative w-full max-w-5xl bg-[#090d1a] border border-indigo-500/40 rounded-3xl shadow-[0_0_60px_rgba(99,102,241,0.25)] overflow-hidden my-auto flex flex-col max-h-[95vh]">
         
         {/* ===================================================================
             ATTRACTIVE HYPERSPACE / RADAR WARP ANIMATION OVERLAY
@@ -554,20 +544,20 @@ export default function InteractiveSpatialNavigator({
           </div>
         )}
 
-        {/* Top Header Ribbon */}
-        <div className="w-full p-4 sm:px-8 sm:py-4 border-b border-slate-800/80 bg-slate-950/80 backdrop-blur-xl flex items-center justify-between gap-3">
+        {/* Top Header */}
+        <div className="p-4 sm:p-5 border-b border-slate-800 bg-slate-950/90 flex items-center justify-between gap-3">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-indigo-600 via-indigo-500 to-purple-600 flex items-center justify-center text-white shadow-lg shadow-indigo-600/40 shrink-0">
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-600 via-indigo-500 to-purple-600 flex items-center justify-center text-white shadow-lg shadow-indigo-600/40 shrink-0">
               <Globe className="w-5 h-5 animate-spin-slow" />
             </div>
             <div>
               <div className="flex items-center gap-2 flex-wrap">
-                <span className="text-sm font-black text-white tracking-wide">CampusBridge Full-Page Spatial Gateway</span>
+                <span className="text-sm font-black text-white tracking-wide">CampusBridge Spatial Navigator</span>
                 <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/40">
                   Global Campus Radar
                 </span>
               </div>
-              <p className="text-[11px] text-slate-400 truncate max-w-lg">
+              <p className="text-[11px] text-slate-400 truncate max-w-md">
                 Earth ➔ Any Country ➔ State Corridor ➔ City Hub ➔ Student Discovery & College Builder
               </p>
             </div>
@@ -577,22 +567,20 @@ export default function InteractiveSpatialNavigator({
             {/* Reset to Earth */}
             <button
               onClick={() => setZoomLevel('EARTH')}
-              className="px-3 py-1.5 rounded-xl bg-slate-800/90 hover:bg-slate-700 text-slate-300 text-xs font-semibold border border-slate-700 transition flex items-center gap-1.5"
+              className="px-2.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold border border-slate-700 transition flex items-center gap-1.5"
               title="Reset Orbit to Outer Space Earth View"
             >
               <RotateCcw className="w-3.5 h-3.5" />
               <span className="hidden sm:inline">Earth Orbit</span>
             </button>
 
-            {/* Switch to Full Dashboard */}
+            {/* Close / Skip */}
             <button
-              onClick={handleExitToDashboard}
-              className="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:opacity-95 text-white text-xs font-bold transition flex items-center gap-1.5 shadow-md shadow-indigo-600/30"
-              title="Open CampusBridge Full Platform Dashboard"
+              onClick={onClose}
+              className="px-3 py-1.5 rounded-xl bg-indigo-600/30 hover:bg-indigo-600 text-indigo-200 hover:text-white border border-indigo-500/40 text-xs font-bold transition flex items-center gap-1"
             >
-              <Building2 className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">Explore Platform</span>
-              <ArrowRight className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Dashboard</span>
+              <X className="w-4 h-4" />
             </button>
           </div>
         </div>
@@ -660,8 +648,8 @@ export default function InteractiveSpatialNavigator({
           </div>
         </div>
 
-        {/* Spatial Content Body (Full-Width Responsive Canvas) */}
-        <div className="container mx-auto px-4 sm:px-8 py-6 max-w-7xl flex-1 flex flex-col justify-center space-y-6">
+        {/* Spatial Content Body */}
+        <div className="p-4 sm:p-6 overflow-y-auto flex-1 space-y-5">
           
           {/* ===================================================================
               LEVEL 1: EARTH VIEW (GLOBAL COUNTRIES SELECTOR)
@@ -670,15 +658,15 @@ export default function InteractiveSpatialNavigator({
             <div className="space-y-6 text-center py-2 animate-fade-in">
               
               {/* Rotating 3D Globe with Telemetry */}
-              <div className="relative w-64 h-64 sm:w-80 sm:h-80 mx-auto flex items-center justify-center">
+              <div className="relative w-52 h-52 sm:w-64 sm:h-64 mx-auto flex items-center justify-center">
                 {/* Orbital atmospheric glow */}
-                <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-indigo-600/35 via-purple-600/25 to-cyan-400/30 blur-3xl animate-pulse pointer-events-none"></div>
+                <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-indigo-600/30 via-purple-600/20 to-cyan-400/25 blur-2xl animate-pulse pointer-events-none"></div>
                 
                 {/* Outer Dashed Orbit Ring */}
-                <div className="absolute inset-[-14px] rounded-full border border-indigo-500/25 border-dashed animate-spin-slow pointer-events-none"></div>
+                <div className="absolute inset-[-10px] rounded-full border border-indigo-500/20 border-dashed animate-spin-slow pointer-events-none"></div>
 
                 {/* Globe Sphere */}
-                <div className="relative w-56 h-56 sm:w-72 sm:h-72 rounded-full bg-gradient-to-br from-slate-950 via-indigo-950/75 to-[#050814] border-2 border-indigo-500/50 shadow-[inset_0_0_50px_rgba(99,102,241,0.4)] flex flex-col items-center justify-center overflow-hidden">
+                <div className="relative w-44 h-44 sm:w-56 sm:h-56 rounded-full bg-gradient-to-br from-slate-950 via-indigo-950/70 to-[#050814] border-2 border-indigo-500/40 shadow-[inset_0_0_40px_rgba(99,102,241,0.3)] flex flex-col items-center justify-center overflow-hidden">
                   
                   {/* Continental Grid Mesh Lines */}
                   <div className="absolute inset-0 rounded-full border border-indigo-500/20 scale-90 pointer-events-none"></div>
@@ -1279,10 +1267,10 @@ export default function InteractiveSpatialNavigator({
           </div>
 
           <button
-            onClick={handleExitToDashboard}
+            onClick={onClose}
             className="text-indigo-400 hover:text-white font-semibold flex items-center gap-1 transition"
           >
-            <span>Proceed to Full Dashboard</span>
+            <span>Proceed to Dashboard</span>
             <ArrowRight className="w-3 h-3" />
           </button>
         </div>
