@@ -742,7 +742,7 @@ export default function CollegeAdminPage({ setActiveTab, presetCity = 'Ghaziabad
           </button>
 
           <button
-            onClick={() => switchUser('usr-aarav')}
+            onClick={() => switchUser('usr-student')}
             className="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold border border-slate-700 transition"
           >
             Switch to Student

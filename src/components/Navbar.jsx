@@ -8,7 +8,6 @@ import {
   Users,
   QrCode,
   Sparkles,
-  ShieldAlert,
   ChevronDown,
   RotateCcw,
   CheckCircle2,
@@ -37,23 +36,26 @@ export default function Navbar({ activeTab, setActiveTab, onSelectCollege, onOpe
   } = useApp();
 
   const [roleMenuOpen, setRoleMenuOpen] = useState(false);
+  const [moreMenuOpen, setMoreMenuOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   // Count pending access requests for the college admin's college
   const pendingRequestsForAdmin = accessRequests.filter(
-    r => r.targetCollegeId === currentUser.collegeId && r.status === 'pending'
+    r => r.targetCollegeId === currentUser?.collegeId && r.status === 'pending'
   ).length;
 
-  const myPassesCount = passes.filter(p => p.studentId === currentUser.id).length;
+  const myPassesCount = passes.filter(p => p.studentId === currentUser?.id).length;
 
-  const isCollegeAdmin = currentUser.role === 'college_admin';
-  const isSuperAdmin = currentUser.role === 'super_admin';
+  const isCollegeAdmin = currentUser?.role === 'college_admin';
+
+  // Check if active tab is one of the secondary items in "More"
+  const isMoreActive = ['compare', 'notices', 'ai', 'admin', 'requests', 'passes', 'scanner'].includes(activeTab);
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-slate-800 bg-slate-950/90 backdrop-blur-xl">
+    <header className="sticky top-0 z-40 w-full border-b border-slate-800/80 bg-slate-950/90 backdrop-blur-xl">
       {/* Top Banner Notice */}
-      <div className="bg-gradient-to-r from-orange-950/60 via-slate-900 to-slate-950 px-4 py-1.5 border-b border-[#ff5722]/20 text-xs flex items-center justify-between">
-        <div className="container mx-auto flex items-center justify-between">
+      <div className="bg-gradient-to-r from-orange-950/40 via-slate-900 to-slate-950 px-4 py-1.5 border-b border-[#ff5722]/20 text-xs">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
           <div className="flex items-center gap-2 text-orange-200">
             <span className="inline-block w-2 h-2 rounded-full bg-[#ff5722] animate-pulse"></span>
             <span>CampusBridge Multi-Campus Network Active</span>
@@ -71,208 +73,291 @@ export default function Navbar({ activeTab, setActiveTab, onSelectCollege, onOpe
             </button>
             <span className="text-slate-600">|</span>
             <span className="text-[11px] font-mono text-orange-300">
-              Role: <strong className="text-white uppercase">{currentUser.role.replace('_', ' ')}</strong>
+              Role: <strong className="text-white uppercase">{currentUser?.role?.replace('_', ' ') || 'STUDENT'}</strong>
             </span>
           </div>
         </div>
       </div>
 
-      {/* Main Navbar */}
-      <div className="container mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+      {/* Main Navbar - Centered within max-w-7xl so login bar is never pushed to the extreme corner */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
         
         {/* Brand Logo with Orange Bridge Motif */}
         <div 
           onClick={() => { setActiveTab('home'); }} 
-          className="flex items-center gap-2.5 cursor-pointer group"
+          className="flex items-center gap-2.5 cursor-pointer group shrink-0"
         >
           <CampusBridgeGraphic variant="logo" className="w-9 h-9 group-hover:scale-105 transition" />
           <div>
-            <div className="text-lg font-black tracking-tight text-white flex items-center gap-1.5">
+            <div className="text-lg font-black tracking-tight text-white flex items-center gap-1.5 leading-none">
               <span>Campus<span className="text-[#ff5722]">Bridge</span></span>
               <span className="px-1.5 py-0.5 text-[10px] font-bold rounded bg-[#ff5722]/20 text-[#ff7043] border border-[#ff5722]/30">MVP</span>
             </div>
-            <div className="text-[10px] text-slate-400 font-medium tracking-wide">Connect Campuses · Compare · Grow</div>
+            <div className="text-[10px] text-slate-400 font-medium tracking-wide mt-1 hidden sm:block">
+              Connect Campuses · Compare · Grow
+            </div>
           </div>
         </div>
 
-        {/* Desktop Navigation Links */}
-        <nav className="hidden lg:flex items-center gap-1 text-sm font-medium text-slate-300">
-          {/* Spatial 3D Earth Gateway Trigger */}
+        {/* Shortened & Un-congested Desktop Navigation */}
+        <nav className="hidden md:flex items-center gap-1.5 text-xs font-semibold text-slate-300">
+          
+          {/* 1. Spatial 3D Earth Gateway */}
           <button
             onClick={() => setActiveTab('spatial')}
-            className={`px-3 py-1.5 rounded-xl transition flex items-center gap-1.5 text-xs font-bold shadow-sm group mr-1 ${
+            className={`px-3 py-1.5 rounded-xl transition flex items-center gap-1.5 font-bold shadow-sm ${
               activeTab === 'spatial'
-                ? 'bg-[#ff5722] text-white shadow-lg shadow-[#ff5722]/30'
-                : 'bg-slate-900/80 hover:bg-slate-800 text-slate-200 border border-slate-700'
+                ? 'bg-[#ff5722] text-white shadow-md shadow-[#ff5722]/30'
+                : 'bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-700/80'
             }`}
-            title="Launch Full-Page 3D Earth Corridor Navigator (Earth ➔ India ➔ UP ➔ Ghaziabad)"
+            title="Launch 3D Earth Corridor Navigator (Earth ➔ Country ➔ State ➔ City)"
           >
-            <Globe className="w-3.5 h-3.5 text-[#ff7043] group-hover:rotate-45 transition duration-300" />
-            <span>3D Earth Gateway</span>
+            <Globe className="w-3.5 h-3.5 text-[#ff7043]" />
+            <span>3D Earth</span>
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
           </button>
 
+          {/* 2. Explore Colleges */}
           <button
             onClick={() => setActiveTab('explore')}
-            className={`px-3 py-2 rounded-lg transition flex items-center gap-1.5 ${activeTab === 'explore' ? 'bg-[#ff5722]/20 text-[#ff7043] font-semibold' : 'hover:text-white hover:bg-slate-800/60'}`}
+            className={`px-3 py-1.5 rounded-lg transition flex items-center gap-1.5 ${
+              activeTab === 'explore'
+                ? 'bg-[#ff5722]/20 text-[#ff7043] font-bold'
+                : 'hover:text-white hover:bg-slate-800/60'
+            }`}
           >
             <Building2 className="w-4 h-4" />
-            Explore Colleges
+            <span>Colleges</span>
           </button>
 
-          <button
-            onClick={() => setActiveTab('compare')}
-            className={`px-3 py-2 rounded-lg transition flex items-center gap-1.5 relative ${activeTab === 'compare' ? 'bg-[#ff5722]/20 text-[#ff7043] font-semibold' : 'hover:text-white hover:bg-slate-800/60'}`}
-          >
-            <Layers className="w-4 h-4" />
-            Compare
-            {compareList.length > 0 && (
-              <span className="ml-1 px-1.5 py-0.2 rounded-full text-[10px] font-bold bg-[#ff5722] text-white">
-                {compareList.length}
-              </span>
-            )}
-          </button>
-
+          {/* 3. Inter-College Events */}
           <button
             onClick={() => setActiveTab('events')}
-            className={`px-3 py-2 rounded-lg transition flex items-center gap-1.5 ${activeTab === 'events' ? 'bg-indigo-600/20 text-indigo-300 font-semibold' : 'hover:text-white hover:bg-slate-800/60'}`}
+            className={`px-3 py-1.5 rounded-lg transition flex items-center gap-1.5 ${
+              activeTab === 'events'
+                ? 'bg-[#ff5722]/20 text-[#ff7043] font-bold'
+                : 'hover:text-white hover:bg-slate-800/60'
+            }`}
           >
             <Calendar className="w-4 h-4" />
-            Inter-College Events
+            <span>Events</span>
           </button>
 
+          {/* 4. Team Finder */}
           <button
             onClick={() => setActiveTab('teams')}
-            className={`px-3 py-2 rounded-lg transition flex items-center gap-1.5 ${activeTab === 'teams' ? 'bg-indigo-600/20 text-indigo-300 font-semibold' : 'hover:text-white hover:bg-slate-800/60'}`}
+            className={`px-3 py-1.5 rounded-lg transition flex items-center gap-1.5 ${
+              activeTab === 'teams'
+                ? 'bg-[#ff5722]/20 text-[#ff7043] font-bold'
+                : 'hover:text-white hover:bg-slate-800/60'
+            }`}
           >
             <Users className="w-4 h-4" />
-            Team Finder
+            <span>Teams</span>
           </button>
 
-          <button
-            onClick={() => setActiveTab('ai')}
-            className={`px-3 py-2 rounded-lg transition flex items-center gap-1.5 text-amber-300 ${activeTab === 'ai' ? 'bg-amber-500/20 font-semibold' : 'hover:text-white hover:bg-slate-800/60'}`}
-          >
-            <Sparkles className="w-4 h-4" />
-            AI Advisor
-          </button>
-
-          {/* Inter-College Information / Bulletins */}
-          <button
-            onClick={() => setActiveTab('notices')}
-            className={`px-3 py-2 rounded-lg transition flex items-center gap-1.5 ${activeTab === 'notices' ? 'bg-indigo-600/20 text-indigo-300 font-semibold' : 'hover:text-white hover:bg-slate-800/60'}`}
-          >
-            <BellRing className="w-4 h-4 text-indigo-400" />
-            <span>Campus Bulletins</span>
-            {notices?.length > 0 && (
-              <span className="ml-1 px-1.5 py-0.2 rounded-full text-[10px] font-bold bg-indigo-600 text-white">
-                {notices.length}
-              </span>
-            )}
-          </button>
-
-          {/* College Admin Portal / Partner Onboarding (Always Accessible) */}
-          <button
-            onClick={() => setActiveTab('admin')}
-            className={`px-3 py-2 rounded-lg transition flex items-center gap-1.5 ${activeTab === 'admin' ? 'bg-purple-600/30 text-purple-200 font-bold border border-purple-500/40' : 'text-purple-300 hover:text-white hover:bg-purple-950/50'}`}
-          >
-            <Building2 className="w-4 h-4 text-purple-400" />
-            <span>{isCollegeAdmin ? 'Admin Studio' : 'College Partner Portal'}</span>
-            {isCollegeAdmin && pendingRequestsForAdmin > 0 && (
-              <span className="px-1.5 py-0.2 rounded-full text-[10px] font-bold bg-rose-500 text-white animate-pulse">
-                {pendingRequestsForAdmin}
-              </span>
-            )}
-          </button>
-
-          {/* Access Requests & Permissions */}
-          <button
-            onClick={() => setActiveTab('requests')}
-            className={`px-3 py-2 rounded-lg transition flex items-center gap-1.5 ${activeTab === 'requests' ? 'bg-indigo-600/20 text-indigo-300 font-semibold' : 'hover:text-white hover:bg-slate-800/60'}`}
-          >
-            <FileKey className="w-4 h-4" />
-            {isCollegeAdmin ? 'Student Access Approvals' : 'Campus Permissions'}
-          </button>
-
-          {/* Student Passes */}
-          {!isCollegeAdmin && (
+          {/* 5. Clean "More Hub" Dropdown to eliminate congestion */}
+          <div className="relative">
             <button
-              onClick={() => setActiveTab('passes')}
-              className={`px-3 py-2 rounded-lg transition flex items-center gap-1.5 ${activeTab === 'passes' ? 'bg-indigo-600/20 text-indigo-300 font-semibold' : 'hover:text-white hover:bg-slate-800/60'}`}
+              onClick={() => setMoreMenuOpen(!moreMenuOpen)}
+              className={`px-3 py-1.5 rounded-lg transition flex items-center gap-1.5 ${
+                isMoreActive || moreMenuOpen
+                  ? 'bg-slate-800 text-white border border-slate-700'
+                  : 'hover:text-white hover:bg-slate-800/60'
+              }`}
             >
-              <QrCode className="w-4 h-4" />
-              My Passes
-              {myPassesCount > 0 && (
-                <span className="px-1.5 py-0.2 rounded-full text-[10px] font-bold bg-emerald-600 text-white">
-                  {myPassesCount}
-                </span>
+              <Layers className="w-4 h-4 text-slate-400" />
+              <span>More</span>
+              {(compareList.length > 0 || (notices && notices.length > 0) || myPassesCount > 0) && (
+                <span className="w-2 h-2 rounded-full bg-[#ff5722]"></span>
               )}
+              <ChevronDown className={`w-3.5 h-3.5 transition duration-200 ${moreMenuOpen ? 'rotate-180 text-[#ff7043]' : 'text-slate-400'}`} />
             </button>
-          )}
 
-          {/* Scanner Page for Organizers */}
-          <button
-            onClick={() => setActiveTab('scanner')}
-            className={`px-3 py-2 rounded-lg transition flex items-center gap-1.5 ${activeTab === 'scanner' ? 'bg-emerald-600/20 text-emerald-300 font-semibold' : 'hover:text-emerald-300 hover:bg-slate-800/60'}`}
-          >
-            <QrCode className="w-4 h-4 text-emerald-400" />
-            Gate Scanner
-          </button>
+            {/* Dropdown Menu */}
+            {moreMenuOpen && (
+              <div 
+                className="absolute left-0 mt-2 w-64 rounded-2xl bg-slate-900 border border-slate-700/80 shadow-2xl p-2 z-50 animate-fade-in backdrop-blur-xl"
+                onMouseLeave={() => setMoreMenuOpen(false)}
+              >
+                <div className="space-y-1">
+                  {/* Compare Colleges */}
+                  <button
+                    onClick={() => { setActiveTab('compare'); setMoreMenuOpen(false); }}
+                    className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs transition ${
+                      activeTab === 'compare' ? 'bg-[#ff5722]/20 text-[#ff7043] font-bold' : 'text-slate-300 hover:bg-slate-800 hover:text-white'
+                    }`}
+                  >
+                    <span className="flex items-center gap-2">
+                      <Layers className="w-4 h-4 text-[#ff7043]" />
+                      <span>Compare Colleges</span>
+                    </span>
+                    {compareList.length > 0 && (
+                      <span className="px-1.5 py-0.2 rounded-full text-[10px] font-bold bg-[#ff5722] text-white">
+                        {compareList.length}
+                      </span>
+                    )}
+                  </button>
+
+                  {/* Campus Bulletins */}
+                  <button
+                    onClick={() => { setActiveTab('notices'); setMoreMenuOpen(false); }}
+                    className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs transition ${
+                      activeTab === 'notices' ? 'bg-indigo-600/20 text-indigo-300 font-bold' : 'text-slate-300 hover:bg-slate-800 hover:text-white'
+                    }`}
+                  >
+                    <span className="flex items-center gap-2">
+                      <BellRing className="w-4 h-4 text-indigo-400" />
+                      <span>Campus Bulletins</span>
+                    </span>
+                    {notices?.length > 0 && (
+                      <span className="px-1.5 py-0.2 rounded-full text-[10px] font-bold bg-indigo-600 text-white">
+                        {notices.length}
+                      </span>
+                    )}
+                  </button>
+
+                  {/* AI Advisor */}
+                  <button
+                    onClick={() => { setActiveTab('ai'); setMoreMenuOpen(false); }}
+                    className={`w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs transition ${
+                      activeTab === 'ai' ? 'bg-amber-500/20 text-amber-300 font-bold' : 'text-amber-300/90 hover:bg-slate-800 hover:text-amber-200'
+                    }`}
+                  >
+                    <Sparkles className="w-4 h-4 text-amber-400" />
+                    <span>AI Advisor</span>
+                  </button>
+                </div>
+
+                <div className="my-1.5 border-t border-slate-800/80"></div>
+
+                <div className="space-y-1">
+                  <div className="px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-slate-500">
+                    Inter-Campus Tools
+                  </div>
+
+                  {/* Student Passes */}
+                  <button
+                    onClick={() => { setActiveTab('passes'); setMoreMenuOpen(false); }}
+                    className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs transition ${
+                      activeTab === 'passes' ? 'bg-emerald-600/20 text-emerald-300 font-bold' : 'text-slate-300 hover:bg-slate-800 hover:text-white'
+                    }`}
+                  >
+                    <span className="flex items-center gap-2">
+                      <QrCode className="w-4 h-4 text-emerald-400" />
+                      <span>My Event Passes</span>
+                    </span>
+                    {myPassesCount > 0 && (
+                      <span className="px-1.5 py-0.2 rounded-full text-[10px] font-bold bg-emerald-600 text-white">
+                        {myPassesCount}
+                      </span>
+                    )}
+                  </button>
+
+                  {/* Campus Permissions */}
+                  <button
+                    onClick={() => { setActiveTab('requests'); setMoreMenuOpen(false); }}
+                    className={`w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs transition ${
+                      activeTab === 'requests' ? 'bg-cyan-600/20 text-cyan-300 font-bold' : 'text-slate-300 hover:bg-slate-800 hover:text-white'
+                    }`}
+                  >
+                    <FileKey className="w-4 h-4 text-cyan-400" />
+                    <span>Campus Permissions</span>
+                  </button>
+
+                  {/* Scanner */}
+                  <button
+                    onClick={() => { setActiveTab('scanner'); setMoreMenuOpen(false); }}
+                    className={`w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs transition ${
+                      activeTab === 'scanner' ? 'bg-emerald-600/20 text-emerald-300 font-bold' : 'text-slate-300 hover:bg-slate-800 hover:text-white'
+                    }`}
+                  >
+                    <QrCode className="w-4 h-4 text-emerald-400" />
+                    <span>Gate Scanner</span>
+                  </button>
+                </div>
+
+                <div className="my-1.5 border-t border-slate-800/80"></div>
+
+                {/* College Admin Portal */}
+                <button
+                  onClick={() => { setActiveTab('admin'); setMoreMenuOpen(false); }}
+                  className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs transition ${
+                    activeTab === 'admin' ? 'bg-purple-600/30 text-purple-200 font-bold' : 'text-purple-300 hover:bg-purple-950/40 hover:text-white'
+                  }`}
+                >
+                  <span className="flex items-center gap-2">
+                    <Building2 className="w-4 h-4 text-purple-400" />
+                    <span>{isCollegeAdmin ? 'Admin Studio' : 'College Partner Portal'}</span>
+                  </span>
+                  {isCollegeAdmin && pendingRequestsForAdmin > 0 && (
+                    <span className="px-1.5 py-0.2 rounded-full text-[10px] font-bold bg-rose-500 text-white animate-pulse">
+                      {pendingRequestsForAdmin}
+                    </span>
+                  )}
+                </button>
+              </div>
+            )}
+          </div>
         </nav>
 
-        {/* Right Section: User Persona Switcher & Auth */}
-        <div className="flex items-center gap-2 sm:gap-2.5">
+        {/* Right Section: Properly Spaced & Framed Login & Account Bar */}
+        <div className="flex items-center gap-2.5 sm:gap-3 shrink-0">
+          
+          {/* Quick Login Link */}
           <button
             onClick={() => setActiveTab('auth')}
-            className="text-xs text-slate-300 hover:text-white font-medium px-2 py-1.5 transition"
+            className="text-xs text-slate-300 hover:text-white font-semibold px-2.5 py-1.5 rounded-lg hover:bg-slate-800/60 transition"
           >
-            Login
+            Log in
           </button>
 
-          {/* Orange "Sign up free" button matching the user's design image */}
+          {/* Prominent Orange "Sign up free" CTA */}
           <button
             onClick={() => setActiveTab('auth')}
-            className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-[#ff5722] hover:bg-[#ea580c] text-white text-xs font-bold transition shadow-md shadow-[#ff5722]/30"
+            className="flex items-center gap-1.5 px-3.5 sm:px-4 py-2 rounded-xl bg-gradient-to-r from-[#ff5722] to-[#ff7043] hover:brightness-110 text-white text-xs font-bold transition shadow-md shadow-[#ff5722]/30 active:scale-95"
           >
             <LogIn className="w-3.5 h-3.5" />
-            <span>Sign up free</span>
+            <span className="whitespace-nowrap">Sign up free</span>
           </button>
 
+          {/* Elegant User Account Pill */}
           <div className="relative">
             <button
               onClick={() => setRoleMenuOpen(!roleMenuOpen)}
-              className="flex items-center gap-2.5 p-1.5 pr-3 rounded-xl bg-slate-800/90 border border-slate-700 hover:border-indigo-500/50 transition shadow-sm text-left"
+              className="flex items-center gap-2 p-1.5 pr-2.5 rounded-xl bg-slate-900 border border-slate-800 hover:border-[#ff5722]/50 transition shadow-sm text-left"
+              title="Switch Account Persona"
             >
               <img
-                src={currentUser.avatar}
-                alt={currentUser.name}
-                className="w-8 h-8 rounded-lg object-cover ring-2 ring-indigo-500/40"
+                src={currentUser?.avatar}
+                alt={currentUser?.name || 'User'}
+                className="w-7 h-7 rounded-lg object-cover ring-1 ring-[#ff5722]/40"
               />
-              <div className="hidden sm:block">
-                <div className="text-xs font-bold text-white flex items-center gap-1">
-                  <span className="truncate max-w-[110px]">{currentUser.name}</span>
-                  <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
+              <div className="hidden xl:block">
+                <div className="text-xs font-bold text-white flex items-center gap-1 leading-none">
+                  <span className="truncate max-w-[95px]">{currentUser?.name}</span>
+                  <ChevronDown className="w-3 h-3 text-slate-400" />
                 </div>
-                <div className="text-[10px] text-indigo-300 truncate max-w-[130px]">
-                  {currentUser.role === 'college_admin' ? '🏛️ Admin: ' + (currentUser.collegeName?.split(' ')[0] || 'College') : '🎓 Student'}
+                <div className="text-[9px] text-[#ff7043] truncate max-w-[95px] mt-0.5 font-medium">
+                  {currentUser?.role === 'college_admin' ? '🏛️ Admin' : '🎓 Student'}
                 </div>
               </div>
             </button>
 
-            {/* Dropdown menu */}
+            {/* Account Switcher Dropdown */}
             {roleMenuOpen && (
               <div 
                 className="absolute right-0 mt-2 w-72 rounded-2xl bg-slate-900 border border-slate-700 shadow-2xl p-2 z-50 animate-fade-in"
                 onMouseLeave={() => setRoleMenuOpen(false)}
               >
                 <div className="px-3 py-2 border-b border-slate-800 flex items-center justify-between text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
-                  <span>Switch User Persona</span>
+                  <span>Switch Account Persona</span>
                   <button
                     onClick={() => {
                       setActiveTab('auth');
                       setRoleMenuOpen(false);
                     }}
-                    className="text-indigo-400 hover:underline normal-case flex items-center gap-1"
+                    className="text-[#ff7043] hover:underline normal-case flex items-center gap-1"
                   >
                     <UserPlus className="w-3 h-3" /> New
                   </button>
@@ -286,7 +371,11 @@ export default function Navbar({ activeTab, setActiveTab, onSelectCollege, onOpe
                         switchUser(u.id);
                         setRoleMenuOpen(false);
                       }}
-                      className={`w-full flex items-center gap-3 p-2 rounded-xl text-left transition ${u.id === currentUser.id ? 'bg-indigo-600/20 border border-indigo-500/40 text-white' : 'hover:bg-slate-800 text-slate-300'}`}
+                      className={`w-full flex items-center gap-3 p-2 rounded-xl text-left transition ${
+                        u.id === currentUser?.id
+                          ? 'bg-[#ff5722]/15 border border-[#ff5722]/40 text-white'
+                          : 'hover:bg-slate-800 text-slate-300'
+                      }`}
                     >
                       <img
                         src={u.avatar}
@@ -296,12 +385,16 @@ export default function Navbar({ activeTab, setActiveTab, onSelectCollege, onOpe
                       <div className="flex-1 min-w-0">
                         <div className="text-xs font-semibold text-white flex items-center justify-between">
                           <span className="truncate">{u.name}</span>
-                          {u.id === currentUser.id && (
-                            <CheckCircle2 className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
+                          {u.id === currentUser?.id && (
+                            <CheckCircle2 className="w-3.5 h-3.5 text-[#ff7043] shrink-0" />
                           )}
                         </div>
                         <div className="text-[11px] text-slate-400 truncate">
-                          {u.role === 'college_admin' ? `🏛️ Admin: ${u.collegeName}` : u.role === 'super_admin' ? '👑 Platform Director' : `🎓 Student (${u.collegeName})`}
+                          {u.role === 'college_admin'
+                            ? `🏛️ Admin: ${u.collegeName}`
+                            : u.role === 'super_admin'
+                            ? '👑 Platform Director'
+                            : `🎓 Student (${u.collegeName || 'Verified'})`}
                         </div>
                       </div>
                     </button>
@@ -314,9 +407,9 @@ export default function Navbar({ activeTab, setActiveTab, onSelectCollege, onOpe
                       setActiveTab('auth');
                       setRoleMenuOpen(false);
                     }}
-                    className="w-full py-1.5 px-3 rounded-lg bg-indigo-600/20 text-indigo-300 hover:bg-indigo-600 hover:text-white font-semibold text-left flex items-center justify-between transition"
+                    className="w-full py-1.5 px-3 rounded-lg bg-[#ff5722]/20 text-[#ff7043] hover:bg-[#ff5722] hover:text-white font-semibold text-left flex items-center justify-between transition"
                   >
-                    <span>Create / Sign In Student</span>
+                    <span>Create / Sign In Account</span>
                     <LogIn className="w-3.5 h-3.5" />
                   </button>
 
@@ -335,30 +428,31 @@ export default function Navbar({ activeTab, setActiveTab, onSelectCollege, onOpe
             )}
           </div>
 
-          {/* Mobile menu button */}
+          {/* Mobile hamburger menu toggle */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="lg:hidden p-2 rounded-xl bg-slate-800 text-slate-300 hover:text-white"
+            className="md:hidden p-2 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 hover:text-white"
+            title="Open Menu"
           >
-            {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
         </div>
       </div>
 
       {/* Mobile Menu Dropdown */}
       {mobileMenuOpen && (
-        <div className="lg:hidden border-t border-slate-800 bg-slate-950 p-4 space-y-2">
+        <div className="md:hidden border-t border-slate-800 bg-slate-950 p-4 space-y-2 animate-fade-in">
           {/* 3D Earth Gateway Mobile Trigger */}
           <button
             onClick={() => {
-              onOpenSpatialNavigator?.();
+              setActiveTab('spatial');
               setMobileMenuOpen(false);
             }}
-            className="w-full text-left px-3 py-2.5 rounded-xl text-sm font-bold text-indigo-200 bg-indigo-950/60 border border-indigo-500/40 hover:bg-indigo-900/60 flex items-center justify-between"
+            className="w-full text-left px-3 py-2.5 rounded-xl text-sm font-bold text-orange-200 bg-orange-950/60 border border-[#ff5722]/40 hover:bg-orange-900/60 flex items-center justify-between"
           >
             <span className="flex items-center gap-2">
-              <Globe className="w-4 h-4 text-indigo-400" />
-              <span>3D Earth Gateway (India ➔ UP ➔ Ghaziabad)</span>
+              <Globe className="w-4 h-4 text-[#ff5722]" />
+              <span>3D Earth Gateway (Explore World & India)</span>
             </span>
             <span className="text-[10px] font-bold text-emerald-400 bg-emerald-500/20 px-2 py-0.5 rounded">3D</span>
           </button>
@@ -367,33 +461,38 @@ export default function Navbar({ activeTab, setActiveTab, onSelectCollege, onOpe
             onClick={() => { setActiveTab('explore'); setMobileMenuOpen(false); }}
             className="w-full text-left px-3 py-2 rounded-lg text-sm text-slate-200 hover:bg-slate-800 flex items-center gap-2"
           >
-            <Building2 className="w-4 h-4 text-indigo-400" /> Explore Colleges
+            <Building2 className="w-4 h-4 text-[#ff7043]" /> Explore Colleges
           </button>
+
           <button
             onClick={() => { setActiveTab('compare'); setMobileMenuOpen(false); }}
             className="w-full text-left px-3 py-2 rounded-lg text-sm text-slate-200 hover:bg-slate-800 flex items-center justify-between"
           >
-            <span className="flex items-center gap-2"><Layers className="w-4 h-4 text-indigo-400" /> Compare Colleges</span>
-            <span className="px-2 py-0.5 rounded-full text-xs bg-indigo-600">{compareList.length}</span>
+            <span className="flex items-center gap-2"><Layers className="w-4 h-4 text-[#ff7043]" /> Compare Colleges</span>
+            <span className="px-2 py-0.5 rounded-full text-xs bg-[#ff5722] text-white font-bold">{compareList.length}</span>
           </button>
+
           <button
             onClick={() => { setActiveTab('events'); setMobileMenuOpen(false); }}
             className="w-full text-left px-3 py-2 rounded-lg text-sm text-slate-200 hover:bg-slate-800 flex items-center gap-2"
           >
-            <Calendar className="w-4 h-4 text-indigo-400" /> Inter-College Events
+            <Calendar className="w-4 h-4 text-[#ff7043]" /> Inter-College Events
           </button>
+
           <button
             onClick={() => { setActiveTab('teams'); setMobileMenuOpen(false); }}
             className="w-full text-left px-3 py-2 rounded-lg text-sm text-slate-200 hover:bg-slate-800 flex items-center gap-2"
           >
-            <Users className="w-4 h-4 text-indigo-400" /> Team Finder
+            <Users className="w-4 h-4 text-[#ff7043]" /> Team Finder
           </button>
+
           <button
             onClick={() => { setActiveTab('ai'); setMobileMenuOpen(false); }}
             className="w-full text-left px-3 py-2 rounded-lg text-sm text-amber-300 hover:bg-slate-800 flex items-center gap-2"
           >
-            <Sparkles className="w-4 h-4" /> AI Advisor
+            <Sparkles className="w-4 h-4 text-amber-400" /> AI Advisor
           </button>
+
           <button
             onClick={() => { setActiveTab('notices'); setMobileMenuOpen(false); }}
             className="w-full text-left px-3 py-2 rounded-lg text-sm text-slate-200 hover:bg-slate-800 flex items-center justify-between"
@@ -403,30 +502,35 @@ export default function Navbar({ activeTab, setActiveTab, onSelectCollege, onOpe
               <span className="px-2 py-0.5 rounded-full text-xs bg-indigo-600 font-bold">{notices.length}</span>
             )}
           </button>
+
           <button
             onClick={() => { setActiveTab('auth'); setMobileMenuOpen(false); }}
-            className="w-full text-left px-3 py-2 rounded-lg text-sm text-indigo-300 font-bold hover:bg-indigo-950/60 flex items-center gap-2"
+            className="w-full text-left px-3 py-2 rounded-lg text-sm text-[#ff7043] font-bold hover:bg-[#ff5722]/10 flex items-center gap-2"
           >
-            <LogIn className="w-4 h-4 text-indigo-400" /> Student Login / Sign Up
+            <LogIn className="w-4 h-4 text-[#ff5722]" /> Student Login / Sign Up
           </button>
+
           <button
             onClick={() => { setActiveTab('requests'); setMobileMenuOpen(false); }}
             className="w-full text-left px-3 py-2 rounded-lg text-sm text-slate-200 hover:bg-slate-800 flex items-center gap-2"
           >
-            <FileKey className="w-4 h-4 text-indigo-400" /> Campus Permissions
+            <FileKey className="w-4 h-4 text-cyan-400" /> Campus Permissions
           </button>
+
           <button
             onClick={() => { setActiveTab('admin'); setMobileMenuOpen(false); }}
             className="w-full text-left px-3 py-2 rounded-lg text-sm text-purple-300 hover:bg-slate-800 flex items-center gap-2"
           >
-            <Building2 className="w-4 h-4" /> {isCollegeAdmin ? 'Admin Studio' : 'Register / Partner College'}
+            <Building2 className="w-4 h-4 text-purple-400" /> {isCollegeAdmin ? 'Admin Studio' : 'Register / Partner College'}
           </button>
+
           <button
             onClick={() => { setActiveTab('passes'); setMobileMenuOpen(false); }}
             className="w-full text-left px-3 py-2 rounded-lg text-sm text-slate-200 hover:bg-slate-800 flex items-center gap-2"
           >
             <QrCode className="w-4 h-4 text-emerald-400" /> My Passes
           </button>
+
           <button
             onClick={() => { setActiveTab('scanner'); setMobileMenuOpen(false); }}
             className="w-full text-left px-3 py-2 rounded-lg text-sm text-emerald-300 hover:bg-slate-800 flex items-center gap-2"

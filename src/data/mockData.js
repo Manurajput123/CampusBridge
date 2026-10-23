@@ -613,11 +613,11 @@ export const INITIAL_PASSES = [
     eventId: "evt-hackathon-meerut",
     eventTitle: "North India Inter-College Hackathon 2026",
     hostCollegeName: "Meerut Institute of Technology & Science",
-    studentId: "usr-aarav",
-    studentName: "Aarav Sharma",
+    studentId: "usr-student",
+    studentName: "Campus Student",
     studentCollege: "Noida Institute of Engineering & Technology",
     studentBranch: "B.Tech CSE - 3rd Year",
-    studentEmail: "aarav.sharma@niet.co.in",
+    studentEmail: "student@campusbridge.edu",
     registeredAt: "2026-10-22T10:30:00Z",
     used: false,
     checkedInAt: null,
@@ -643,9 +643,9 @@ export const INITIAL_PASSES = [
 export const INITIAL_ACCESS_REQUESTS = [
   {
     id: "req-101",
-    studentId: "usr-aarav",
-    studentName: "Aarav Sharma",
-    studentEmail: "aarav.sharma@niet.co.in",
+    studentId: "usr-student",
+    studentName: "Campus Student",
+    studentEmail: "student@campusbridge.edu",
     studentCollege: "Noida Institute of Engineering & Technology",
     targetCollegeId: "col-meerut-1",
     targetCollegeName: "Meerut Institute of Technology & Science",
@@ -700,15 +700,15 @@ export const INITIAL_TEAMS = [
     title: "SmartCity Hackers",
     eventId: "evt-hackathon-meerut",
     eventTitle: "North India Inter-College Hackathon 2026",
-    leaderName: "Aarav Sharma",
+    leaderName: "Campus Student",
     leaderCollege: "Noida Institute of Engineering & Technology",
-    contactEmail: "aarav.sharma@niet.co.in",
+    contactEmail: "student@campusbridge.edu",
     description: "Building an automated AI pothole detection & real-time municipal routing dashboard using mobile dashcams.",
     neededRoles: ["FastAPI / Python Backend", "UI/UX Designer", "Computer Vision Dev"],
     currentMembers: 2,
     maxMembers: 4,
     members: [
-      { name: "Aarav Sharma", role: "Team Lead & React Frontend", college: "NIET Noida" },
+      { name: "Campus Student", role: "Team Lead & React Frontend", college: "NIET Noida" },
       { name: "Sameer Khan", role: "Embedded Systems", college: "NIET Noida" }
     ]
   },
@@ -752,9 +752,9 @@ export const INITIAL_TEAMS = [
 
 export const DEMO_USERS = [
   {
-    id: "usr-aarav",
-    name: "Aarav Sharma",
-    email: "aarav.sharma@niet.co.in",
+    id: "usr-student",
+    name: "Campus Student",
+    email: "student@campusbridge.edu",
     role: "student",
     collegeId: "col-noida-1",
     collegeName: "Noida Institute of Engineering & Technology",

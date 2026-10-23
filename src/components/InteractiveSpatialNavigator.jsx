@@ -63,7 +63,7 @@ export default function InteractiveSpatialNavigator({
   const [quickAccreditation, setQuickAccreditation] = useState('NAAC A+ & NBA Approved');
   const [quickAnnualFee, setQuickAnnualFee] = useState('115000');
   const [quickAvgPkg, setQuickAvgPkg] = useState('₹7.2 LPA');
-  const [quickAdminName, setQuickAdminName] = useState('Prof. Sudhir Sharma');
+  const [quickAdminName, setQuickAdminName] = useState('Prof. S. Verma');
   const [quickAdminEmail, setQuickAdminEmail] = useState('dean@giatghaziabad.edu.in');
 
   if (isOpen === false) return null;

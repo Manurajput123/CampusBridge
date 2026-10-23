@@ -93,13 +93,27 @@ export const INITIAL_NOTICES = [
 export function AppProvider({ children }) {
   // Users list (persisted so new college admins & students stay registered)
   const [users, setUsers] = useState(() => {
-    return safeGetLocalStorage('cb_users', DEMO_USERS);
+    const loaded = safeGetLocalStorage('cb_users', DEMO_USERS);
+    // Sanitize any previous session with dummy name "Aarav"
+    return loaded.map(u => {
+      if (u.id === 'usr-aarav' || u.name?.includes('Aarav')) {
+        return {
+          ...u,
+          id: 'usr-student',
+          name: 'Campus Student',
+          email: 'student@campusbridge.edu'
+        };
+      }
+      return u;
+    });
   });
 
   // Current active user ID
   const [currentUserId, setCurrentUserId] = useState(() => {
     try {
-      return (typeof window !== 'undefined' && localStorage.getItem('cb_current_user_id')) || DEMO_USERS[0].id;
+      const stored = (typeof window !== 'undefined' && localStorage.getItem('cb_current_user_id'));
+      if (stored === 'usr-aarav') return 'usr-student';
+      return stored || DEMO_USERS[0].id;
     } catch (e) {
       return DEMO_USERS[0].id;
     }
@@ -259,7 +273,7 @@ export function AppProvider({ children }) {
   };
 
   const logoutUser = () => {
-    // Revert to demo Aarav
+    // Revert to default student account
     setCurrentUserId(DEMO_USERS[0].id);
     showToast('Signed out of current account. Active session reset.', 'info');
   };

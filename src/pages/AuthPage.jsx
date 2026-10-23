@@ -79,8 +79,8 @@ export default function AuthPage({ setActiveTab }) {
       
       {/* Header */}
       <div className="text-center space-y-2">
-        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 text-xs font-semibold">
-          <GraduationCap className="w-4 h-4 text-indigo-400" />
+        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#ff5722]/15 border border-[#ff5722]/30 text-[#ff7043] text-xs font-semibold">
+          <GraduationCap className="w-4 h-4 text-[#ff5722]" />
           <span>CampusBridge Single Identity Authentication</span>
         </div>
         <h1 className="text-3xl sm:text-4xl font-black text-white tracking-tight">
@@ -94,10 +94,10 @@ export default function AuthPage({ setActiveTab }) {
       </div>
 
       {/* Auth Mode Toggle Bar */}
-      <div className="flex items-center justify-center p-1.5 rounded-2xl bg-slate-900 border border-slate-800 max-w-md mx-auto">
+      <div className="flex items-center justify-center p-1.5 rounded-2xl bg-slate-900 border border-slate-800 max-w-md mx-auto shadow-lg">
         <button
           onClick={() => setAuthMode('student_signup')}
-          className={`flex-1 py-2 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 ${authMode === 'student_signup' ? 'bg-indigo-600 text-white shadow-md' : 'text-slate-400 hover:text-white'}`}
+          className={`flex-1 py-2 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 ${authMode === 'student_signup' ? 'bg-[#ff5722] text-white shadow-md shadow-[#ff5722]/30' : 'text-slate-400 hover:text-white'}`}
         >
           <User className="w-3.5 h-3.5" />
           Student Sign Up
@@ -105,7 +105,7 @@ export default function AuthPage({ setActiveTab }) {
 
         <button
           onClick={() => setAuthMode('student_login')}
-          className={`flex-1 py-2 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 ${authMode === 'student_login' ? 'bg-indigo-600 text-white shadow-md' : 'text-slate-400 hover:text-white'}`}
+          className={`flex-1 py-2 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 ${authMode === 'student_login' ? 'bg-[#ff5722] text-white shadow-md shadow-[#ff5722]/30' : 'text-slate-400 hover:text-white'}`}
         >
           <KeyRound className="w-3.5 h-3.5" />
           Student Login
@@ -113,7 +113,7 @@ export default function AuthPage({ setActiveTab }) {
 
         <button
           onClick={() => setAuthMode('college_login')}
-          className={`flex-1 py-2 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 ${authMode === 'college_login' ? 'bg-purple-600 text-white shadow-md' : 'text-slate-400 hover:text-white'}`}
+          className={`flex-1 py-2 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 ${authMode === 'college_login' ? 'bg-purple-600 text-white shadow-md shadow-purple-600/30' : 'text-slate-400 hover:text-white'}`}
         >
           <Building2 className="w-3.5 h-3.5" />
           College Admin
@@ -137,7 +137,7 @@ export default function AuthPage({ setActiveTab }) {
                 <User className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
                 <input
                   type="text"
-                  placeholder="e.g. Aman Sharma"
+                  placeholder="Enter your full name"
                   value={stdName}
                   onChange={(e) => setStdName(e.target.value)}
                   className="w-full pl-9 pr-3 py-2.5 rounded-xl glass-input text-xs text-white placeholder-slate-500"
@@ -247,7 +247,7 @@ export default function AuthPage({ setActiveTab }) {
 
             <button
               type="submit"
-              className="w-full py-3 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow-lg shadow-indigo-600/30 transition flex items-center justify-center gap-2 mt-2"
+              className="w-full py-3 rounded-2xl bg-[#ff5722] hover:bg-[#ea580c] text-white font-bold text-xs shadow-lg shadow-[#ff5722]/30 transition flex items-center justify-center gap-2 mt-2"
             >
               <CheckCircle2 className="w-4 h-4" />
               Complete Student Sign Up & Launch Profile
@@ -276,7 +276,7 @@ export default function AuthPage({ setActiveTab }) {
                 <Mail className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
                 <input
                   type="email"
-                  placeholder="e.g. aarav.sharma@niet.co.in"
+                  placeholder="e.g. student@college.edu.in"
                   value={loginEmail}
                   onChange={(e) => setLoginEmail(e.target.value)}
                   className="w-full pl-9 pr-3 py-2.5 rounded-xl glass-input text-xs text-white placeholder-slate-500"
@@ -304,7 +304,7 @@ export default function AuthPage({ setActiveTab }) {
 
             <button
               type="submit"
-              className="w-full py-3 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow-lg shadow-indigo-600/30 transition flex items-center justify-center gap-2"
+              className="w-full py-3 rounded-2xl bg-[#ff5722] hover:bg-[#ea580c] text-white font-bold text-xs shadow-lg shadow-[#ff5722]/30 transition flex items-center justify-center gap-2"
             >
               <KeyRound className="w-4 h-4" />
               Sign In to Student Dashboard
@@ -385,12 +385,12 @@ export default function AuthPage({ setActiveTab }) {
           <div className="flex flex-wrap justify-center gap-2">
             <button
               onClick={() => {
-                switchUser('usr-aarav');
+                switchUser('usr-student');
                 setActiveTab('explore');
               }}
               className="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium border border-slate-700 transition"
             >
-              🎓 Aarav Sharma (NIET Noida)
+              🎓 Student Delegate (NIET Noida)
             </button>
             <button
               onClick={() => {
