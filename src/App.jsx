@@ -20,6 +20,7 @@ import AIAdvisorPage from './pages/AIAdvisorPage';
 import AuthPage from './pages/AuthPage';
 import InterCollegeNoticesPage from './pages/InterCollegeNoticesPage';
 import InteractiveSpatialNavigator from './components/InteractiveSpatialNavigator';
+import PageBackgroundBridge from './components/PageBackgroundBridge';
 
 function MainApp() {
   // Starting page is directly the full-page 3D Earth Gateway!
@@ -30,7 +31,10 @@ function MainApp() {
   const [spatialPresetState, setSpatialPresetState] = useState('Uttar Pradesh');
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#0b0f19] text-slate-100">
+    <div className="min-h-screen flex flex-col bg-[#0b0f19] text-slate-100 relative">
+      {/* Light Visible Bridge Background across different pages matching design */}
+      <PageBackgroundBridge />
+
       {/* Global Navigation */}
       <Navbar
         activeTab={activeTab}

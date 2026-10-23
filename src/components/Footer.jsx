@@ -1,105 +1,81 @@
 import React from 'react';
-import { GraduationCap, Heart, Shield, Sparkles, Github, ExternalLink } from 'lucide-react';
+import { Shield } from 'lucide-react';
+import CampusBridgeGraphic from './CampusBridgeGraphic';
 
 export default function Footer({ setActiveTab }) {
   return (
-    <footer className="mt-20 border-t border-slate-800 bg-slate-950/90 text-slate-400">
+    <footer className="border-t border-slate-800 bg-[#070b14] text-slate-400 relative z-10">
       <div className="container mx-auto px-4 sm:px-6 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-10">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-8 mb-8 items-start">
           
-          {/* Brand Col */}
-          <div className="md:col-span-1 space-y-3">
-            <div className="flex items-center gap-2 text-white font-bold text-lg">
-              <div className="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center text-white">
-                <GraduationCap className="w-5 h-5" />
-              </div>
-              <span>CampusBridge</span>
+          {/* Brand Column matching the user's design mock */}
+          <div className="md:col-span-5 space-y-3">
+            <div 
+              onClick={() => setActiveTab('home')}
+              className="flex items-center gap-2.5 text-white font-bold text-lg cursor-pointer"
+            >
+              <CampusBridgeGraphic variant="logo" className="w-8 h-8" />
+              <span>Campus<span className="text-[#ff5722]">Bridge</span></span>
             </div>
-            <p className="text-xs text-slate-400 leading-relaxed">
-              A centralized platform for verified college discovery, multi-campus event broadcasting, access permissions, and student collaboration across India.
+            <p className="text-xs text-slate-400 leading-relaxed max-w-sm">
+              Research verified disclosures on every fact. All events are managed by official campus hosts. Gate scanners are authorized per event.
             </p>
-            <div className="flex items-center gap-2 pt-2 text-[11px] text-emerald-400">
-              <Shield className="w-3.5 h-3.5" />
-              <span>Verified Institution & Student Network</span>
+            <div className="flex items-center gap-2 pt-1 text-[11px] text-[#ff7043]">
+              <Shield className="w-3.5 h-3.5 text-[#ff5722]" />
+              <span>Verified Institution & Multi-Campus Access Network</span>
             </div>
           </div>
 
-          {/* Feature 1 */}
-          <div>
-            <h4 className="text-xs font-semibold text-white uppercase tracking-wider mb-3">Feature 1: Discovery & Compare</h4>
-            <ul className="text-xs space-y-2">
-              <li>
-                <button onClick={() => setActiveTab('explore')} className="hover:text-indigo-400 transition">
-                  Search Meerut, Noida, Delhi Colleges
-                </button>
-              </li>
-              <li>
-                <button onClick={() => setActiveTab('compare')} className="hover:text-indigo-400 transition">
-                  Side-by-Side 3-Way Comparison
-                </button>
-              </li>
-              <li>
-                <button onClick={() => setActiveTab('ai')} className="hover:text-indigo-400 transition">
-                  AI Admission & Fee Guidance
-                </button>
-              </li>
-            </ul>
+          {/* Links matching mock image */}
+          <div className="md:col-span-7 grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs">
+            <div>
+              <h4 className="font-bold text-white mb-2.5">Colleges</h4>
+              <ul className="space-y-1.5">
+                <li><button onClick={() => setActiveTab('explore')} className="hover:text-[#ff7043] transition">All Campuses</button></li>
+                <li><button onClick={() => setActiveTab('compare')} className="hover:text-[#ff7043] transition">Side-by-Side</button></li>
+                <li><button onClick={() => setActiveTab('spatial')} className="hover:text-[#ff7043] transition">3D Earth Gateway</button></li>
+              </ul>
+            </div>
+
+            <div>
+              <h4 className="font-bold text-white mb-2.5">For Colleges</h4>
+              <ul className="space-y-1.5">
+                <li><button onClick={() => setActiveTab('admin')} className="hover:text-[#ff7043] transition">Admin Studio</button></li>
+                <li><button onClick={() => setActiveTab('requests')} className="hover:text-[#ff7043] transition">Lab Passes</button></li>
+                <li><button onClick={() => setActiveTab('scanner')} className="hover:text-[#ff7043] transition">Gate Scanner</button></li>
+              </ul>
+            </div>
+
+            <div>
+              <h4 className="font-bold text-white mb-2.5">Events</h4>
+              <ul className="space-y-1.5">
+                <li><button onClick={() => setActiveTab('events')} className="hover:text-[#ff7043] transition">Hackathons</button></li>
+                <li><button onClick={() => setActiveTab('notices')} className="hover:text-[#ff7043] transition">Bulletins</button></li>
+                <li><button onClick={() => setActiveTab('passes')} className="hover:text-[#ff7043] transition">My Passes</button></li>
+              </ul>
+            </div>
+
+            <div>
+              <h4 className="font-bold text-white mb-2.5">Platform</h4>
+              <ul className="space-y-1.5">
+                <li><button onClick={() => setActiveTab('auth')} className="hover:text-[#ff7043] transition">Student Sign Up</button></li>
+                <li><button onClick={() => setActiveTab('teams')} className="hover:text-[#ff7043] transition">Team Finder</button></li>
+                <li><button onClick={() => setActiveTab('ai')} className="hover:text-[#ff7043] transition">AI Advisor</button></li>
+              </ul>
+            </div>
           </div>
 
-          {/* Feature 2 */}
-          <div>
-            <h4 className="text-xs font-semibold text-white uppercase tracking-wider mb-3">Feature 2: Admin & Events</h4>
-            <ul className="text-xs space-y-2">
-              <li>
-                <button onClick={() => setActiveTab('admin')} className="hover:text-indigo-400 transition">
-                  College Admin Dashboard
-                </button>
-              </li>
-              <li>
-                <button onClick={() => setActiveTab('events')} className="hover:text-indigo-400 transition">
-                  Targeted Campus Event Broadcast
-                </button>
-              </li>
-              <li>
-                <button onClick={() => setActiveTab('scanner')} className="hover:text-indigo-400 transition">
-                  Duplicate-Resistant QR Gate Scanner
-                </button>
-              </li>
-            </ul>
-          </div>
-
-          {/* Feature 3 */}
-          <div>
-            <h4 className="text-xs font-semibold text-white uppercase tracking-wider mb-3">Feature 3: Student Access & Teams</h4>
-            <ul className="text-xs space-y-2">
-              <li>
-                <button onClick={() => setActiveTab('requests')} className="hover:text-indigo-400 transition">
-                  Campus Lab & Resource Permissions
-                </button>
-              </li>
-              <li>
-                <button onClick={() => setActiveTab('teams')} className="hover:text-indigo-400 transition">
-                  Inter-College Team Finder
-                </button>
-              </li>
-              <li>
-                <button onClick={() => setActiveTab('passes')} className="hover:text-indigo-400 transition">
-                  Student Event Passes & QR Code
-                </button>
-              </li>
-            </ul>
-          </div>
         </div>
 
         {/* Bottom bar */}
-        <div className="pt-8 border-t border-slate-800/80 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-400 gap-4">
+        <div className="pt-6 border-t border-slate-800/80 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-3">
           <div>
-            Built with React 18, Vite, Tailwind CSS, QR Verification & Local-First State.
+            © 2026 CampusBridge. One bridge between every campus.
           </div>
-          <div className="flex items-center gap-4">
-            <span className="text-[11px] px-2.5 py-1 rounded-full bg-slate-800 text-indigo-300 border border-slate-700">
-              CampusBridge 2026 Hackathon Release
-            </span>
+          <div className="flex items-center gap-3">
+            <span>Western UP & NCR Education Corridor</span>
+            <span>·</span>
+            <span className="text-[#ff7043]">Private & Secure</span>
           </div>
         </div>
       </div>

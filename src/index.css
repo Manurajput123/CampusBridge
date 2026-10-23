@@ -28,9 +28,9 @@
 }
 
 .glass-card:hover {
-  border-color: rgba(99, 102, 241, 0.4);
+  border-color: rgba(255, 87, 34, 0.4);
   transform: translateY(-2px);
-  box-shadow: 0 10px 25px -5px rgba(99, 102, 241, 0.15);
+  box-shadow: 0 10px 25px -5px rgba(255, 87, 34, 0.15);
 }
 
 .glass-input {
@@ -38,9 +38,9 @@
   border: 1px solid rgba(255, 255, 255, 0.12);
 }
 .glass-input:focus {
-  border-color: #6366f1;
+  border-color: #ff5722;
   outline: none;
-  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.25);
+  box-shadow: 0 0 0 2px rgba(255, 87, 34, 0.25);
 }
 
 /* Custom Scrollbar */

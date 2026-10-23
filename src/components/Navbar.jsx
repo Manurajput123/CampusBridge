@@ -21,6 +21,7 @@ import {
   UserPlus,
   Globe
 } from 'lucide-react';
+import CampusBridgeGraphic from './CampusBridgeGraphic';
 
 export default function Navbar({ activeTab, setActiveTab, onSelectCollege, onOpenSpatialNavigator }) {
   const {
@@ -49,12 +50,12 @@ export default function Navbar({ activeTab, setActiveTab, onSelectCollege, onOpe
   const isSuperAdmin = currentUser.role === 'super_admin';
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-slate-800 bg-slate-950/85 backdrop-blur-xl">
+    <header className="sticky top-0 z-40 w-full border-b border-slate-800 bg-slate-950/90 backdrop-blur-xl">
       {/* Top Banner Notice */}
-      <div className="bg-gradient-to-r from-indigo-900/60 via-purple-900/60 to-slate-900/60 px-4 py-1.5 border-b border-indigo-500/20 text-xs flex items-center justify-between">
+      <div className="bg-gradient-to-r from-orange-950/60 via-slate-900 to-slate-950 px-4 py-1.5 border-b border-[#ff5722]/20 text-xs flex items-center justify-between">
         <div className="container mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-2 text-indigo-200">
-            <span className="inline-block w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          <div className="flex items-center gap-2 text-orange-200">
+            <span className="inline-block w-2 h-2 rounded-full bg-[#ff5722] animate-pulse"></span>
             <span>CampusBridge Multi-Campus Network Active</span>
             <span className="hidden md:inline text-slate-400">· Meerut, Greater Noida, Ghaziabad & Delhi Campuses Connected</span>
           </div>
@@ -69,7 +70,7 @@ export default function Navbar({ activeTab, setActiveTab, onSelectCollege, onOpe
               Reset Demo
             </button>
             <span className="text-slate-600">|</span>
-            <span className="text-[11px] font-mono text-indigo-300">
+            <span className="text-[11px] font-mono text-orange-300">
               Role: <strong className="text-white uppercase">{currentUser.role.replace('_', ' ')}</strong>
             </span>
           </div>
@@ -79,18 +80,16 @@ export default function Navbar({ activeTab, setActiveTab, onSelectCollege, onOpe
       {/* Main Navbar */}
       <div className="container mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
         
-        {/* Brand Logo */}
+        {/* Brand Logo with Orange Bridge Motif */}
         <div 
           onClick={() => { setActiveTab('home'); }} 
           className="flex items-center gap-2.5 cursor-pointer group"
         >
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 via-indigo-500 to-purple-500 flex items-center justify-center text-white shadow-lg shadow-indigo-600/30 group-hover:scale-105 transition">
-            <GraduationCap className="w-6 h-6" />
-          </div>
+          <CampusBridgeGraphic variant="logo" className="w-9 h-9 group-hover:scale-105 transition" />
           <div>
             <div className="text-lg font-black tracking-tight text-white flex items-center gap-1.5">
-              <span>Campus<span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">Bridge</span></span>
-              <span className="px-1.5 py-0.5 text-[10px] font-bold rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">MVP</span>
+              <span>Campus<span className="text-[#ff5722]">Bridge</span></span>
+              <span className="px-1.5 py-0.5 text-[10px] font-bold rounded bg-[#ff5722]/20 text-[#ff7043] border border-[#ff5722]/30">MVP</span>
             </div>
             <div className="text-[10px] text-slate-400 font-medium tracking-wide">Connect Campuses · Compare · Grow</div>
           </div>
@@ -103,19 +102,19 @@ export default function Navbar({ activeTab, setActiveTab, onSelectCollege, onOpe
             onClick={() => setActiveTab('spatial')}
             className={`px-3 py-1.5 rounded-xl transition flex items-center gap-1.5 text-xs font-bold shadow-sm group mr-1 ${
               activeTab === 'spatial'
-                ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-indigo-600/30 ring-1 ring-indigo-400'
-                : 'bg-gradient-to-r from-indigo-950 via-purple-950 to-indigo-950 hover:from-indigo-900 hover:to-purple-900 text-indigo-200 hover:text-white border border-indigo-500/40'
+                ? 'bg-[#ff5722] text-white shadow-lg shadow-[#ff5722]/30'
+                : 'bg-slate-900/80 hover:bg-slate-800 text-slate-200 border border-slate-700'
             }`}
             title="Launch Full-Page 3D Earth Corridor Navigator (Earth ➔ India ➔ UP ➔ Ghaziabad)"
           >
-            <Globe className="w-3.5 h-3.5 text-indigo-400 group-hover:rotate-45 transition duration-300" />
+            <Globe className="w-3.5 h-3.5 text-[#ff7043] group-hover:rotate-45 transition duration-300" />
             <span>3D Earth Gateway</span>
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
           </button>
 
           <button
             onClick={() => setActiveTab('explore')}
-            className={`px-3 py-2 rounded-lg transition flex items-center gap-1.5 ${activeTab === 'explore' ? 'bg-indigo-600/20 text-indigo-300 font-semibold' : 'hover:text-white hover:bg-slate-800/60'}`}
+            className={`px-3 py-2 rounded-lg transition flex items-center gap-1.5 ${activeTab === 'explore' ? 'bg-[#ff5722]/20 text-[#ff7043] font-semibold' : 'hover:text-white hover:bg-slate-800/60'}`}
           >
             <Building2 className="w-4 h-4" />
             Explore Colleges
@@ -123,12 +122,12 @@ export default function Navbar({ activeTab, setActiveTab, onSelectCollege, onOpe
 
           <button
             onClick={() => setActiveTab('compare')}
-            className={`px-3 py-2 rounded-lg transition flex items-center gap-1.5 relative ${activeTab === 'compare' ? 'bg-indigo-600/20 text-indigo-300 font-semibold' : 'hover:text-white hover:bg-slate-800/60'}`}
+            className={`px-3 py-2 rounded-lg transition flex items-center gap-1.5 relative ${activeTab === 'compare' ? 'bg-[#ff5722]/20 text-[#ff7043] font-semibold' : 'hover:text-white hover:bg-slate-800/60'}`}
           >
             <Layers className="w-4 h-4" />
             Compare
             {compareList.length > 0 && (
-              <span className="ml-1 px-1.5 py-0.2 rounded-full text-[10px] font-bold bg-indigo-600 text-white">
+              <span className="ml-1 px-1.5 py-0.2 rounded-full text-[10px] font-bold bg-[#ff5722] text-white">
                 {compareList.length}
               </span>
             )}
@@ -222,13 +221,21 @@ export default function Navbar({ activeTab, setActiveTab, onSelectCollege, onOpe
         </nav>
 
         {/* Right Section: User Persona Switcher & Auth */}
-        <div className="flex items-center gap-2.5">
+        <div className="flex items-center gap-2 sm:gap-2.5">
           <button
             onClick={() => setActiveTab('auth')}
-            className="hidden sm:flex items-center gap-1.5 px-3 py-2 rounded-xl bg-indigo-600/20 hover:bg-indigo-600 text-indigo-300 hover:text-white border border-indigo-500/30 text-xs font-bold transition shadow-sm"
+            className="text-xs text-slate-300 hover:text-white font-medium px-2 py-1.5 transition"
+          >
+            Login
+          </button>
+
+          {/* Orange "Sign up free" button matching the user's design image */}
+          <button
+            onClick={() => setActiveTab('auth')}
+            className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-[#ff5722] hover:bg-[#ea580c] text-white text-xs font-bold transition shadow-md shadow-[#ff5722]/30"
           >
             <LogIn className="w-3.5 h-3.5" />
-            <span>Student Login / Sign Up</span>
+            <span>Sign up free</span>
           </button>
 
           <div className="relative">
