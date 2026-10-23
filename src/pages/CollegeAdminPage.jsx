@@ -29,7 +29,7 @@ import {
   BellRing
 } from 'lucide-react';
 
-export default function CollegeAdminPage({ setActiveTab }) {
+export default function CollegeAdminPage({ setActiveTab, presetCity = 'Ghaziabad', presetState = 'Uttar Pradesh' }) {
   const {
     currentUser,
     users,
@@ -57,8 +57,14 @@ export default function CollegeAdminPage({ setActiveTab }) {
   // Registration form state for new college
   const [newColName, setNewColName] = useState('');
   const [newColShortName, setNewColShortName] = useState('');
-  const [newColCity, setNewColCity] = useState('Greater Noida');
-  const [newColState, setNewColState] = useState('Uttar Pradesh');
+  const [newColCity, setNewColCity] = useState(presetCity || 'Ghaziabad');
+  const [newColState, setNewColState] = useState(presetState || 'Uttar Pradesh');
+
+  React.useEffect(() => {
+    if (presetCity) setNewColCity(presetCity);
+    if (presetState) setNewColState(presetState);
+    if (presetCity) setOnboardingMode('register');
+  }, [presetCity, presetState]);
   const [newColType, setNewColType] = useState('Autonomous Institute');
   const [newColFounded, setNewColFounded] = useState('2010');
   const [newColAccreditation, setNewColAccreditation] = useState('NAAC A++ & NBA Tier-1');

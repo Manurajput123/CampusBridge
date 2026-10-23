@@ -19,11 +19,16 @@ import TeamFinderPage from './pages/TeamFinderPage';
 import AIAdvisorPage from './pages/AIAdvisorPage';
 import AuthPage from './pages/AuthPage';
 import InterCollegeNoticesPage from './pages/InterCollegeNoticesPage';
+import InteractiveSpatialNavigator from './components/InteractiveSpatialNavigator';
 
 function MainApp() {
   const [activeTab, setActiveTab] = useState('home');
   const [selectedCollegeId, setSelectedCollegeId] = useState('col-meerut-1');
   const [selectedEventId, setSelectedEventId] = useState('evt-hackathon-meerut');
+  // Earth Gateway opens first on website load as requested by user!
+  const [isSpatialNavigatorOpen, setIsSpatialNavigatorOpen] = useState(true);
+  const [spatialPresetCity, setSpatialPresetCity] = useState('Ghaziabad');
+  const [spatialPresetState, setSpatialPresetState] = useState('Uttar Pradesh');
 
   return (
     <div className="min-h-screen flex flex-col bg-[#0b0f19] text-slate-100">
@@ -31,6 +36,7 @@ function MainApp() {
       <Navbar
         activeTab={activeTab}
         setActiveTab={setActiveTab}
+        onOpenSpatialNavigator={() => setIsSpatialNavigatorOpen(true)}
         onSelectCollege={(id) => {
           setSelectedCollegeId(id);
           setActiveTab('college-detail');
@@ -44,6 +50,7 @@ function MainApp() {
             setActiveTab={setActiveTab}
             setSelectedCollegeId={setSelectedCollegeId}
             setSelectedEventId={setSelectedEventId}
+            onOpenSpatialNavigator={() => setIsSpatialNavigatorOpen(true)}
           />
         )}
 
@@ -87,6 +94,8 @@ function MainApp() {
         {activeTab === 'admin' && (
           <CollegeAdminPage
             setActiveTab={setActiveTab}
+            presetCity={spatialPresetCity}
+            presetState={spatialPresetState}
           />
         )}
 
@@ -136,6 +145,22 @@ function MainApp() {
 
       {/* Global Notification Toast */}
       <Toast />
+
+      {/* 3D Spatial Earth-to-Campus Navigator Modal */}
+      <InteractiveSpatialNavigator
+        isOpen={isSpatialNavigatorOpen}
+        onClose={() => setIsSpatialNavigatorOpen(false)}
+        onSelectCollege={(id) => {
+          setSelectedCollegeId(id);
+          setActiveTab('college-detail');
+        }}
+        onRegisterCollegeInCity={(city, state) => {
+          setSpatialPresetCity(city || 'Ghaziabad');
+          setSpatialPresetState(state || 'Uttar Pradesh');
+          setActiveTab('admin');
+        }}
+        setActiveTab={setActiveTab}
+      />
     </div>
   );
 }

@@ -18,10 +18,11 @@ import {
   BellRing,
   LogIn,
   LogOut,
-  UserPlus
+  UserPlus,
+  Globe
 } from 'lucide-react';
 
-export default function Navbar({ activeTab, setActiveTab, onSelectCollege }) {
+export default function Navbar({ activeTab, setActiveTab, onSelectCollege, onOpenSpatialNavigator }) {
   const {
     currentUser,
     users,
@@ -97,6 +98,17 @@ export default function Navbar({ activeTab, setActiveTab, onSelectCollege }) {
 
         {/* Desktop Navigation Links */}
         <nav className="hidden lg:flex items-center gap-1 text-sm font-medium text-slate-300">
+          {/* Spatial 3D Earth Gateway Trigger */}
+          <button
+            onClick={onOpenSpatialNavigator}
+            className="px-3 py-1.5 rounded-xl bg-gradient-to-r from-indigo-950 via-purple-950 to-indigo-950 hover:from-indigo-900 hover:to-purple-900 text-indigo-200 hover:text-white border border-indigo-500/40 text-xs font-bold transition flex items-center gap-1.5 shadow-sm group mr-1"
+            title="Launch Interactive 3D Earth Corridor Navigator (Earth ➔ India ➔ UP ➔ Ghaziabad)"
+          >
+            <Globe className="w-3.5 h-3.5 text-indigo-400 group-hover:rotate-45 transition duration-300" />
+            <span>3D Earth Gateway</span>
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+          </button>
+
           <button
             onClick={() => setActiveTab('explore')}
             className={`px-3 py-2 rounded-lg transition flex items-center gap-1.5 ${activeTab === 'explore' ? 'bg-indigo-600/20 text-indigo-300 font-semibold' : 'hover:text-white hover:bg-slate-800/60'}`}
@@ -325,6 +337,21 @@ export default function Navbar({ activeTab, setActiveTab, onSelectCollege }) {
       {/* Mobile Menu Dropdown */}
       {mobileMenuOpen && (
         <div className="lg:hidden border-t border-slate-800 bg-slate-950 p-4 space-y-2">
+          {/* 3D Earth Gateway Mobile Trigger */}
+          <button
+            onClick={() => {
+              onOpenSpatialNavigator?.();
+              setMobileMenuOpen(false);
+            }}
+            className="w-full text-left px-3 py-2.5 rounded-xl text-sm font-bold text-indigo-200 bg-indigo-950/60 border border-indigo-500/40 hover:bg-indigo-900/60 flex items-center justify-between"
+          >
+            <span className="flex items-center gap-2">
+              <Globe className="w-4 h-4 text-indigo-400" />
+              <span>3D Earth Gateway (India ➔ UP ➔ Ghaziabad)</span>
+            </span>
+            <span className="text-[10px] font-bold text-emerald-400 bg-emerald-500/20 px-2 py-0.5 rounded">3D</span>
+          </button>
+
           <button
             onClick={() => { setActiveTab('explore'); setMobileMenuOpen(false); }}
             className="w-full text-left px-3 py-2 rounded-lg text-sm text-slate-200 hover:bg-slate-800 flex items-center gap-2"

@@ -18,10 +18,12 @@ import {
   GraduationCap,
   Plus,
   BellRing,
-  LogIn
+  LogIn,
+  Globe,
+  Navigation
 } from 'lucide-react';
 
-export default function HomePage({ setActiveTab, setSelectedCollegeId, setSelectedEventId }) {
+export default function HomePage({ setActiveTab, setSelectedCollegeId, setSelectedEventId, onOpenSpatialNavigator }) {
   const { colleges, events, passes, currentUser, switchUser } = useApp();
   const [searchTerm, setSearchTerm] = useState('');
 
@@ -129,6 +131,64 @@ export default function HomePage({ setActiveTab, setSelectedCollegeId, setSelect
               <Building2 className="w-3.5 h-3.5 text-purple-400" />
               <span>College Partner Portal</span>
             </button>
+          </div>
+        </div>
+      </section>
+
+      {/* 3D Spatial Gateway Showcase Banner (Requested by User!) */}
+      <section className="container mx-auto px-4 sm:px-6">
+        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-slate-900 via-indigo-950/80 to-purple-950/70 border border-indigo-500/40 p-6 sm:p-8 shadow-2xl">
+          {/* Ambient light glow */}
+          <div className="absolute top-0 right-0 w-96 h-96 bg-indigo-500/10 blur-3xl pointer-events-none"></div>
+
+          <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-6">
+            <div className="space-y-3 max-w-2xl text-center lg:text-left">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/20 border border-indigo-500/40 text-indigo-300 text-xs font-bold">
+                <Globe className="w-3.5 h-3.5 animate-spin-slow text-indigo-400" />
+                <span>Spatial 3D Campus Gateway Active</span>
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+              </div>
+
+              <h2 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
+                Earth ➔ India ➔ Uttar Pradesh ➔ Ghaziabad
+              </h2>
+
+              <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+                Zoom from planet Earth down to local Ghaziabad, Greater Noida, and Meerut engineering institutes.
+                Explore degree courses as a student or launch <strong>"Make Your Own Page"</strong> to establish your college portal.
+              </p>
+
+              {/* Transit corridor pill */}
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-950/80 border border-slate-800 text-xs font-mono text-slate-300 flex-wrap">
+                <Navigation className="w-3.5 h-3.5 text-indigo-400" />
+                <span>Meerut (MITS)</span>
+                <span className="text-indigo-400">⚡ 45km / 22m ➔</span>
+                <span className="text-indigo-300 font-bold">Ghaziabad (GEA)</span>
+                <span className="text-indigo-400">⚡ 25km / 18m ➔</span>
+                <span>Gr. Noida (NIET)</span>
+              </div>
+            </div>
+
+            <div className="flex flex-col sm:flex-row lg:flex-col gap-3 shrink-0 w-full sm:w-auto">
+              <button
+                onClick={onOpenSpatialNavigator}
+                className="px-6 py-3.5 rounded-2xl bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-600 hover:opacity-95 text-white font-bold text-xs shadow-xl shadow-indigo-600/30 transition flex items-center justify-center gap-2.5"
+              >
+                <Globe className="w-4 h-4" />
+                <span>Launch 3D Earth Gateway</span>
+                <ArrowRight className="w-4 h-4" />
+              </button>
+
+              <button
+                onClick={() => {
+                  onOpenSpatialNavigator?.();
+                }}
+                className="px-6 py-3 rounded-2xl bg-slate-800/90 hover:bg-slate-700 text-slate-200 border border-slate-700 font-semibold text-xs transition flex items-center justify-center gap-2"
+              >
+                <Building2 className="w-4 h-4 text-purple-400" />
+                <span>Make College Page in Ghaziabad</span>
+              </button>
+            </div>
           </div>
         </div>
       </section>
