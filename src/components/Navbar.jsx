@@ -159,24 +159,17 @@ export default function Navbar({ activeTab, setActiveTab, onSelectCollege, onOpe
             </button>
           </nav>
 
-          {/* Right Section: Login, Sign Up Free, and Side Hub Drawer Trigger */}
+          {/* Right Section: Single Unified Auth Button & Side Hub Drawer Trigger */}
           <div className="flex items-center gap-2 sm:gap-3 shrink-0">
             
-            {/* Quick Login */}
+            {/* Single Unified Login / Sign Up Button */}
             <button
               onClick={() => setActiveTab('auth')}
-              className="text-xs text-slate-300 hover:text-white font-semibold px-2.5 py-1.5 rounded-lg hover:bg-slate-800/60 transition"
-            >
-              Log in
-            </button>
-
-            {/* Prominent Orange "Sign up free" CTA */}
-            <button
-              onClick={() => setActiveTab('auth')}
-              className="flex items-center gap-1.5 px-3 sm:px-4 py-2 rounded-xl bg-gradient-to-r from-[#ff5722] to-[#ff7043] hover:brightness-110 text-white text-xs font-bold transition shadow-md shadow-[#ff5722]/30 active:scale-95"
+              className="flex items-center gap-1.5 px-3.5 sm:px-4 py-2 rounded-xl bg-gradient-to-r from-[#ff5722] to-[#ff7043] hover:brightness-110 text-white text-xs font-bold transition shadow-md shadow-[#ff5722]/30 active:scale-95"
+              title="Login or Sign Up to CampusBridge"
             >
               <LogIn className="w-3.5 h-3.5" />
-              <span className="whitespace-nowrap">Sign up free</span>
+              <span className="whitespace-nowrap">Login / Sign Up</span>
             </button>
 
             {/* Side Menu Drawer Button: Opens Slide-Over Hub for Secondary Features */}
