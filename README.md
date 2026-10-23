@@ -53,6 +53,7 @@
 | **QR Code Engine** | QRCodeSVG (`qrcode.react`) |
 | **State & Persistence** | Local-First Architecture (`localStorage` cache + Reactive Context) |
 | **Confetti & FX** | Canvas Confetti |
+| **Database** | MongoDB via Node.js + MongoDB driver |
 
 ---
 
@@ -63,16 +64,53 @@
 npm install
 ```
 
-### 2. Start the Development Server
+### 2. Start MongoDB
+Make sure MongoDB is running locally or use a MongoDB Atlas connection string.
+
+Example local connection:
+```bash
+mongod
+```
+
+### 3. Configure Environment Variables
+Create a `.env` file from `.env.example`:
+```bash
+cp .env.example .env
+```
+
+Then update the `MONGO_URI` value if needed.
+
+### 4. Start the API Server
+```bash
+npm run server
+```
+
+### 5. Start the Development Server
 ```bash
 npm run dev
 ```
 
 Open your browser at `http://localhost:5173`.
 
-### 3. Build for Production
+### 6. Build for Production
 ```bash
 npm run build
+```
+
+---
+
+## 🗄️ MongoDB Connection Setup
+
+This repository is a frontend-only React app, so MongoDB is connected through a lightweight Node.js API server instead of directly from the browser.
+
+Files added for the database connection:
+- `server/db.js` — MongoDB connection utility
+- `server/index.js` — Express API server
+- `.env.example` — example MongoDB environment variables
+
+API health check:
+```bash
+curl http://localhost:5000/api/health
 ```
 
 ---
@@ -98,3 +136,4 @@ npm run build
    - Click "Validate Check-in" again: **Scan 2** triggers **"REJECTED: Pass Already Used"** duplicate protection!
 5. **Show AI Advisor & Team Finder**:
    - Ask AI Counselor: *"Compare Meerut vs Noida fees"* to show immediate answers.
+
