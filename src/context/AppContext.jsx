@@ -185,9 +185,18 @@ export function AppProvider({ children }) {
     ]);
   });
 
-  // Passes
+  // Passes: Merges fresh initial passes with user generated passes
   const [passes, setPasses] = useState(() => {
-    return safeGetLocalStorage('cb_passes', INITIAL_PASSES);
+    const loaded = safeGetLocalStorage('cb_passes', INITIAL_PASSES);
+    const existingTokens = new Set(loaded.map(p => p.token));
+    const merged = [...loaded];
+    for (const initP of INITIAL_PASSES) {
+      if (!existingTokens.has(initP.token)) {
+        merged.push(initP);
+        existingTokens.add(initP.token);
+      }
+    }
+    return merged;
   });
 
   // Access Requests
@@ -616,31 +625,80 @@ export function AppProvider({ children }) {
       return {
         success: false,
         status: 'ALREADY_USED',
-        message: `REJECTED: Pass has already been used on ${new Date(pass.checkedInAt).toLocaleTimeString()} by ${pass.checkedInBy || 'Organizer'}. Duplicate entry forbidden!`,
+        message: `REJECTED: Pass has already been used on ${new Date(pass.checkedInAt).toLocaleTimeString()} by ${pass.checkedInBy || 'Security Desk'}. Duplicate entry forbidden!`,
         pass
       };
     }
+
+    // Role & College Verification Check
+    const isAdmin = currentUser.role === 'college_admin';
+    const adminCollegeId = currentUser.collegeId;
+    const passCollegeId = pass.targetCollegeId || (pass.eventId ? events.find(e => e.id === pass.eventId)?.hostCollegeId : null);
+
+    const isMismatch = isAdmin && adminCollegeId && passCollegeId && adminCollegeId !== passCollegeId;
 
     const now = new Date().toISOString();
     const updatedPass = {
       ...pass,
       used: true,
       checkedInAt: now,
-      checkedInBy: currentUser.name || "Event Organizer"
+      checkedInBy: currentUser.name || "Campus Gate Security"
     };
 
     setPasses(prev => prev.map(p => p.token === trimmed ? updatedPass : p));
-    showToast(`Pass verified! ${pass.studentName} checked in.`, 'success');
+    
+    if (isMismatch) {
+      showToast(`⚠️ Warning: Pass belongs to ${pass.targetCollegeName || 'another college'}, scanned at ${currentUser.collegeName}!`, 'warning');
+    } else {
+      showToast(`Gate Entry Approved! ${pass.studentName} checked in.`, 'success');
+    }
 
     return {
       success: true,
       status: 'VERIFIED',
-      message: `Pass Verified! Welcome, ${pass.studentName} (${pass.studentCollege}).`,
+      isMismatch,
+      mismatchWarning: isMismatch 
+        ? `⚠️ Campus Mismatch Warning: This pass was issued for ${pass.targetCollegeName || 'another campus'}, but is being scanned at ${currentUser.collegeName}!`
+        : null,
+      message: `Pass Verified! Entry cleared for ${pass.studentName} (${pass.studentCollege}).`,
       pass: updatedPass
     };
   };
 
-  // 10. ACCESS REQUESTS
+  // 10. GENERATE COLLEGE VISIT PASS (Student requests a campus visit pass for any college)
+  const generateCollegeVisitPass = ({ targetCollegeId, purpose, visitDate, timeSlot }) => {
+    const targetCol = colleges.find(c => c.id === targetCollegeId) || colleges[0];
+    const randomHex = Math.floor(100000 + Math.random() * 900000);
+    const shortCode = (targetCol.shortName || targetCol.name).split(' ')[0].toUpperCase();
+    const token = `CB-VISIT-${randomHex}-${shortCode}`;
+
+    const newVisitPass = {
+      token,
+      passType: 'COLLEGE_VISIT',
+      targetCollegeId: targetCol.id,
+      targetCollegeName: targetCol.name,
+      targetCollegeCity: targetCol.city,
+      gateLocation: targetCol.contact?.address || `${targetCol.city} Campus Main Gate 1`,
+      studentId: currentUser.id,
+      studentName: currentUser.name,
+      studentCollege: currentUser.collegeName || 'Verified Affiliate Campus',
+      studentEmail: currentUser.email,
+      studentBranch: currentUser.branch || 'Engineering',
+      purpose: purpose || 'Campus Tour & Admission Counseling',
+      visitDate: visitDate || new Date().toISOString().split('T')[0],
+      timeSlot: timeSlot || '10:00 AM - 01:00 PM',
+      registeredAt: new Date().toISOString(),
+      used: false,
+      checkedInAt: null,
+      checkedInBy: null
+    };
+
+    setPasses(prev => [newVisitPass, ...prev]);
+    showToast(`🎟️ Official Visit Pass generated for ${targetCol.name}!`, 'success');
+    return { success: true, pass: newVisitPass };
+  };
+
+  // 11. ACCESS REQUESTS
   const submitAccessRequest = ({ targetCollegeId, resourceId, resourceTitle, purpose }) => {
     const targetCol = colleges.find(c => c.id === targetCollegeId);
     const newReq = {
@@ -786,6 +844,7 @@ export function AppProvider({ children }) {
         invitations,
         passes,
         registerForEvent,
+        generateCollegeVisitPass,
         checkInPass,
         accessRequests,
         submitAccessRequest,

@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
+import confetti from 'canvas-confetti';
+import QRPassModal from '../components/QRPassModal';
 import {
   Building2,
   MapPin,
@@ -19,18 +21,67 @@ import {
   Phone,
   ShieldAlert,
   Send,
-  X
+  X,
+  QrCode,
+  Ticket
 } from 'lucide-react';
 
 export default function CollegeDetailPage({ collegeId, setActiveTab, onBack }) {
-  const { colleges, compareList, toggleCompare, submitAccessRequest, currentUser, showToast } = useApp();
+  const {
+    colleges,
+    compareList,
+    toggleCompare,
+    submitAccessRequest,
+    currentUser,
+    showToast,
+    passes,
+    generateCollegeVisitPass
+  } = useApp();
   const college = colleges.find(c => c.id === collegeId) || colleges[0];
 
   const [activeSubTab, setActiveSubTab] = useState('courses'); // 'courses' | 'admissions' | 'placements' | 'resources' | 'facilities'
   const [requestModalResource, setRequestModalResource] = useState(null);
   const [requestPurpose, setRequestPurpose] = useState('');
 
+  // Campus Visit QR Pass State
+  const [showVisitModal, setShowVisitModal] = useState(false);
+  const [visitPurpose, setVisitPurpose] = useState('Campus Tour & Admission Counseling');
+  const [visitDate, setVisitDate] = useState(() => {
+    const d = new Date();
+    d.setDate(d.getDate() + 1);
+    return d.toISOString().split('T')[0];
+  });
+  const [visitTimeSlot, setVisitTimeSlot] = useState('10:00 AM - 01:00 PM (Morning Window)');
+  const [activeQRPass, setActiveQRPass] = useState(null);
+
+  // Check if student already has a visit pass for this college
+  const existingPass = (passes || []).find(
+    p => p.studentId === currentUser?.id && p.targetCollegeId === college.id && !p.used
+  );
+
   const isComparing = compareList.includes(college.id);
+
+  const handleGenerateVisitPassSubmit = (e) => {
+    e.preventDefault();
+    const result = generateCollegeVisitPass({
+      targetCollegeId: college.id,
+      purpose: visitPurpose,
+      visitDate: visitDate,
+      timeSlot: visitTimeSlot
+    });
+
+    if (result.success && result.pass) {
+      try {
+        confetti({
+          particleCount: 90,
+          spread: 60,
+          origin: { y: 0.6 }
+        });
+      } catch (err) {}
+      setShowVisitModal(false);
+      setActiveQRPass(result.pass);
+    }
+  };
 
   const handleAccessRequestSubmit = (e) => {
     e.preventDefault();
@@ -123,7 +174,25 @@ export default function CollegeDetailPage({ collegeId, setActiveTab, onBack }) {
               </div>
             </div>
 
-            <div className="flex items-center gap-3">
+            <div className="flex flex-wrap items-center gap-2.5">
+              {existingPass ? (
+                <button
+                  onClick={() => setActiveQRPass(existingPass)}
+                  className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold flex items-center gap-2 shadow-lg shadow-emerald-600/30 transition transform active:scale-95"
+                >
+                  <Ticket className="w-4 h-4" />
+                  <span>My Active Pass 🎟️</span>
+                </button>
+              ) : (
+                <button
+                  onClick={() => setShowVisitModal(true)}
+                  className="px-4 py-2 rounded-xl bg-gradient-to-r from-[#ff5722] to-[#e64a19] hover:brightness-110 text-white text-xs font-bold flex items-center gap-2 shadow-lg shadow-orange-500/30 transition transform active:scale-95"
+                >
+                  <QrCode className="w-4 h-4" />
+                  <span>Book Campus Visit (Get QR Pass) 🎟️</span>
+                </button>
+              )}
+
               <a
                 href={college.contact.website}
                 target="_blank"
@@ -157,6 +226,30 @@ export default function CollegeDetailPage({ collegeId, setActiveTab, onBack }) {
           </div>
         </div>
       </div>
+
+      {/* Active Campus Pass Banner (if student already holds one) */}
+      {existingPass && (
+        <div className="bg-emerald-950/40 border border-emerald-500/40 rounded-3xl p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-xl">
+          <div className="flex items-center gap-3.5">
+            <div className="w-11 h-11 rounded-2xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold">
+              <Ticket className="w-6 h-6" />
+            </div>
+            <div>
+              <p className="font-bold text-white text-sm">You hold a confirmed Campus Visit Pass for {college.name}!</p>
+              <p className="text-slate-300 text-xs mt-0.5">
+                Pass Token: <span className="font-mono text-emerald-300 font-bold">{existingPass.token}</span> • Visit Date: {existingPass.visitDate} • Slot: {existingPass.timeSlot}
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={() => setActiveQRPass(existingPass)}
+            className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center gap-2 shadow-md shadow-emerald-600/30 transition transform active:scale-95 whitespace-nowrap"
+          >
+            <QrCode className="w-4 h-4" />
+            <span>Open Gate QR Code</span>
+          </button>
+        </div>
+      )}
 
       {/* Sub-Navigation Tabs */}
       <div className="flex items-center gap-2 overflow-x-auto border-b border-slate-800 pb-2">
@@ -456,6 +549,112 @@ export default function CollegeDetailPage({ collegeId, setActiveTab, onBack }) {
             </form>
           </div>
         </div>
+      )}
+
+      {/* College Visit Pass Generation Modal */}
+      {showVisitModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in">
+          <div className="relative w-full max-w-lg bg-slate-900 border border-slate-700 rounded-3xl p-6 shadow-2xl space-y-5">
+            <div className="flex items-start justify-between border-b border-slate-800 pb-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-2xl bg-[#ff5722]/20 border border-[#ff5722]/30 flex items-center justify-center text-[#ff7043]">
+                  <QrCode className="w-5 h-5" />
+                </div>
+                <div>
+                  <span className="text-[10px] font-bold text-[#ff7043] uppercase tracking-wider">Campus Gate Clearance</span>
+                  <h3 className="text-lg font-bold text-white">Book Campus Visit at {college.name}</h3>
+                </div>
+              </div>
+              <button
+                onClick={() => setShowVisitModal(false)}
+                className="text-slate-400 hover:text-white p-1 rounded-lg"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleGenerateVisitPassSubmit} className="space-y-4">
+              <div className="p-3.5 bg-slate-950/60 rounded-2xl border border-slate-800 text-xs text-slate-300 space-y-1.5">
+                <div><strong>Visitor:</strong> {currentUser.name} ({currentUser.collegeName || 'Verified Affiliate'})</div>
+                <div><strong>Gate / Destination:</strong> {college.contact?.address || `${college.city} Campus Gate 1`}</div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-300 mb-1">
+                  Visit Purpose <span className="text-[#ff7043]">*</span>
+                </label>
+                <select
+                  value={visitPurpose}
+                  onChange={(e) => setVisitPurpose(e.target.value)}
+                  className="w-full p-3 rounded-xl glass-input text-xs text-white focus:outline-none"
+                  required
+                >
+                  <option value="Campus Tour & Admission Counseling" className="bg-slate-900">Campus Tour & Admission Counseling</option>
+                  <option value="Lab & Robotics Center Inspection" className="bg-slate-900">Lab & Robotics Center Inspection</option>
+                  <option value="Inter-College Academic Collaboration" className="bg-slate-900">Inter-College Academic Collaboration</option>
+                  <option value="Faculty & Department Meeting" className="bg-slate-900">Faculty & Department Meeting</option>
+                  <option value="Hackathon / Tech Fest Registration Inquiry" className="bg-slate-900">Hackathon / Tech Fest Registration Inquiry</option>
+                  <option value="Placement Cell Interaction" className="bg-slate-900">Placement Cell Interaction</option>
+                </select>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-semibold text-slate-300 mb-1">
+                    Scheduled Visit Date <span className="text-[#ff7043]">*</span>
+                  </label>
+                  <input
+                    type="date"
+                    value={visitDate}
+                    onChange={(e) => setVisitDate(e.target.value)}
+                    className="w-full p-2.5 rounded-xl glass-input text-xs text-white focus:outline-none"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-slate-300 mb-1">
+                    Arrival Time Slot <span className="text-[#ff7043]">*</span>
+                  </label>
+                  <select
+                    value={visitTimeSlot}
+                    onChange={(e) => setVisitTimeSlot(e.target.value)}
+                    className="w-full p-2.5 rounded-xl glass-input text-xs text-white focus:outline-none"
+                  >
+                    <option value="09:00 AM - 12:00 PM (Morning Slot)" className="bg-slate-900">09:00 AM - 12:00 PM (Morning Slot)</option>
+                    <option value="12:00 PM - 03:00 PM (Midday Slot)" className="bg-slate-900">12:00 PM - 03:00 PM (Midday Slot)</option>
+                    <option value="03:00 PM - 06:00 PM (Evening Slot)" className="bg-slate-900">03:00 PM - 06:00 PM (Evening Slot)</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="p-3 bg-amber-500/10 border border-amber-500/20 rounded-xl text-[11px] text-amber-200">
+                ⚡ Instant Issuance: Generating this pass gives you an encrypted QR code to present at {college.name}'s gate security desk for instant authorization.
+              </div>
+
+              <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-800">
+                <button
+                  type="button"
+                  onClick={() => setShowVisitModal(false)}
+                  className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-5 py-2 rounded-xl bg-gradient-to-r from-[#ff5722] to-[#e64a19] hover:brightness-110 text-white text-xs font-bold flex items-center gap-2 shadow-lg shadow-orange-500/30"
+                >
+                  <QrCode className="w-4 h-4" />
+                  <span>Generate Visit QR Pass</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* QR Pass Viewer Modal */}
+      {activeQRPass && (
+        <QRPassModal pass={activeQRPass} onClose={() => setActiveQRPass(null)} />
       )}
 
     </div>
