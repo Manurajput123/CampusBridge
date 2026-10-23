@@ -14,7 +14,8 @@ import {
   QrCode,
   Radio,
   ExternalLink,
-  Award
+  Award,
+  GraduationCap
 } from 'lucide-react';
 
 export default function HomePage({ setActiveTab, setSelectedCollegeId, setSelectedEventId }) {

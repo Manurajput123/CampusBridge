@@ -10,48 +10,58 @@ import {
 
 const AppContext = createContext();
 
+const safeGetLocalStorage = (key, fallback) => {
+  try {
+    if (typeof window === 'undefined' || !window.localStorage) return fallback;
+    const saved = localStorage.getItem(key);
+    if (!saved || saved === 'undefined' || saved === 'null') return fallback;
+    return JSON.parse(saved);
+  } catch (err) {
+    console.warn(`Failed to parse ${key} from localStorage, using fallback`, err);
+    return fallback;
+  }
+};
+
 export function AppProvider({ children }) {
   // Current active demo user
   const [currentUserId, setCurrentUserId] = useState(() => {
-    return localStorage.getItem('cb_current_user_id') || DEMO_USERS[0].id;
+    try {
+      return (typeof window !== 'undefined' && localStorage.getItem('cb_current_user_id')) || DEMO_USERS[0].id;
+    } catch (e) {
+      return DEMO_USERS[0].id;
+    }
   });
 
   const currentUser = DEMO_USERS.find(u => u.id === currentUserId) || DEMO_USERS[0];
 
   // Colleges
   const [colleges, setColleges] = useState(() => {
-    const saved = localStorage.getItem('cb_colleges');
-    return saved ? JSON.parse(saved) : INITIAL_COLLEGES;
+    return safeGetLocalStorage('cb_colleges', INITIAL_COLLEGES);
   });
 
   // Events
   const [events, setEvents] = useState(() => {
-    const saved = localStorage.getItem('cb_events');
-    return saved ? JSON.parse(saved) : INITIAL_EVENTS;
+    return safeGetLocalStorage('cb_events', INITIAL_EVENTS);
   });
 
   // Passes
   const [passes, setPasses] = useState(() => {
-    const saved = localStorage.getItem('cb_passes');
-    return saved ? JSON.parse(saved) : INITIAL_PASSES;
+    return safeGetLocalStorage('cb_passes', INITIAL_PASSES);
   });
 
   // Access Requests
   const [accessRequests, setAccessRequests] = useState(() => {
-    const saved = localStorage.getItem('cb_access_requests');
-    return saved ? JSON.parse(saved) : INITIAL_ACCESS_REQUESTS;
+    return safeGetLocalStorage('cb_access_requests', INITIAL_ACCESS_REQUESTS);
   });
 
   // Teams
   const [teams, setTeams] = useState(() => {
-    const saved = localStorage.getItem('cb_teams');
-    return saved ? JSON.parse(saved) : INITIAL_TEAMS;
+    return safeGetLocalStorage('cb_teams', INITIAL_TEAMS);
   });
 
   // Compare List (up to 3 colleges)
   const [compareList, setCompareList] = useState(() => {
-    const saved = localStorage.getItem('cb_compare_list');
-    return saved ? JSON.parse(saved) : ["col-meerut-1", "col-noida-1"];
+    return safeGetLocalStorage('cb_compare_list', ["col-meerut-1", "col-noida-1"]);
   });
 
   // Active Toast notification
