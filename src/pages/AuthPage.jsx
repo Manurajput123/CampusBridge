@@ -13,7 +13,8 @@ import {
   Sparkles,
   BookOpen,
   MapPin,
-  KeyRound
+  KeyRound,
+  X
 } from 'lucide-react';
 
 export default function AuthPage({ setActiveTab }) {
@@ -78,7 +79,16 @@ export default function AuthPage({ setActiveTab }) {
     <div className="container mx-auto px-4 sm:px-6 py-12 max-w-4xl space-y-8 animate-fade-in">
       
       {/* Header */}
-      <div className="text-center space-y-2">
+      <div className="text-center space-y-2 relative">
+        <button
+          onClick={() => setActiveTab('home')}
+          className="absolute right-0 top-0 p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-slate-400 hover:text-white hover:border-[#ff5722]/50 hover:bg-slate-800 transition flex items-center gap-1.5 text-xs font-bold shadow-md"
+          title="Close Authentication (Exit to Home)"
+        >
+          <X className="w-4 h-4" />
+          <span className="hidden sm:inline">Close</span>
+        </button>
+
         <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#ff5722]/15 border border-[#ff5722]/30 text-[#ff7043] text-xs font-semibold">
           <GraduationCap className="w-4 h-4 text-[#ff5722]" />
           <span>CampusBridge Single Identity Authentication</span>
@@ -123,6 +133,15 @@ export default function AuthPage({ setActiveTab }) {
       {/* Main Form Box */}
       <div className="glass-panel p-6 sm:p-8 rounded-3xl border border-slate-800 max-w-xl mx-auto shadow-2xl relative overflow-hidden">
         
+        {/* Quick Close 'X' Button on Card */}
+        <button
+          onClick={() => setActiveTab('home')}
+          className="absolute top-4 right-4 p-2 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-400 hover:text-white transition z-10"
+          title="Close Authentication (Exit to Home)"
+        >
+          <X className="w-4 h-4" />
+        </button>
+
         {/* Glow ambient */}
         <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none"></div>
 

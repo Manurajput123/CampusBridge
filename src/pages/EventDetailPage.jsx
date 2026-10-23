@@ -14,7 +14,8 @@ import {
   Share2,
   ShieldCheck,
   Radio,
-  Sparkles
+  Sparkles,
+  X
 } from 'lucide-react';
 import QRPassModal from '../components/QRPassModal';
 
@@ -49,14 +50,25 @@ export default function EventDetailPage({ eventId, setActiveTab, onBack }) {
   return (
     <div className="container mx-auto px-4 sm:px-6 py-8 space-y-8">
       
-      {/* Back button */}
-      <button
-        onClick={onBack || (() => setActiveTab('events'))}
-        className="inline-flex items-center gap-2 text-xs font-semibold text-slate-400 hover:text-white transition"
-      >
-        <ArrowLeft className="w-4 h-4" />
-        Back to Events Feed
-      </button>
+      {/* Back and Close buttons */}
+      <div className="flex items-center justify-between">
+        <button
+          onClick={onBack || (() => setActiveTab('events'))}
+          className="inline-flex items-center gap-2 text-xs font-semibold text-slate-400 hover:text-white transition"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          Back to Events Feed
+        </button>
+
+        <button
+          onClick={onBack || (() => setActiveTab('events'))}
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-800 text-slate-400 hover:text-white transition text-xs font-bold"
+          title="Close Event View (X)"
+        >
+          <X className="w-4 h-4" />
+          <span>Close</span>
+        </button>
+      </div>
 
       {/* Main Banner Header */}
       <div className="glass-panel rounded-3xl overflow-hidden border border-slate-800">

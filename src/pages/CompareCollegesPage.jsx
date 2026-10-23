@@ -12,7 +12,8 @@ import {
   ArrowRight,
   TrendingUp,
   DollarSign,
-  GraduationCap
+  GraduationCap,
+  X
 } from 'lucide-react';
 
 export default function CompareCollegesPage({ setActiveTab, setSelectedCollegeId }) {
@@ -49,12 +50,20 @@ export default function CompareCollegesPage({ setActiveTab, setSelectedCollegeId
           {compareList.length < 3 && (
             <button
               onClick={() => setSelectorOpen(!selectorOpen)}
-              className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold flex items-center gap-1.5 shadow-lg shadow-indigo-600/30 transition"
+              className="px-4 py-2 rounded-xl bg-[#ff5722] hover:bg-[#ea580c] text-white text-xs font-semibold flex items-center gap-1.5 shadow-lg shadow-[#ff5722]/30 transition"
             >
               <Plus className="w-4 h-4" />
               Add College ({compareList.length}/3)
             </button>
           )}
+
+          <button
+            onClick={() => setActiveTab('explore')}
+            className="p-2 rounded-xl bg-slate-900 border border-slate-800 text-slate-400 hover:text-white hover:bg-slate-800 transition"
+            title="Close Comparison (X)"
+          >
+            <X className="w-4 h-4" />
+          </button>
         </div>
       </div>
 

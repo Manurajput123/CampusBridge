@@ -18,7 +18,8 @@ import {
   Mail,
   Phone,
   ShieldAlert,
-  Send
+  Send,
+  X
 } from 'lucide-react';
 
 export default function CollegeDetailPage({ collegeId, setActiveTab, onBack }) {
@@ -53,14 +54,25 @@ export default function CollegeDetailPage({ collegeId, setActiveTab, onBack }) {
   return (
     <div className="container mx-auto px-4 sm:px-6 py-8 space-y-8">
       
-      {/* Back button */}
-      <button
-        onClick={onBack || (() => setActiveTab('explore'))}
-        className="inline-flex items-center gap-2 text-xs font-semibold text-slate-400 hover:text-white transition"
-      >
-        <ArrowLeft className="w-4 h-4" />
-        Back to Explore Colleges
-      </button>
+      {/* Back and Close buttons */}
+      <div className="flex items-center justify-between">
+        <button
+          onClick={onBack || (() => setActiveTab('explore'))}
+          className="inline-flex items-center gap-2 text-xs font-semibold text-slate-400 hover:text-white transition"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          Back to Explore Colleges
+        </button>
+
+        <button
+          onClick={onBack || (() => setActiveTab('explore'))}
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-800 text-slate-400 hover:text-white transition text-xs font-bold"
+          title="Close College View (X)"
+        >
+          <X className="w-4 h-4" />
+          <span>Close</span>
+        </button>
+      </div>
 
       {/* Hero Banner Header */}
       <div className="glass-panel rounded-3xl overflow-hidden border border-slate-800">
