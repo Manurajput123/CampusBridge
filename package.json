@@ -8,7 +8,8 @@
     "build": "vite build",
     "preview": "vite preview",
     "server": "node server/index.js",
-    "dev:server": "node --watch server/index.js"
+    "dev:server": "node --watch server/index.js",
+    "seed": "node server/seed.js"
   },
   "dependencies": {
     "canvas-confetti": "^1.9.4",
