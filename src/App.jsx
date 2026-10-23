@@ -17,6 +17,8 @@ import StudentDashboardPage from './pages/StudentDashboardPage';
 import QRScannerPage from './pages/QRScannerPage';
 import TeamFinderPage from './pages/TeamFinderPage';
 import AIAdvisorPage from './pages/AIAdvisorPage';
+import AuthPage from './pages/AuthPage';
+import InterCollegeNoticesPage from './pages/InterCollegeNoticesPage';
 
 function MainApp() {
   const [activeTab, setActiveTab] = useState('home');
@@ -113,6 +115,18 @@ function MainApp() {
           <AIAdvisorPage
             setActiveTab={setActiveTab}
             setSelectedCollegeId={setSelectedCollegeId}
+          />
+        )}
+
+        {activeTab === 'auth' && (
+          <AuthPage
+            setActiveTab={setActiveTab}
+          />
+        )}
+
+        {activeTab === 'notices' && (
+          <InterCollegeNoticesPage
+            setActiveTab={setActiveTab}
           />
         )}
       </main>

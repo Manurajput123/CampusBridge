@@ -22,13 +22,81 @@ const safeGetLocalStorage = (key, fallback) => {
   }
 };
 
+export const INITIAL_NOTICES = [
+  {
+    id: "not-1",
+    title: "Joint Pooled Campus Placement Drive: Microsoft & Deloitte 2026",
+    category: "Pool Campus Placement",
+    hostCollegeId: "col-noida-1",
+    hostCollegeName: "Noida Institute of Engineering & Technology",
+    hostCity: "Greater Noida",
+    targetScope: "SELECTED_COLLEGES",
+    targetColleges: ["col-meerut-1", "col-gzb-1", "col-noida-1"],
+    targetCollegeNames: [
+      "Meerut Institute of Technology & Science",
+      "Ghaziabad Engineering & Tech Academy",
+      "Noida Institute of Engineering & Technology"
+    ],
+    summary: "NIET is extending pooled placement drive invitations to eligible B.Tech CSE/IT 2026 batch students of MITS Meerut and GEA Ghaziabad. CTC package: ₹14 LPA - ₹44 LPA.",
+    content: "NIET Career Advancement Cell officially invites student nominations from partner colleges in Meerut and Ghaziabad. Eligible branches: B.Tech CSE, IT, AI & Data Science with minimum 70% aggregate marks throughout. Registration deadline for student list submission is November 10, 2026. Online coding test will be conducted on November 18, 2026.",
+    deadline: "November 10, 2026",
+    contactPerson: "Dr. Alok Verma (Director of Corporate Relations, NIET)",
+    contactEmail: "placements@niet.co.in",
+    datePublished: "October 22, 2026",
+    status: "ACTIVE"
+  },
+  {
+    id: "not-2",
+    title: "Shared Research Access: NVIDIA A100 Supercomputing Cluster",
+    category: "Shared Research Facility",
+    hostCollegeId: "col-delhi-1",
+    hostCollegeName: "Delhi Technological University (DTU)",
+    hostCity: "New Delhi",
+    targetScope: "SELECTED_COLLEGES",
+    targetColleges: ["col-meerut-1", "col-noida-1", "col-gzb-1"],
+    targetCollegeNames: [
+      "Meerut Institute of Technology & Science",
+      "Noida Institute of Engineering & Technology",
+      "Ghaziabad Engineering & Tech Academy"
+    ],
+    summary: "DTU opens high-performance compute nodes for validated inter-university research scholars in Generative AI, Molecular Modeling & Quantum simulations.",
+    content: "Under the NCR Technical Consortium, faculty and student project leads from partner engineering colleges can apply for remote compute slots on our 8x NVIDIA A100 (80GB) cluster. Allocation will be made on a peer-reviewed project basis with up to 100 GPU compute hours per validated team.",
+    deadline: "December 01, 2026",
+    contactPerson: "Prof. S.K. Garg (Dean of Research & Sponsored Projects, DTU)",
+    contactEmail: "supercompute@dtu.ac.in",
+    datePublished: "October 21, 2026",
+    status: "ACTIVE"
+  },
+  {
+    id: "not-3",
+    title: "Regional Faculty & Student Exchange Proposal for Robotics Labs",
+    category: "Academic MoU & Collaboration",
+    hostCollegeId: "col-meerut-1",
+    hostCollegeName: "Meerut Institute of Technology & Science",
+    hostCity: "Meerut",
+    targetScope: "SELECTED_COLLEGES",
+    targetColleges: ["col-noida-1", "col-gzb-1"],
+    targetCollegeNames: [
+      "Noida Institute of Engineering & Technology",
+      "Ghaziabad Engineering & Tech Academy"
+    ],
+    summary: "MITS Meerut proposes reciprocal laboratory usage and joint mentorship for students participating in national hardware robotics competitions.",
+    content: "MITS Meerut welcomes collaborative engagement with robotics societies at NIET Greater Noida and GEA Ghaziabad. We offer reciprocal access to our KUKA 6-axis industrial manipulator setup in exchange for telemetry and embedded sensors calibration facilities.",
+    deadline: "November 25, 2026",
+    contactPerson: "Dr. R.K. Sharma (Dean of Student Affairs, MITS Meerut)",
+    contactEmail: "dean.academics@mitsmeerut.ac.in",
+    datePublished: "October 20, 2026",
+    status: "ACTIVE"
+  }
+];
+
 export function AppProvider({ children }) {
-  // Users list (persisted so new college admins stay registered)
+  // Users list (persisted so new college admins & students stay registered)
   const [users, setUsers] = useState(() => {
     return safeGetLocalStorage('cb_users', DEMO_USERS);
   });
 
-  // Current active demo user ID
+  // Current active user ID
   const [currentUserId, setCurrentUserId] = useState(() => {
     try {
       return (typeof window !== 'undefined' && localStorage.getItem('cb_current_user_id')) || DEMO_USERS[0].id;
@@ -49,7 +117,12 @@ export function AppProvider({ children }) {
     return safeGetLocalStorage('cb_events', INITIAL_EVENTS);
   });
 
-  // Cross-Campus Formal Invitations
+  // Cross-Campus Information Bulletins / Notices
+  const [notices, setNotices] = useState(() => {
+    return safeGetLocalStorage('cb_notices', INITIAL_NOTICES);
+  });
+
+  // Cross-Campus Formal Event Invitations
   const [invitations, setInvitations] = useState(() => {
     return safeGetLocalStorage('cb_invitations', [
       {
@@ -109,6 +182,7 @@ export function AppProvider({ children }) {
       localStorage.setItem('cb_users', JSON.stringify(users));
       localStorage.setItem('cb_colleges', JSON.stringify(colleges));
       localStorage.setItem('cb_events', JSON.stringify(events));
+      localStorage.setItem('cb_notices', JSON.stringify(notices));
       localStorage.setItem('cb_invitations', JSON.stringify(invitations));
       localStorage.setItem('cb_passes', JSON.stringify(passes));
       localStorage.setItem('cb_access_requests', JSON.stringify(accessRequests));
@@ -117,7 +191,7 @@ export function AppProvider({ children }) {
     } catch (err) {
       console.warn("Storage sync error", err);
     }
-  }, [currentUserId, users, colleges, events, invitations, passes, accessRequests, teams, compareList]);
+  }, [currentUserId, users, colleges, events, notices, invitations, passes, accessRequests, teams, compareList]);
 
   const showToast = (message, type = 'info') => {
     setToast({ id: Date.now(), message, type });
@@ -134,7 +208,63 @@ export function AppProvider({ children }) {
     }
   };
 
-  // 1. REGISTER NEW COLLEGE ON CAMPUSBRIDGE (Self-Onboarding)
+  // 1. STUDENT REGISTRATION & SIGN UP
+  const registerStudent = ({ name, email, password, collegeId, branch, year, skills }) => {
+    const col = colleges.find(c => c.id === collegeId) || colleges[0];
+    const newStudentId = `usr-std-${Date.now()}`;
+    const skillsArray = typeof skills === 'string'
+      ? skills.split(',').map(s => s.trim()).filter(Boolean)
+      : (skills || ['Web Development', 'Python']);
+
+    const newStudentUser = {
+      id: newStudentId,
+      name: name || "Student",
+      email: email,
+      password: password || "password123",
+      role: "student",
+      collegeId: col.id,
+      collegeName: col.name,
+      branch: `${branch || 'Computer Science'} (${year || '3rd Year'})`,
+      avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80",
+      skills: skillsArray.length > 0 ? skillsArray : ["React.js", "Python", "Problem Solving"],
+      bio: `Enrolled student at ${col.shortName || col.name}. Actively exploring regional hackathons and inter-college projects.`
+    };
+
+    setUsers(prev => [newStudentUser, ...prev]);
+    setCurrentUserId(newStudentId);
+    showToast(`🎉 Student account created successfully! Welcome, ${name}.`, 'success');
+    return newStudentUser;
+  };
+
+  // 2. USER LOGIN
+  const loginUser = (email, password) => {
+    const found = users.find(u => u.email.toLowerCase() === email.trim().toLowerCase());
+    if (found) {
+      setCurrentUserId(found.id);
+      showToast(`Welcome back, ${found.name}! Signed in as ${found.role === 'college_admin' ? 'College Admin' : 'Student'}.`, 'success');
+      return { success: true, user: found };
+    }
+
+    // Auto-create student if not found for seamless hackathon testing
+    const defaultStudent = registerStudent({
+      name: email.split('@')[0],
+      email: email,
+      password: password,
+      collegeId: colleges[0].id,
+      branch: "Computer Science",
+      year: "3rd Year",
+      skills: "React, Python"
+    });
+    return { success: true, user: defaultStudent };
+  };
+
+  const logoutUser = () => {
+    // Revert to demo Aarav
+    setCurrentUserId(DEMO_USERS[0].id);
+    showToast('Signed out of current account. Active session reset.', 'info');
+  };
+
+  // 3. REGISTER NEW COLLEGE (Self-Onboarding)
   const registerNewCollege = ({ college, admin }) => {
     const colId = `col-${Date.now()}`;
     const adminId = `admin-${Date.now()}`;
@@ -241,7 +371,7 @@ export function AppProvider({ children }) {
     return { college: newCollegeObj, admin: newAdminUser };
   };
 
-  // 2. CLAIM AN EXISTING UNCLAIMED COLLEGE
+  // 4. CLAIM COLLEGE
   const claimCollege = (collegeId, adminData) => {
     const targetCol = colleges.find(c => c.id === collegeId);
     if (!targetCol) return;
@@ -264,7 +394,34 @@ export function AppProvider({ children }) {
     showToast(`Authority claimed for ${targetCol.name}! You are now the official admin.`, 'success');
   };
 
-  // 3. ADD COURSE DYNAMICALLY TO COLLEGE
+  // 5. CROSS-COLLEGE DIRECT INFORMATION / CIRCULAR BROADCAST SYSTEM
+  // (Feature: Option for college to give information directly to other selected colleges)
+  const createNotice = (noticeData) => {
+    const newId = `not-${Date.now()}`;
+    const hostColId = currentUser.collegeId || "col-meerut-1";
+    const hostCol = colleges.find(c => c.id === hostColId);
+
+    const targetNames = colleges
+      .filter(c => noticeData.targetColleges?.includes(c.id))
+      .map(c => c.name);
+
+    const newNotice = {
+      id: newId,
+      hostCollegeId: hostColId,
+      hostCollegeName: hostCol ? hostCol.name : currentUser.collegeName,
+      hostCity: hostCol ? hostCol.city : "Meerut",
+      targetCollegeNames: noticeData.targetScope === 'ALL' ? ['All Partner Colleges'] : targetNames,
+      datePublished: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+      status: "ACTIVE",
+      ...noticeData
+    };
+
+    setNotices(prev => [newNotice, ...prev]);
+    showToast(`📢 Information circular dispatched to ${newNotice.targetCollegeNames.length} selected partner colleges!`, 'success');
+    return newNotice;
+  };
+
+  // 6. ADD & REMOVE COURSES
   const addCourseToCollege = (collegeId, courseData) => {
     const newCourseObj = {
       id: `c-${Date.now()}`,
@@ -292,7 +449,6 @@ export function AppProvider({ children }) {
     showToast(`Added program "${newCourseObj.name}" to college catalog!`, 'success');
   };
 
-  // 4. REMOVE COURSE FROM COLLEGE
   const removeCourseFromCollege = (collegeId, courseId) => {
     setColleges(prev => prev.map(col => {
       if (col.id === collegeId) {
@@ -306,7 +462,6 @@ export function AppProvider({ children }) {
     showToast("Program removed from catalog.", "info");
   };
 
-  // 5. UPDATE COLLEGE DETAILS & GENERAL INFO
   const updateCollege = (collegeId, updatedFields) => {
     setColleges(prev => prev.map(col => {
       if (col.id === collegeId) {
@@ -321,7 +476,7 @@ export function AppProvider({ children }) {
     showToast('College information successfully updated & synced across CampusBridge!', 'success');
   };
 
-  // 6. CREATE EVENT WITH MULTI-CAMPUS INVITATION TARGETING
+  // 7. CREATE EVENT & INVITATIONS
   const createEvent = (eventData) => {
     const newId = `evt-${Date.now()}`;
     const hostColId = currentUser.collegeId || "col-meerut-1";
@@ -335,7 +490,6 @@ export function AppProvider({ children }) {
       ...eventData
     };
 
-    // Generate formal cross-campus invitation logs
     if (newEvent.targetScope === 'SELECTED_COLLEGES' && newEvent.targetColleges?.length > 0) {
       const newInvites = newEvent.targetColleges.map((targetId, idx) => {
         const targetCol = colleges.find(c => c.id === targetId);
@@ -361,19 +515,17 @@ export function AppProvider({ children }) {
     return newEvent;
   };
 
-  // 7. REGISTER FOR EVENT
+  // 8. EVENT REGISTRATION & QR PASSES
   const registerForEvent = (eventId) => {
     const event = events.find(e => e.id === eventId);
     if (!event) return { success: false, message: 'Event not found' };
 
-    // Check duplicate
     const existing = passes.find(p => p.eventId === eventId && p.studentId === currentUser.id);
     if (existing) {
       showToast(`You already have a valid pass for "${event.title}"! Check 'My Passes'.`, 'warning');
       return { success: false, message: 'Already registered', pass: existing };
     }
 
-    // Check college eligibility
     if (event.targetScope === 'SELECTED_COLLEGES') {
       const isEligible = event.targetColleges.includes(currentUser.collegeId);
       if (!isEligible && currentUser.role === 'student') {
@@ -382,7 +534,6 @@ export function AppProvider({ children }) {
       }
     }
 
-    // Generate Pass
     const randomHex = Math.floor(100000 + Math.random() * 900000);
     const token = `CB-PASS-${randomHex}-${Date.now().toString(36).toUpperCase()}`;
 
@@ -404,7 +555,6 @@ export function AppProvider({ children }) {
 
     setPasses(prev => [newPass, ...prev]);
 
-    // Update invitation counter if student registered
     setInvitations(prev => prev.map(inv => {
       if (inv.eventId === eventId && inv.toCollegeId === currentUser.collegeId) {
         return { ...inv, studentsRegisteredCount: (inv.studentsRegisteredCount || 0) + 1 };
@@ -416,7 +566,7 @@ export function AppProvider({ children }) {
     return { success: true, pass: newPass };
   };
 
-  // 8. CHECK-IN SCANNER (ATOMIC DUPLICATE RESISTANT)
+  // 9. CHECK IN PASS
   const checkInPass = (token) => {
     const trimmed = (token || '').trim();
     const pass = passes.find(p => p.token === trimmed);
@@ -457,7 +607,7 @@ export function AppProvider({ children }) {
     };
   };
 
-  // 9. ACCESS REQUESTS
+  // 10. ACCESS REQUESTS
   const submitAccessRequest = ({ targetCollegeId, resourceId, resourceTitle, purpose }) => {
     const targetCol = colleges.find(c => c.id === targetCollegeId);
     const newReq = {
@@ -502,7 +652,7 @@ export function AppProvider({ children }) {
     showToast(`Access request has been ${decision.toUpperCase()}!`, decision === 'approved' ? 'success' : 'info');
   };
 
-  // 10. COMPARE
+  // 11. COMPARE
   const toggleCompare = (collegeId) => {
     if (compareList.includes(collegeId)) {
       setCompareList(prev => prev.filter(id => id !== collegeId));
@@ -521,7 +671,7 @@ export function AppProvider({ children }) {
     setCompareList([]);
   };
 
-  // 11. TEAMS
+  // 12. TEAMS
   const createTeam = (teamData) => {
     const newTeam = {
       id: `team-${Date.now()}`,
@@ -563,7 +713,7 @@ export function AppProvider({ children }) {
     }));
   };
 
-  // 12. RESET TO FRESH DEMO
+  // 13. RESET TO FRESH DEMO
   const resetDemoData = () => {
     try {
       localStorage.clear();
@@ -572,6 +722,8 @@ export function AppProvider({ children }) {
     setCurrentUserId(DEMO_USERS[0].id);
     setColleges(INITIAL_COLLEGES);
     setEvents(INITIAL_EVENTS);
+    setNotices(INITIAL_NOTICES);
+    setInvitations([]);
     setPasses(INITIAL_PASSES);
     setAccessRequests(INITIAL_ACCESS_REQUESTS);
     setTeams(INITIAL_TEAMS);
@@ -585,6 +737,9 @@ export function AppProvider({ children }) {
         currentUser,
         users,
         switchUser,
+        registerStudent,
+        loginUser,
+        logoutUser,
         colleges,
         registerNewCollege,
         claimCollege,
@@ -593,6 +748,8 @@ export function AppProvider({ children }) {
         removeCourseFromCollege,
         events,
         createEvent,
+        notices,
+        createNotice,
         invitations,
         passes,
         registerForEvent,

@@ -14,7 +14,11 @@ import {
   CheckCircle2,
   Menu,
   X,
-  FileKey
+  FileKey,
+  BellRing,
+  LogIn,
+  LogOut,
+  UserPlus
 } from 'lucide-react';
 
 export default function Navbar({ activeTab, setActiveTab, onSelectCollege }) {
@@ -22,6 +26,8 @@ export default function Navbar({ activeTab, setActiveTab, onSelectCollege }) {
     currentUser,
     users,
     switchUser,
+    logoutUser,
+    notices,
     compareList,
     passes,
     accessRequests,
@@ -136,6 +142,20 @@ export default function Navbar({ activeTab, setActiveTab, onSelectCollege }) {
             AI Advisor
           </button>
 
+          {/* Inter-College Information / Bulletins */}
+          <button
+            onClick={() => setActiveTab('notices')}
+            className={`px-3 py-2 rounded-lg transition flex items-center gap-1.5 ${activeTab === 'notices' ? 'bg-indigo-600/20 text-indigo-300 font-semibold' : 'hover:text-white hover:bg-slate-800/60'}`}
+          >
+            <BellRing className="w-4 h-4 text-indigo-400" />
+            <span>Campus Bulletins</span>
+            {notices?.length > 0 && (
+              <span className="ml-1 px-1.5 py-0.2 rounded-full text-[10px] font-bold bg-indigo-600 text-white">
+                {notices.length}
+              </span>
+            )}
+          </button>
+
           {/* College Admin Portal / Partner Onboarding (Always Accessible) */}
           <button
             onClick={() => setActiveTab('admin')}
@@ -185,8 +205,16 @@ export default function Navbar({ activeTab, setActiveTab, onSelectCollege }) {
           </button>
         </nav>
 
-        {/* Right Section: User Persona Switcher */}
-        <div className="flex items-center gap-3">
+        {/* Right Section: User Persona Switcher & Auth */}
+        <div className="flex items-center gap-2.5">
+          <button
+            onClick={() => setActiveTab('auth')}
+            className="hidden sm:flex items-center gap-1.5 px-3 py-2 rounded-xl bg-indigo-600/20 hover:bg-indigo-600 text-indigo-300 hover:text-white border border-indigo-500/30 text-xs font-bold transition shadow-sm"
+          >
+            <LogIn className="w-3.5 h-3.5" />
+            <span>Student Login / Sign Up</span>
+          </button>
+
           <div className="relative">
             <button
               onClick={() => setRoleMenuOpen(!roleMenuOpen)}
@@ -214,11 +242,20 @@ export default function Navbar({ activeTab, setActiveTab, onSelectCollege }) {
                 className="absolute right-0 mt-2 w-72 rounded-2xl bg-slate-900 border border-slate-700 shadow-2xl p-2 z-50 animate-fade-in"
                 onMouseLeave={() => setRoleMenuOpen(false)}
               >
-                <div className="px-3 py-2 border-b border-slate-800 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
-                  Switch Demo Persona (Fast Role Testing)
+                <div className="px-3 py-2 border-b border-slate-800 flex items-center justify-between text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
+                  <span>Switch User Persona</span>
+                  <button
+                    onClick={() => {
+                      setActiveTab('auth');
+                      setRoleMenuOpen(false);
+                    }}
+                    className="text-indigo-400 hover:underline normal-case flex items-center gap-1"
+                  >
+                    <UserPlus className="w-3 h-3" /> New
+                  </button>
                 </div>
 
-                <div className="space-y-1 mt-1">
+                <div className="space-y-1 mt-1 max-h-56 overflow-y-auto">
                   {users.map(u => (
                     <button
                       key={u.id}
@@ -248,8 +285,28 @@ export default function Navbar({ activeTab, setActiveTab, onSelectCollege }) {
                   ))}
                 </div>
 
-                <div className="mt-2 pt-2 border-t border-slate-800 px-3 py-1 text-[10px] text-slate-400">
-                  Tip: Switch to <strong>Dr. R.K. Sharma</strong> to test Meerut college admin event broadcasting & approvals!
+                <div className="mt-2 pt-2 border-t border-slate-800 space-y-1 text-xs">
+                  <button
+                    onClick={() => {
+                      setActiveTab('auth');
+                      setRoleMenuOpen(false);
+                    }}
+                    className="w-full py-1.5 px-3 rounded-lg bg-indigo-600/20 text-indigo-300 hover:bg-indigo-600 hover:text-white font-semibold text-left flex items-center justify-between transition"
+                  >
+                    <span>Create / Sign In Student</span>
+                    <LogIn className="w-3.5 h-3.5" />
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      logoutUser();
+                      setRoleMenuOpen(false);
+                    }}
+                    className="w-full py-1 px-3 text-slate-400 hover:text-rose-400 text-left flex items-center gap-1.5 text-[11px] transition"
+                  >
+                    <LogOut className="w-3 h-3" />
+                    <span>Reset / Sign Out</span>
+                  </button>
                 </div>
               </div>
             )}

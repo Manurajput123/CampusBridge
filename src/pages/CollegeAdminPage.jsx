@@ -25,7 +25,8 @@ import {
   Layers,
   Award,
   ChevronRight,
-  UserCheck
+  UserCheck,
+  BellRing
 } from 'lucide-react';
 
 export default function CollegeAdminPage({ setActiveTab }) {
@@ -788,6 +789,14 @@ export default function CollegeAdminPage({ setActiveTab }) {
         >
           <Users className="w-4 h-4" />
           Attendees & Tickets ({myAttendees.length})
+        </button>
+
+        <button
+          onClick={() => setActiveTab('notices')}
+          className="px-4 py-2.5 rounded-xl font-bold flex items-center gap-2 text-indigo-300 hover:text-white bg-indigo-950/50 hover:bg-indigo-900/60 border border-indigo-500/30 transition whitespace-nowrap"
+        >
+          <BellRing className="w-4 h-4 text-indigo-400" />
+          Dispatch Info to Selected Colleges
         </button>
       </div>
 
