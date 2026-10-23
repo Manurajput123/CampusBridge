@@ -100,9 +100,13 @@ export default function Navbar({ activeTab, setActiveTab, onSelectCollege, onOpe
         <nav className="hidden lg:flex items-center gap-1 text-sm font-medium text-slate-300">
           {/* Spatial 3D Earth Gateway Trigger */}
           <button
-            onClick={onOpenSpatialNavigator}
-            className="px-3 py-1.5 rounded-xl bg-gradient-to-r from-indigo-950 via-purple-950 to-indigo-950 hover:from-indigo-900 hover:to-purple-900 text-indigo-200 hover:text-white border border-indigo-500/40 text-xs font-bold transition flex items-center gap-1.5 shadow-sm group mr-1"
-            title="Launch Interactive 3D Earth Corridor Navigator (Earth ➔ India ➔ UP ➔ Ghaziabad)"
+            onClick={() => setActiveTab('spatial')}
+            className={`px-3 py-1.5 rounded-xl transition flex items-center gap-1.5 text-xs font-bold shadow-sm group mr-1 ${
+              activeTab === 'spatial'
+                ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-indigo-600/30 ring-1 ring-indigo-400'
+                : 'bg-gradient-to-r from-indigo-950 via-purple-950 to-indigo-950 hover:from-indigo-900 hover:to-purple-900 text-indigo-200 hover:text-white border border-indigo-500/40'
+            }`}
+            title="Launch Full-Page 3D Earth Corridor Navigator (Earth ➔ India ➔ UP ➔ Ghaziabad)"
           >
             <Globe className="w-3.5 h-3.5 text-indigo-400 group-hover:rotate-45 transition duration-300" />
             <span>3D Earth Gateway</span>

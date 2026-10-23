@@ -22,11 +22,10 @@ import InterCollegeNoticesPage from './pages/InterCollegeNoticesPage';
 import InteractiveSpatialNavigator from './components/InteractiveSpatialNavigator';
 
 function MainApp() {
-  const [activeTab, setActiveTab] = useState('home');
+  // Starting page is directly the full-page 3D Earth Gateway!
+  const [activeTab, setActiveTab] = useState('spatial');
   const [selectedCollegeId, setSelectedCollegeId] = useState('col-meerut-1');
   const [selectedEventId, setSelectedEventId] = useState('evt-hackathon-meerut');
-  // Earth Gateway opens first on website load as requested by user!
-  const [isSpatialNavigatorOpen, setIsSpatialNavigatorOpen] = useState(true);
   const [spatialPresetCity, setSpatialPresetCity] = useState('Ghaziabad');
   const [spatialPresetState, setSpatialPresetState] = useState('Uttar Pradesh');
 
@@ -36,7 +35,7 @@ function MainApp() {
       <Navbar
         activeTab={activeTab}
         setActiveTab={setActiveTab}
-        onOpenSpatialNavigator={() => setIsSpatialNavigatorOpen(true)}
+        onOpenSpatialNavigator={() => setActiveTab('spatial')}
         onSelectCollege={(id) => {
           setSelectedCollegeId(id);
           setActiveTab('college-detail');
@@ -45,12 +44,29 @@ function MainApp() {
 
       {/* Main Page Router */}
       <main className="flex-1">
+        {/* Dedicated Full-Page 3D Spatial Gateway */}
+        {activeTab === 'spatial' && (
+          <InteractiveSpatialNavigator
+            onSelectCollege={(id) => {
+              setSelectedCollegeId(id);
+              setActiveTab('college-detail');
+            }}
+            onRegisterCollegeInCity={(city, state) => {
+              setSpatialPresetCity(city || 'Ghaziabad');
+              setSpatialPresetState(state || 'Uttar Pradesh');
+              setActiveTab('admin');
+            }}
+            setActiveTab={setActiveTab}
+            onClose={() => setActiveTab('home')}
+          />
+        )}
+
         {activeTab === 'home' && (
           <HomePage
             setActiveTab={setActiveTab}
             setSelectedCollegeId={setSelectedCollegeId}
             setSelectedEventId={setSelectedEventId}
-            onOpenSpatialNavigator={() => setIsSpatialNavigatorOpen(true)}
+            onOpenSpatialNavigator={() => setActiveTab('spatial')}
           />
         )}
 
@@ -140,27 +156,11 @@ function MainApp() {
         )}
       </main>
 
-      {/* Global Footer */}
-      <Footer setActiveTab={setActiveTab} />
+      {/* Global Footer (hidden on full-page spatial navigator to keep 100% immersive cosmic canvas) */}
+      {activeTab !== 'spatial' && <Footer setActiveTab={setActiveTab} />}
 
       {/* Global Notification Toast */}
       <Toast />
-
-      {/* 3D Spatial Earth-to-Campus Navigator Modal */}
-      <InteractiveSpatialNavigator
-        isOpen={isSpatialNavigatorOpen}
-        onClose={() => setIsSpatialNavigatorOpen(false)}
-        onSelectCollege={(id) => {
-          setSelectedCollegeId(id);
-          setActiveTab('college-detail');
-        }}
-        onRegisterCollegeInCity={(city, state) => {
-          setSpatialPresetCity(city || 'Ghaziabad');
-          setSpatialPresetState(state || 'Uttar Pradesh');
-          setActiveTab('admin');
-        }}
-        setActiveTab={setActiveTab}
-      />
     </div>
   );
 }
