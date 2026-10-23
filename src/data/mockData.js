@@ -321,6 +321,532 @@ export const INITIAL_COLLEGES = [
     lastCheckedDate: "October 18, 2026"
   },
   {
+    id: "col-gzb-akgec",
+    name: "Ajay Kumar Garg Engineering College",
+    shortName: "AKGEC Ghaziabad",
+    city: "Ghaziabad",
+    state: "Uttar Pradesh",
+    founded: 1998,
+    type: "Private Engineering College (Autonomous)",
+    rating: 4.6,
+    reviewsCount: 1420,
+    accreditation: "NAAC A++ Grade & NBA Accredited",
+    campusSize: "40 Acres",
+    claimed: true,
+    claimedByAdminId: "admin-akgec",
+    verified: true,
+    tagLine: "Premier AKTU Engineering Institution & Industrial Automation Hub",
+    bannerImage: "https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&w=1200&q=80",
+    logo: "https://images.unsplash.com/photo-1562774053-701939374585?auto=format&fit=crop&w=160&q=80",
+    about: "Established in 1998 on the 27th Km Milestone of the Delhi-Meerut Expressway, AKGEC is widely recognized as the premier engineering college affiliated with AKTU. AKGEC houses world-class Industrial Research Centres of Excellence in partnership with KUKA Robotics, Mitsubishi Electric, Bosch Rexroth, and National Instruments.",
+    contact: {
+      email: "info@akgec.ac.in",
+      phone: "+91 120 2762841",
+      website: "https://www.akgec.ac.in",
+      address: "27th Km Stone, Delhi-Meerut Expressway, P.O. Adhyatmik Nagar, Ghaziabad, UP 201009"
+    },
+    courses: [
+      {
+        id: "c-akgec-1",
+        name: "B.Tech Computer Science & Engineering",
+        branch: "CSE",
+        duration: "4 Years",
+        annualFee: 141256,
+        totalSeats: 240,
+        eligibility: "10+2 with PCM (Min 60%) + JEE Main / UPTAC",
+        averagePackage: "₹6.8 LPA",
+        highestPackage: "₹1.13 Cr"
+      },
+      {
+        id: "c-akgec-2",
+        name: "B.Tech CSE (Artificial Intelligence & Machine Learning)",
+        branch: "AI & ML",
+        duration: "4 Years",
+        annualFee: 141256,
+        totalSeats: 180,
+        eligibility: "10+2 with PCM (Min 60%) + JEE Main",
+        averagePackage: "₹6.5 LPA",
+        highestPackage: "₹33.8 LPA"
+      },
+      {
+        id: "c-akgec-3",
+        name: "B.Tech Information Technology",
+        branch: "IT",
+        duration: "4 Years",
+        annualFee: 141256,
+        totalSeats: 120,
+        eligibility: "10+2 with PCM (Min 55%)",
+        averagePackage: "₹6.2 LPA",
+        highestPackage: "₹28.0 LPA"
+      },
+      {
+        id: "c-akgec-4",
+        name: "B.Tech Electronics & Communication Engineering",
+        branch: "ECE",
+        duration: "4 Years",
+        annualFee: 141256,
+        totalSeats: 120,
+        eligibility: "10+2 with PCM",
+        averagePackage: "₹5.5 LPA",
+        highestPackage: "₹18.0 LPA"
+      }
+    ],
+    admissionDetails: {
+      status: "Admissions Open 2026-27",
+      applicationDeadline: "July 31, 2026",
+      entranceExams: ["JEE Main", "UPTAC Counselling"],
+      hostelFeePerYear: 85000,
+      brochureUrl: "#brochure-akgec"
+    },
+    placementStats: {
+      avgPackage: "₹6.4 LPA",
+      highestPackage: "₹1.13 Crore (Amazon)",
+      placementRate: "92%",
+      topRecruiters: ["Amazon", "Microsoft", "Infosys", "TCS Digital", "Wipro", "Cognizant", "Adobe", "Capgemini", "HCL Tech"]
+    },
+    facilities: [
+      "KUKA Industrial Robotics Training Centre",
+      "Mitsubishi Electric Factory Automation Lab",
+      "Bosch Rexroth Automation Centre of Excellence",
+      "Air-conditioned Boys & Girls Hostels on campus",
+      "Central Library with 1,25,000+ volumes and IEEE Access"
+    ],
+    restrictedResources: [
+      {
+        id: "res-akgec-1",
+        title: "KUKA 6-Axis Industrial Robotics Simulation Cell",
+        category: "Advanced Robotics Lab",
+        description: "Industrial grade heavy articulated robotic arms for kinematics calibration and ROS trajectory planning.",
+        requiredRole: "Approved Team Lead / Inter-College Pass"
+      }
+    ],
+    sourceLink: "https://www.akgec.ac.in/mandatory-disclosure",
+    lastCheckedDate: "October 22, 2026"
+  },
+  {
+    id: "col-gzb-kiet",
+    name: "KIET Group of Institutions",
+    shortName: "KIET Ghaziabad",
+    city: "Ghaziabad",
+    state: "Uttar Pradesh",
+    founded: 1998,
+    type: "Private Engineering College (Autonomous)",
+    rating: 4.5,
+    reviewsCount: 1280,
+    accreditation: "NAAC Grade A+ (3.23 CGPA) & NBA Tier-1",
+    campusSize: "18.2 Acres",
+    claimed: true,
+    claimedByAdminId: "admin-kiet",
+    verified: true,
+    tagLine: "Autonomous Technical Excellence & Innovation Incubator",
+    bannerImage: "https://images.unsplash.com/photo-1562774053-701939374585?auto=format&fit=crop&w=1200&q=80",
+    logo: "https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&w=160&q=80",
+    about: "Established in 1998 by the Krishna Charitable Society on Delhi-NCR's Meerut Road (Muradnagar, Ghaziabad), KIET is an autonomous college consistently ranked in the NIRF 150-200 band. It hosts a DST-recognized Technology Business Incubator (TBI) and has strong placement linkages with Tier-1 tech giants.",
+    contact: {
+      email: "registrar@kiet.edu",
+      phone: "+91 1232 227978",
+      website: "https://www.kiet.edu",
+      address: "Delhi-NCR, Meerut Road (NH-58), Muradnagar, Ghaziabad, UP 201206"
+    },
+    courses: [
+      {
+        id: "c-kiet-1",
+        name: "B.Tech Computer Science & Engineering",
+        branch: "CSE",
+        duration: "4 Years",
+        annualFee: 138499,
+        totalSeats: 240,
+        eligibility: "10+2 with PCM (Min 60%) + JEE Main",
+        averagePackage: "₹7.5 LPA",
+        highestPackage: "₹48.4 LPA"
+      },
+      {
+        id: "c-kiet-2",
+        name: "B.Tech CSE (AI & Machine Learning)",
+        branch: "AI & ML",
+        duration: "4 Years",
+        annualFee: 138499,
+        totalSeats: 180,
+        eligibility: "10+2 with PCM (Min 60%)",
+        averagePackage: "₹7.2 LPA",
+        highestPackage: "₹38.0 LPA"
+      },
+      {
+        id: "c-kiet-3",
+        name: "B.Tech Computer Science & Information Tech (CSIT)",
+        branch: "CSIT",
+        duration: "4 Years",
+        annualFee: 138499,
+        totalSeats: 120,
+        eligibility: "10+2 with PCM",
+        averagePackage: "₹6.8 LPA",
+        highestPackage: "₹25.0 LPA"
+      }
+    ],
+    admissionDetails: {
+      status: "Admissions Open 2026-27",
+      applicationDeadline: "July 28, 2026",
+      entranceExams: ["JEE Main", "UPTAC"],
+      hostelFeePerYear: 82000,
+      brochureUrl: "#brochure-kiet"
+    },
+    placementStats: {
+      avgPackage: "₹7.25 LPA",
+      highestPackage: "₹48.4 LPA (Amazon/Cisco)",
+      placementRate: "94%",
+      topRecruiters: ["Amazon", "Cisco", "Walmart", "TCS Digital", "Infosys", "Capgemini", "Accenture", "Wipro", "Qualcomm"]
+    },
+    facilities: [
+      "Apple Authorized Training Centre & iOS Lab",
+      "Technology Business Incubator (DST Funded)",
+      "Mercedes-Benz Advanced Automotive Technology Center",
+      "Air-conditioned Auditorium (450+ seats)",
+      "Olympic-sized Swimming Pool and Multi-Gym"
+    ],
+    restrictedResources: [
+      {
+        id: "res-kiet-1",
+        title: "Apple iOS Ecosystem & Swift Developer Lab",
+        category: "Software & Mobile Lab",
+        description: "Mac Studio M2 workstations equipped with Xcode and VisionOS simulators for native application development.",
+        requiredRole: "Approved Team Lead"
+      }
+    ],
+    sourceLink: "https://www.kiet.edu/mandatory-disclosure",
+    lastCheckedDate: "October 20, 2026"
+  },
+  {
+    id: "col-gzb-abes",
+    name: "ABES Engineering College",
+    shortName: "ABESEC Ghaziabad",
+    city: "Ghaziabad",
+    state: "Uttar Pradesh",
+    founded: 2000,
+    type: "Private Engineering College",
+    rating: 4.4,
+    reviewsCount: 1150,
+    accreditation: "NAAC Accredited & NBA (CSE, IT, ECE)",
+    campusSize: "16 Acres",
+    claimed: true,
+    claimedByAdminId: "admin-abes",
+    verified: true,
+    tagLine: "Innovation, Enterprise & High-Volume Tech Placements",
+    bannerImage: "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&w=1200&q=80",
+    logo: "https://images.unsplash.com/photo-1525921429624-479b6a26d84d?auto=format&fit=crop&w=160&q=80",
+    about: "ABES Engineering College was founded in 2000 on NH-24 (Delhi-Hapur Bypass), Vijay Nagar, Ghaziabad. Known for strong training in competitive programming, the college houses the ABES Innovation and Incubation Foundation (AIIF) and records regular Microsoft and Amazon student selections.",
+    contact: {
+      email: "info@abes.ac.in",
+      phone: "+91 120 7135111",
+      website: "https://www.abes.ac.in",
+      address: "19th Km Stone, NH-24, Delhi-Hapur Bypass Road, Ghaziabad, UP 201009"
+    },
+    courses: [
+      {
+        id: "c-abes-1",
+        name: "B.Tech Computer Science & Engineering",
+        branch: "CSE",
+        duration: "4 Years",
+        annualFee: 135000,
+        totalSeats: 240,
+        eligibility: "10+2 with PCM (Min 55%) + JEE Main",
+        averagePackage: "₹6.4 LPA",
+        highestPackage: "₹47.0 LPA"
+      },
+      {
+        id: "c-abes-2",
+        name: "B.Tech CSE (Data Science)",
+        branch: "Data Science",
+        duration: "4 Years",
+        annualFee: 135000,
+        totalSeats: 120,
+        eligibility: "10+2 with PCM",
+        averagePackage: "₹6.1 LPA",
+        highestPackage: "₹30.0 LPA"
+      },
+      {
+        id: "c-abes-3",
+        name: "B.Tech Information Technology",
+        branch: "IT",
+        duration: "4 Years",
+        annualFee: 135000,
+        totalSeats: 120,
+        eligibility: "10+2 with PCM",
+        averagePackage: "₹5.9 LPA",
+        highestPackage: "₹24.0 LPA"
+      }
+    ],
+    admissionDetails: {
+      status: "Admissions Open 2026-27",
+      applicationDeadline: "July 26, 2026",
+      entranceExams: ["JEE Main", "UPTAC"],
+      hostelFeePerYear: 78000,
+      brochureUrl: "#brochure-abes"
+    },
+    placementStats: {
+      avgPackage: "₹5.8 LPA",
+      highestPackage: "₹47.0 LPA (Microsoft)",
+      placementRate: "91%",
+      topRecruiters: ["Microsoft", "Amazon", "Capgemini", "TCS", "Wipro", "Cognizant", "DXC Technology", "Paytm"]
+    },
+    facilities: [
+      "ABES Innovation & Incubation Foundation (AIIF)",
+      "High Performance Cloud & GPU Computing Lab",
+      "Fully Wi-Fi Enabled Campus with 1.5 Gbps Backbone",
+      "Air-cooled Hostels with Cafeteria and Sports Complex"
+    ],
+    restrictedResources: [
+      {
+        id: "res-abes-1",
+        title: "NVIDIA Deep Learning & GPU Cluster Workstation",
+        category: "AI Computing Lab",
+        description: "Four RTX A6000 GPU nodes for fine-tuning LLMs, computer vision, and distributed PyTorch tasks.",
+        requiredRole: "Approved Team Lead"
+      }
+    ],
+    sourceLink: "https://www.abes.ac.in/mandatory-disclosure",
+    lastCheckedDate: "October 19, 2026"
+  },
+  {
+    id: "col-gzb-imsec",
+    name: "IMS Engineering College",
+    shortName: "IMSEC Ghaziabad",
+    city: "Ghaziabad",
+    state: "Uttar Pradesh",
+    founded: 2002,
+    type: "Private Engineering College",
+    rating: 4.2,
+    reviewsCount: 850,
+    accreditation: "NAAC Grade 'A' & NBA Accredited",
+    campusSize: "11 Acres",
+    claimed: true,
+    claimedByAdminId: "admin-imsec",
+    verified: true,
+    tagLine: "Engineering Education, Biotechnology & Applied Research",
+    bannerImage: "https://images.unsplash.com/photo-1564981797816-1043664bf78d?auto=format&fit=crop&w=1200&q=80",
+    logo: "https://images.unsplash.com/photo-1546410531-bb4caa6b424d?auto=format&fit=crop&w=160&q=80",
+    about: "IMS Engineering College (IMSEC) was established in 2002 under the IMS Society on NH-24, Adhyatmik Nagar, Ghaziabad. Known for academic rigour and research, IMSEC is one of the few NCR colleges with a thriving B.Tech Biotechnology program along with full CSE disciplines.",
+    contact: {
+      email: "enquiry@imsec.ac.in",
+      phone: "+91 120 4940000",
+      website: "https://www.imsec.ac.in",
+      address: "NH-24, Adhyatmik Nagar, Distt: Ghaziabad, UP 201015"
+    },
+    courses: [
+      {
+        id: "c-imsec-1",
+        name: "B.Tech Computer Science & Engineering",
+        branch: "CSE",
+        duration: "4 Years",
+        annualFee: 125000,
+        totalSeats: 180,
+        eligibility: "10+2 with PCM (Min 50%) + JEE Main",
+        averagePackage: "₹5.4 LPA",
+        highestPackage: "₹30.0 LPA"
+      },
+      {
+        id: "c-imsec-2",
+        name: "B.Tech Biotechnology",
+        branch: "Biotech",
+        duration: "4 Years",
+        annualFee: 125000,
+        totalSeats: 60,
+        eligibility: "10+2 with PCM/PCB",
+        averagePackage: "₹4.6 LPA",
+        highestPackage: "₹12.0 LPA"
+      }
+    ],
+    admissionDetails: {
+      status: "Admissions Open 2026-27",
+      applicationDeadline: "July 25, 2026",
+      entranceExams: ["JEE Main", "UPTAC"],
+      hostelFeePerYear: 75000,
+      brochureUrl: "#brochure-imsec"
+    },
+    placementStats: {
+      avgPackage: "₹5.2 LPA",
+      highestPackage: "₹30.0 LPA",
+      placementRate: "88%",
+      topRecruiters: ["TCS", "Infosys", "Cognizant", "Wipro", "Accenture", "Nucleus Software", "Byju's"]
+    },
+    facilities: [
+      "Bio-Molecular Research & Tissue Culture Lab",
+      "Software Development & Open Source Cell",
+      "Central Library with National & International Journals",
+      "Multi-cuisine Cafeteria and Sports Facilities"
+    ],
+    restrictedResources: [
+      {
+        id: "res-imsec-1",
+        title: "Biotechnology Fermentation & Chromatography Suite",
+        category: "Biotechnology Lab",
+        description: "Gas chromatography and benchtop bioreactor systems for bio-process engineering.",
+        requiredRole: "Approved Team Lead"
+      }
+    ],
+    sourceLink: "https://www.imsec.ac.in/mandatory-disclosure",
+    lastCheckedDate: "October 18, 2026"
+  },
+  {
+    id: "col-gzb-rkgit",
+    name: "Raj Kumar Goel Institute of Technology",
+    shortName: "RKGIT Ghaziabad",
+    city: "Ghaziabad",
+    state: "Uttar Pradesh",
+    founded: 2000,
+    type: "Private Engineering College",
+    rating: 4.1,
+    reviewsCount: 780,
+    accreditation: "NAAC Accredited & AICTE Approved",
+    campusSize: "27 Acres",
+    claimed: true,
+    claimedByAdminId: "admin-rkgit",
+    verified: true,
+    tagLine: "Comprehensive Engineering, IoT & Professional Ethics",
+    bannerImage: "https://images.unsplash.com/photo-1592280771190-3e2e4d571952?auto=format&fit=crop&w=1200&q=80",
+    logo: "https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&w=160&q=80",
+    about: "RKGIT was established in 2000 on the Delhi-Meerut Road in Ghaziabad. Spread over 27 lush green acres, the institute features modern academic facilities, an active student council, and dedicated placement training in Java, Python, and Full Stack development.",
+    contact: {
+      email: "info@rkgit.edu.in",
+      phone: "+91 120 2788273",
+      website: "https://www.rkgit.edu.in",
+      address: "5th Km Stone, Delhi-Meerut Road, Ghaziabad, UP 201003"
+    },
+    courses: [
+      {
+        id: "c-rkgit-1",
+        name: "B.Tech Computer Science & Engineering",
+        branch: "CSE",
+        duration: "4 Years",
+        annualFee: 118000,
+        totalSeats: 180,
+        eligibility: "10+2 with PCM (Min 50%) + JEE Main",
+        averagePackage: "₹4.8 LPA",
+        highestPackage: "₹18.0 LPA"
+      },
+      {
+        id: "c-rkgit-2",
+        name: "B.Tech CSE (Internet of Things)",
+        branch: "IoT",
+        duration: "4 Years",
+        annualFee: 118000,
+        totalSeats: 60,
+        eligibility: "10+2 with PCM",
+        averagePackage: "₹4.5 LPA",
+        highestPackage: "₹14.0 LPA"
+      }
+    ],
+    admissionDetails: {
+      status: "Admissions Open 2026-27",
+      applicationDeadline: "July 20, 2026",
+      entranceExams: ["JEE Main", "UPTAC"],
+      hostelFeePerYear: 72000,
+      brochureUrl: "#brochure-rkgit"
+    },
+    placementStats: {
+      avgPackage: "₹4.6 LPA",
+      highestPackage: "₹18.0 LPA",
+      placementRate: "85%",
+      topRecruiters: ["TCS", "Infosys", "Wipro", "Tech Mahindra", "Cognizant", "Nucleus Software"]
+    },
+    facilities: [
+      "Internet of Things (IoT) Embedded Systems Lab",
+      "Cloud Computing & Oracle Academy Centre",
+      "27-Acre Sports Ground and Open Air Theatre",
+      "Spacious Separate Hostels for Boys and Girls"
+    ],
+    restrictedResources: [
+      {
+        id: "res-rkgit-1",
+        title: "IoT Sensor Testing & ZigBee/LoRaWAN Gateway Station",
+        category: "IoT Wireless Lab",
+        description: "Industrial IoT prototyping equipment with micro-controller development boards and signal analyzers.",
+        requiredRole: "Approved Team Lead"
+      }
+    ],
+    sourceLink: "https://www.rkgit.edu.in/mandatory-disclosure",
+    lastCheckedDate: "October 17, 2026"
+  },
+  {
+    id: "col-gzb-abesit",
+    name: "ABES Institute of Technology",
+    shortName: "ABESIT Ghaziabad",
+    city: "Ghaziabad",
+    state: "Uttar Pradesh",
+    founded: 2007,
+    type: "Private Engineering College",
+    rating: 4.2,
+    reviewsCount: 690,
+    accreditation: "NAAC Accredited & AICTE Approved",
+    campusSize: "14 Acres",
+    claimed: true,
+    claimedByAdminId: "admin-abesit",
+    verified: true,
+    tagLine: "Emerging Tech, Artificial Intelligence & Data Science Focus",
+    bannerImage: "https://images.unsplash.com/photo-1519452635265-7b1fbfd1e4e0?auto=format&fit=crop&w=1200&q=80",
+    logo: "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&w=160&q=80",
+    about: "ABESIT was established in 2007 adjacent to the Delhi-Meerut Expressway at Vijay Nagar, Ghaziabad. The campus emphasizes emergent fields like Artificial Intelligence, Data Science, and Internet of Things with specialized innovation centers.",
+    contact: {
+      email: "info@abesit.in",
+      phone: "+91 120 2845112",
+      website: "https://www.abesit.in",
+      address: "19th KM Stone, NH-24, Vijay Nagar, Ghaziabad, UP 201009"
+    },
+    courses: [
+      {
+        id: "c-abesit-1",
+        name: "B.Tech Computer Science & Engineering",
+        branch: "CSE",
+        duration: "4 Years",
+        annualFee: 115000,
+        totalSeats: 180,
+        eligibility: "10+2 with PCM (Min 50%) + JEE Main",
+        averagePackage: "₹4.8 LPA",
+        highestPackage: "₹21.0 LPA"
+      },
+      {
+        id: "c-abesit-2",
+        name: "B.Tech CSE (Data Science)",
+        branch: "Data Science",
+        duration: "4 Years",
+        annualFee: 115000,
+        totalSeats: 60,
+        eligibility: "10+2 with PCM",
+        averagePackage: "₹4.5 LPA",
+        highestPackage: "₹16.0 LPA"
+      }
+    ],
+    admissionDetails: {
+      status: "Admissions Open 2026-27",
+      applicationDeadline: "July 24, 2026",
+      entranceExams: ["JEE Main", "UPTAC"],
+      hostelFeePerYear: 70000,
+      brochureUrl: "#brochure-abesit"
+    },
+    placementStats: {
+      avgPackage: "₹4.8 LPA",
+      highestPackage: "₹21.0 LPA",
+      placementRate: "86%",
+      topRecruiters: ["TCS", "Capgemini", "Nagarro", "Newgen Software", "Nucleus Software", "Wipro"]
+    },
+    facilities: [
+      "Center of Excellence in Big Data & Data Analytics",
+      "Mobile App Development & Flutter Studio",
+      "Central Library with IEEE Xplore digital access",
+      "Cafeteria, Cricket pitch, and on-campus medical unit"
+    ],
+    restrictedResources: [
+      {
+        id: "res-abesit-1",
+        title: "Big Data Hadoop Cluster & Distributed Computing Lab",
+        category: "Data Analytics Lab",
+        description: "Multi-node Apache Spark and Hadoop ecosystem cluster for big data analytics benchmarks.",
+        requiredRole: "Approved Team Lead"
+      }
+    ],
+    sourceLink: "https://www.abesit.in/mandatory-disclosure",
+    lastCheckedDate: "October 16, 2026"
+  },
+  {
     id: "col-delhi-1",
     name: "Delhi Technological University (DTU)",
     shortName: "DTU Delhi",
@@ -806,6 +1332,26 @@ export const DEMO_USERS = [
     collegeName: "Noida Institute of Engineering & Technology",
     designation: "Director of Industry Relations & Inter-College Events",
     avatar: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=120&q=80"
+  },
+  {
+    id: "admin-akgec",
+    name: "Dr. Hemant Ahuja",
+    email: "dean.academics@akgec.ac.in",
+    role: "college_admin",
+    collegeId: "col-gzb-akgec",
+    collegeName: "Ajay Kumar Garg Engineering College",
+    designation: "Dean of Academics & Industry Research",
+    avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=120&q=80"
+  },
+  {
+    id: "admin-kiet",
+    name: "Dr. Manoj Goel",
+    email: "director.events@kiet.edu",
+    role: "college_admin",
+    collegeId: "col-gzb-kiet",
+    collegeName: "KIET Group of Institutions",
+    designation: "Joint Director & Cross-Campus Coordinator",
+    avatar: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=120&q=80"
   },
   {
     id: "super-admin",

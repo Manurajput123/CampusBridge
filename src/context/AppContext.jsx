@@ -95,7 +95,7 @@ export function AppProvider({ children }) {
   const [users, setUsers] = useState(() => {
     const loaded = safeGetLocalStorage('cb_users', DEMO_USERS);
     // Sanitize any previous session with dummy name "Aarav"
-    return loaded.map(u => {
+    const sanitized = loaded.map(u => {
       if (u.id === 'usr-aarav' || u.name?.includes('Aarav')) {
         return {
           ...u,
@@ -106,6 +106,16 @@ export function AppProvider({ children }) {
       }
       return u;
     });
+
+    // Merge any new demo users (e.g. AKGEC & KIET Deans)
+    const existingUserIds = new Set(sanitized.map(u => u.id));
+    for (const demoU of DEMO_USERS) {
+      if (!existingUserIds.has(demoU.id)) {
+        sanitized.push(demoU);
+        existingUserIds.add(demoU.id);
+      }
+    }
+    return sanitized;
   });
 
   // Current active user ID
@@ -121,9 +131,18 @@ export function AppProvider({ children }) {
 
   const currentUser = users.find(u => u.id === currentUserId) || users[0] || DEMO_USERS[0];
 
-  // Colleges
+  // Colleges: Merges fresh default colleges with any user-created colleges from localStorage
   const [colleges, setColleges] = useState(() => {
-    return safeGetLocalStorage('cb_colleges', INITIAL_COLLEGES);
+    const loaded = safeGetLocalStorage('cb_colleges', INITIAL_COLLEGES);
+    const existingIds = new Set(loaded.map(c => c.id));
+    const merged = [...loaded];
+    for (const initCol of INITIAL_COLLEGES) {
+      if (!existingIds.has(initCol.id)) {
+        merged.push(initCol);
+        existingIds.add(initCol.id);
+      }
+    }
+    return merged;
   });
 
   // Events
