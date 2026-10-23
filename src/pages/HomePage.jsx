@@ -133,69 +133,96 @@ export default function HomePage({ setActiveTab, setSelectedCollegeId, setSelect
         </div>
       </section>
 
-      {/* 3 Core Features Breakdown (From the PPT!) */}
+      {/* 4 Core Features Breakdown (From the PPT + Advanced Extension!) */}
       <section className="container mx-auto px-4 sm:px-6">
         <div className="text-center max-w-2xl mx-auto mb-12">
           <div className="text-xs font-bold text-indigo-400 uppercase tracking-wider mb-2">Core Platform Pillars</div>
-          <h2 className="text-2xl sm:text-3xl font-extrabold text-white">Three Groundbreaking Features</h2>
-          <p className="text-sm text-slate-400 mt-2">Engineered specifically for Indian colleges and students to eliminate the information silos between neighboring campuses.</p>
+          <h2 className="text-2xl sm:text-3xl font-extrabold text-white">Centralized Inter-Campus Infrastructure</h2>
+          <p className="text-sm text-slate-400 mt-2">Engineered specifically for Indian colleges and students to eliminate information silos and enable cross-campus collaboration.</p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           
           {/* Feature 1 */}
-          <div className="glass-card p-6 rounded-2xl border border-slate-800 hover:border-indigo-500/40 relative group">
-            <div className="w-12 h-12 rounded-xl bg-indigo-600/20 border border-indigo-500/30 text-indigo-400 flex items-center justify-center mb-5 group-hover:scale-110 transition">
-              <Building2 className="w-6 h-6" />
+          <div className="glass-card p-6 rounded-2xl border border-slate-800 hover:border-indigo-500/40 relative group flex flex-col justify-between">
+            <div>
+              <div className="w-12 h-12 rounded-xl bg-indigo-600/20 border border-indigo-500/30 text-indigo-400 flex items-center justify-center mb-5 group-hover:scale-110 transition">
+                <Building2 className="w-6 h-6" />
+              </div>
+              <div className="text-xs font-bold text-indigo-400 tracking-wider uppercase mb-1">Feature 01</div>
+              <h3 className="text-base font-bold text-white mb-2">College Discovery & Compare</h3>
+              <p className="text-xs text-slate-300 leading-relaxed mb-4">
+                Explore Meerut, Noida, Delhi colleges with verified fees, eligibility, and cutoffs. Side-by-side compare up to 3 colleges.
+              </p>
             </div>
-            <div className="text-xs font-bold text-indigo-400 tracking-wider uppercase mb-1">Feature 01</div>
-            <h3 className="text-lg font-bold text-white mb-2">College Discovery & Comparison</h3>
-            <p className="text-xs text-slate-300 leading-relaxed mb-4">
-              Explore colleges across Meerut, Noida, Ghaziabad, Delhi with verified fee structures, eligibility criteria, cutoffs, and placements. Compare up to 3 colleges side-by-side.
-            </p>
             <button
               onClick={() => setActiveTab('compare')}
-              className="text-xs font-semibold text-indigo-400 group-hover:text-indigo-300 flex items-center gap-1 transition"
+              className="text-xs font-semibold text-indigo-400 group-hover:text-indigo-300 flex items-center gap-1 transition pt-2 border-t border-slate-800"
             >
-              Try Side-by-Side Comparison <ArrowRight className="w-3.5 h-3.5" />
+              Side-by-Side Compare <ArrowRight className="w-3.5 h-3.5" />
             </button>
           </div>
 
           {/* Feature 2 */}
-          <div className="glass-card p-6 rounded-2xl border border-slate-800 hover:border-purple-500/40 relative group">
-            <div className="w-12 h-12 rounded-xl bg-purple-600/20 border border-purple-500/30 text-purple-400 flex items-center justify-center mb-5 group-hover:scale-110 transition">
-              <Radio className="w-6 h-6" />
+          <div className="glass-card p-6 rounded-2xl border border-slate-800 hover:border-purple-500/40 relative group flex flex-col justify-between">
+            <div>
+              <div className="w-12 h-12 rounded-xl bg-purple-600/20 border border-purple-500/30 text-purple-400 flex items-center justify-center mb-5 group-hover:scale-110 transition">
+                <Radio className="w-6 h-6" />
+              </div>
+              <div className="text-xs font-bold text-purple-400 tracking-wider uppercase mb-1">Feature 02</div>
+              <h3 className="text-base font-bold text-white mb-2">Targeted Event Broadcast</h3>
+              <p className="text-xs text-slate-300 leading-relaxed mb-4">
+                Colleges can publish hackathons and selectively invite partner colleges across Meerut, Noida, Ghaziabad, and Delhi.
+              </p>
             </div>
-            <div className="text-xs font-bold text-purple-400 tracking-wider uppercase mb-1">Feature 02</div>
-            <h3 className="text-lg font-bold text-white mb-2">Multi-Campus Event Broadcasting</h3>
-            <p className="text-xs text-slate-300 leading-relaxed mb-4">
-              Colleges can host hackathons and symposia targeting selected partner colleges (e.g., Meerut college broadcasting its hackathon specifically to Noida & Ghaziabad campuses).
-            </p>
             <button
               onClick={() => setActiveTab('events')}
-              className="text-xs font-semibold text-purple-400 group-hover:text-purple-300 flex items-center gap-1 transition"
+              className="text-xs font-semibold text-purple-400 group-hover:text-purple-300 flex items-center gap-1 transition pt-2 border-t border-slate-800"
             >
-              View Targeted Events Feed <ArrowRight className="w-3.5 h-3.5" />
+              Targeted Events Feed <ArrowRight className="w-3.5 h-3.5" />
             </button>
           </div>
 
-          {/* Feature 3 */}
-          <div className="glass-card p-6 rounded-2xl border border-slate-800 hover:border-emerald-500/40 relative group">
-            <div className="w-12 h-12 rounded-xl bg-emerald-600/20 border border-emerald-500/30 text-emerald-400 flex items-center justify-center mb-5 group-hover:scale-110 transition">
-              <ShieldCheck className="w-6 h-6" />
+          {/* Feature 3: Campus Information Sharing */}
+          <div className="glass-card p-6 rounded-2xl border border-slate-800 hover:border-amber-500/40 relative group flex flex-col justify-between">
+            <div>
+              <div className="w-12 h-12 rounded-xl bg-amber-500/20 border border-amber-500/30 text-amber-400 flex items-center justify-center mb-5 group-hover:scale-110 transition">
+                <BellRing className="w-6 h-6" />
+              </div>
+              <div className="text-xs font-bold text-amber-400 tracking-wider uppercase mb-1">Feature 03</div>
+              <h3 className="text-base font-bold text-white mb-2">Inter-College Circulars & Info</h3>
+              <p className="text-xs text-slate-300 leading-relaxed mb-4">
+                Colleges directly send pooled placement drives, shared supercomputing labs, and MoU notices to other selected colleges.
+              </p>
             </div>
-            <div className="text-xs font-bold text-emerald-400 tracking-wider uppercase mb-1">Feature 03</div>
-            <h3 className="text-lg font-bold text-white mb-2">Student Access & QR Check-in</h3>
-            <p className="text-xs text-slate-300 leading-relaxed mb-4">
-              Students can request permissions for high-end research labs, maker workshops, or digital libraries at other colleges. Admin approves or rejects. Single-scan duplicate-proof QR check-in!
-            </p>
             <button
-              onClick={() => setActiveTab('requests')}
-              className="text-xs font-semibold text-emerald-400 group-hover:text-emerald-300 flex items-center gap-1 transition"
+              onClick={() => setActiveTab('notices')}
+              className="text-xs font-semibold text-amber-400 group-hover:text-amber-300 flex items-center gap-1 transition pt-2 border-t border-slate-800"
             >
-              View Campus Permissions <ArrowRight className="w-3.5 h-3.5" />
+              Open Campus Bulletins <ArrowRight className="w-3.5 h-3.5" />
             </button>
           </div>
+
+          {/* Feature 4: Student Passes & Check-in */}
+          <div className="glass-card p-6 rounded-2xl border border-slate-800 hover:border-emerald-500/40 relative group flex flex-col justify-between">
+            <div>
+              <div className="w-12 h-12 rounded-xl bg-emerald-600/20 border border-emerald-500/30 text-emerald-400 flex items-center justify-center mb-5 group-hover:scale-110 transition">
+                <ShieldCheck className="w-6 h-6" />
+              </div>
+              <div className="text-xs font-bold text-emerald-400 tracking-wider uppercase mb-1">Feature 04</div>
+              <h3 className="text-base font-bold text-white mb-2">QR Pass & Gate Scanner</h3>
+              <p className="text-xs text-slate-300 leading-relaxed mb-4">
+                Single-use cryptographically verified QR passes for students, with atomic duplicate-scan rejection at the entrance gate.
+              </p>
+            </div>
+            <button
+              onClick={() => setActiveTab('scanner')}
+              className="text-xs font-semibold text-emerald-400 group-hover:text-emerald-300 flex items-center gap-1 transition pt-2 border-t border-slate-800"
+            >
+              Test Gate Scanner <ArrowRight className="w-3.5 h-3.5" />
+            </button>
+          </div>
+
         </div>
       </section>
 

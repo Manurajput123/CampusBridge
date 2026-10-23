@@ -357,6 +357,21 @@ export default function Navbar({ activeTab, setActiveTab, onSelectCollege }) {
             <Sparkles className="w-4 h-4" /> AI Advisor
           </button>
           <button
+            onClick={() => { setActiveTab('notices'); setMobileMenuOpen(false); }}
+            className="w-full text-left px-3 py-2 rounded-lg text-sm text-slate-200 hover:bg-slate-800 flex items-center justify-between"
+          >
+            <span className="flex items-center gap-2"><BellRing className="w-4 h-4 text-indigo-400" /> Campus Bulletins & Info</span>
+            {notices?.length > 0 && (
+              <span className="px-2 py-0.5 rounded-full text-xs bg-indigo-600 font-bold">{notices.length}</span>
+            )}
+          </button>
+          <button
+            onClick={() => { setActiveTab('auth'); setMobileMenuOpen(false); }}
+            className="w-full text-left px-3 py-2 rounded-lg text-sm text-indigo-300 font-bold hover:bg-indigo-950/60 flex items-center gap-2"
+          >
+            <LogIn className="w-4 h-4 text-indigo-400" /> Student Login / Sign Up
+          </button>
+          <button
             onClick={() => { setActiveTab('requests'); setMobileMenuOpen(false); }}
             className="w-full text-left px-3 py-2 rounded-lg text-sm text-slate-200 hover:bg-slate-800 flex items-center gap-2"
           >
