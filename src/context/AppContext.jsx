@@ -23,7 +23,12 @@ const safeGetLocalStorage = (key, fallback) => {
 };
 
 export function AppProvider({ children }) {
-  // Current active demo user
+  // Users list (persisted so new college admins stay registered)
+  const [users, setUsers] = useState(() => {
+    return safeGetLocalStorage('cb_users', DEMO_USERS);
+  });
+
+  // Current active demo user ID
   const [currentUserId, setCurrentUserId] = useState(() => {
     try {
       return (typeof window !== 'undefined' && localStorage.getItem('cb_current_user_id')) || DEMO_USERS[0].id;
@@ -32,7 +37,7 @@ export function AppProvider({ children }) {
     }
   });
 
-  const currentUser = DEMO_USERS.find(u => u.id === currentUserId) || DEMO_USERS[0];
+  const currentUser = users.find(u => u.id === currentUserId) || users[0] || DEMO_USERS[0];
 
   // Colleges
   const [colleges, setColleges] = useState(() => {
@@ -42,6 +47,36 @@ export function AppProvider({ children }) {
   // Events
   const [events, setEvents] = useState(() => {
     return safeGetLocalStorage('cb_events', INITIAL_EVENTS);
+  });
+
+  // Cross-Campus Formal Invitations
+  const [invitations, setInvitations] = useState(() => {
+    return safeGetLocalStorage('cb_invitations', [
+      {
+        id: "inv-1",
+        fromCollegeId: "col-meerut-1",
+        fromCollegeName: "Meerut Institute of Technology & Science",
+        toCollegeId: "col-noida-1",
+        toCollegeName: "Noida Institute of Engineering & Technology",
+        eventId: "evt-hackathon-meerut",
+        eventTitle: "North India Inter-College Hackathon 2026",
+        sentAt: "2026-10-21T09:00:00Z",
+        status: "ACCEPTED",
+        studentsRegisteredCount: 4
+      },
+      {
+        id: "inv-2",
+        fromCollegeId: "col-meerut-1",
+        fromCollegeName: "Meerut Institute of Technology & Science",
+        toCollegeId: "col-gzb-1",
+        toCollegeName: "Ghaziabad Engineering & Tech Academy",
+        eventId: "evt-hackathon-meerut",
+        eventTitle: "North India Inter-College Hackathon 2026",
+        sentAt: "2026-10-21T09:00:00Z",
+        status: "ACCEPTED",
+        studentsRegisteredCount: 2
+      }
+    ]);
   });
 
   // Passes
@@ -69,32 +104,20 @@ export function AppProvider({ children }) {
 
   // Persistence effects
   useEffect(() => {
-    localStorage.setItem('cb_current_user_id', currentUserId);
-  }, [currentUserId]);
-
-  useEffect(() => {
-    localStorage.setItem('cb_colleges', JSON.stringify(colleges));
-  }, [colleges]);
-
-  useEffect(() => {
-    localStorage.setItem('cb_events', JSON.stringify(events));
-  }, [events]);
-
-  useEffect(() => {
-    localStorage.setItem('cb_passes', JSON.stringify(passes));
-  }, [passes]);
-
-  useEffect(() => {
-    localStorage.setItem('cb_access_requests', JSON.stringify(accessRequests));
-  }, [accessRequests]);
-
-  useEffect(() => {
-    localStorage.setItem('cb_teams', JSON.stringify(teams));
-  }, [teams]);
-
-  useEffect(() => {
-    localStorage.setItem('cb_compare_list', JSON.stringify(compareList));
-  }, [compareList]);
+    try {
+      localStorage.setItem('cb_current_user_id', currentUserId);
+      localStorage.setItem('cb_users', JSON.stringify(users));
+      localStorage.setItem('cb_colleges', JSON.stringify(colleges));
+      localStorage.setItem('cb_events', JSON.stringify(events));
+      localStorage.setItem('cb_invitations', JSON.stringify(invitations));
+      localStorage.setItem('cb_passes', JSON.stringify(passes));
+      localStorage.setItem('cb_access_requests', JSON.stringify(accessRequests));
+      localStorage.setItem('cb_teams', JSON.stringify(teams));
+      localStorage.setItem('cb_compare_list', JSON.stringify(compareList));
+    } catch (err) {
+      console.warn("Storage sync error", err);
+    }
+  }, [currentUserId, users, colleges, events, invitations, passes, accessRequests, teams, compareList]);
 
   const showToast = (message, type = 'info') => {
     setToast({ id: Date.now(), message, type });
@@ -104,33 +127,186 @@ export function AppProvider({ children }) {
   };
 
   const switchUser = (userId) => {
-    const target = DEMO_USERS.find(u => u.id === userId);
+    const target = users.find(u => u.id === userId);
     if (target) {
       setCurrentUserId(userId);
-      showToast(`Switched active view to: ${target.name} (${target.role === 'college_admin' ? 'College Admin' : target.role === 'super_admin' ? 'Super Admin' : 'Student'})`, 'success');
+      showToast(`Switched active view to: ${target.name} (${target.role === 'college_admin' ? '🏛️ ' + target.collegeName + ' Admin' : target.role === 'super_admin' ? '👑 Super Admin' : '🎓 Student'})`, 'success');
     }
   };
 
-  // Compare functions
-  const toggleCompare = (collegeId) => {
-    if (compareList.includes(collegeId)) {
-      setCompareList(prev => prev.filter(id => id !== collegeId));
-      showToast('Removed from comparison', 'info');
-    } else {
-      if (compareList.length >= 3) {
-        showToast('Maximum 3 colleges can be compared at a time.', 'warning');
-        return;
+  // 1. REGISTER NEW COLLEGE ON CAMPUSBRIDGE (Self-Onboarding)
+  const registerNewCollege = ({ college, admin }) => {
+    const colId = `col-${Date.now()}`;
+    const adminId = `admin-${Date.now()}`;
+
+    const newAdminUser = {
+      id: adminId,
+      name: admin.name || "Dean / Event Coordinator",
+      email: admin.email || `admin@${college.shortName.toLowerCase().replace(/[^a-z0-9]/g, '')}.edu.in`,
+      role: "college_admin",
+      collegeId: colId,
+      collegeName: college.name,
+      designation: admin.designation || "Director of Student Affairs & Events",
+      avatar: admin.avatar || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80"
+    };
+
+    const initialCourses = college.courses && college.courses.length > 0 ? college.courses : [
+      {
+        id: `c-${Date.now()}-1`,
+        name: "B.Tech Computer Science & Engineering",
+        branch: "CSE",
+        duration: "4 Years",
+        annualFee: parseInt(college.defaultFee, 10) || 125000,
+        totalSeats: 180,
+        eligibility: "10+2 with PCM (Min 60%) + JEE Main / CUET",
+        averagePackage: "₹7.8 LPA",
+        highestPackage: "₹36.0 LPA"
+      },
+      {
+        id: `c-${Date.now()}-2`,
+        name: "B.Tech Artificial Intelligence & Data Science",
+        branch: "AI & DS",
+        duration: "4 Years",
+        annualFee: (parseInt(college.defaultFee, 10) || 125000) + 10000,
+        totalSeats: 120,
+        eligibility: "10+2 with PCM (Min 60%) + JEE Main",
+        averagePackage: "₹8.2 LPA",
+        highestPackage: "₹40.0 LPA"
       }
-      setCompareList(prev => [...prev, collegeId]);
-      showToast('Added to side-by-side comparison!', 'success');
-    }
+    ];
+
+    const newCollegeObj = {
+      id: colId,
+      name: college.name,
+      shortName: college.shortName || college.name,
+      city: college.city || "Greater Noida",
+      state: college.state || "Uttar Pradesh",
+      founded: parseInt(college.founded, 10) || 2012,
+      type: college.type || "Autonomous / Private University",
+      rating: 4.5,
+      reviewsCount: 150,
+      accreditation: college.accreditation || "NAAC A+ & NBA Accredited",
+      campusSize: college.campusSize || "35 Acres Green Campus",
+      claimed: true,
+      claimedByAdminId: adminId,
+      verified: true,
+      tagLine: college.tagLine || "Pioneering Technical Excellence, Research & Innovation",
+      bannerImage: college.bannerImage || "https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&w=1200&q=80",
+      logo: college.logo || "https://images.unsplash.com/photo-1592280771190-3e2e4d571952?auto=format&fit=crop&w=160&q=80",
+      about: college.about || `${college.name} is a premier technical institution delivering high-impact engineering education, research incubators, and corporate partnerships across India.`,
+      contact: {
+        email: admin.email || `contact@${college.shortName.toLowerCase().replace(/[^a-z0-9]/g, '')}.edu.in`,
+        phone: college.phone || "+91 120 450 7800",
+        website: college.website || "https://campusbridge.in",
+        address: college.address || `${college.city}, ${college.state || 'India'}`
+      },
+      courses: initialCourses,
+      admissionDetails: {
+        status: "Admissions Open 2026-27",
+        applicationDeadline: college.deadline || "August 15, 2026",
+        entranceExams: ["JEE Main", "State Entrance", "CUET-UG"],
+        hostelFeePerYear: parseInt(college.hostelFee, 10) || 80000,
+        brochureUrl: "#brochure"
+      },
+      placementStats: {
+        avgPackage: college.avgPackage || "₹7.8 LPA",
+        highestPackage: college.highestPackage || "₹38.0 LPA",
+        placementRate: "91%",
+        topRecruiters: ["Microsoft", "Amazon", "TCS", "Infosys", "Wipro", "Cognizant", "Deloitte"]
+      },
+      facilities: [
+        "High-Performance Computing Cluster",
+        "Robotics & IoT Innovation Hub",
+        "Air-Conditioned Central Library",
+        "High-Speed 1Gbps Campus Wi-Fi",
+        "Hostel Complex & Sports Arena"
+      ],
+      restrictedResources: [
+        {
+          id: `res-${colId}-1`,
+          title: "Hardware MakerSpace & Prototyping Lab",
+          category: "Hardware & 3D Printing",
+          description: "Access to laser cutters, CNC milling, and 3D printing for verified inter-college project teams.",
+          requiredRole: "Partner Campus Students"
+        }
+      ],
+      sourceLink: "https://campusbridge.in/partner-disclosure",
+      lastCheckedDate: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+    };
+
+    setColleges(prev => [newCollegeObj, ...prev]);
+    setUsers(prev => [newAdminUser, ...prev]);
+    setCurrentUserId(adminId);
+    showToast(`🎉 "${newCollegeObj.name}" successfully registered and verified on CampusBridge!`, 'success');
+    return { college: newCollegeObj, admin: newAdminUser };
   };
 
-  const clearCompare = () => {
-    setCompareList([]);
+  // 2. CLAIM AN EXISTING UNCLAIMED COLLEGE
+  const claimCollege = (collegeId, adminData) => {
+    const targetCol = colleges.find(c => c.id === collegeId);
+    if (!targetCol) return;
+
+    const adminId = `admin-claim-${Date.now()}`;
+    const newAdmin = {
+      id: adminId,
+      name: adminData.name || "Authorized College Official",
+      email: adminData.email || "admin@" + targetCol.shortName.toLowerCase().replace(/[^a-z0-9]/g, '') + ".edu.in",
+      role: "college_admin",
+      collegeId: collegeId,
+      collegeName: targetCol.name,
+      designation: adminData.designation || "Director / Dean of Academics",
+      avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=120&q=80"
+    };
+
+    setColleges(prev => prev.map(c => c.id === collegeId ? { ...c, claimed: true, claimedByAdminId: adminId } : c));
+    setUsers(prev => [newAdmin, ...prev]);
+    setCurrentUserId(adminId);
+    showToast(`Authority claimed for ${targetCol.name}! You are now the official admin.`, 'success');
   };
 
-  // College Admin update function
+  // 3. ADD COURSE DYNAMICALLY TO COLLEGE
+  const addCourseToCollege = (collegeId, courseData) => {
+    const newCourseObj = {
+      id: `c-${Date.now()}`,
+      name: courseData.name || "B.Tech Specialized",
+      branch: courseData.branch || "CSE Specialization",
+      duration: courseData.duration || "4 Years",
+      annualFee: parseInt(courseData.annualFee, 10) || 120000,
+      totalSeats: parseInt(courseData.totalSeats, 10) || 120,
+      eligibility: courseData.eligibility || "10+2 with PCM (Min 60%) + Entrance Score",
+      averagePackage: courseData.averagePackage || "₹7.0 LPA",
+      highestPackage: courseData.highestPackage || "₹30.0 LPA"
+    };
+
+    setColleges(prev => prev.map(col => {
+      if (col.id === collegeId) {
+        return {
+          ...col,
+          courses: [...col.courses, newCourseObj],
+          lastCheckedDate: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+        };
+      }
+      return col;
+    }));
+
+    showToast(`Added program "${newCourseObj.name}" to college catalog!`, 'success');
+  };
+
+  // 4. REMOVE COURSE FROM COLLEGE
+  const removeCourseFromCollege = (collegeId, courseId) => {
+    setColleges(prev => prev.map(col => {
+      if (col.id === collegeId) {
+        return {
+          ...col,
+          courses: col.courses.filter(c => c.id !== courseId)
+        };
+      }
+      return col;
+    }));
+    showToast("Program removed from catalog.", "info");
+  };
+
+  // 5. UPDATE COLLEGE DETAILS & GENERAL INFO
   const updateCollege = (collegeId, updatedFields) => {
     setColleges(prev => prev.map(col => {
       if (col.id === collegeId) {
@@ -142,26 +318,50 @@ export function AppProvider({ children }) {
       }
       return col;
     }));
-    showToast('College information successfully updated & synced!', 'success');
+    showToast('College information successfully updated & synced across CampusBridge!', 'success');
   };
 
-  // Create Event with Target Campus selection
+  // 6. CREATE EVENT WITH MULTI-CAMPUS INVITATION TARGETING
   const createEvent = (eventData) => {
     const newId = `evt-${Date.now()}`;
+    const hostColId = currentUser.collegeId || "col-meerut-1";
+    const hostCol = colleges.find(c => c.id === hostColId);
+
     const newEvent = {
       id: newId,
-      hostCollegeId: currentUser.collegeId || "col-meerut-1",
-      hostCollegeName: currentUser.collegeName || "Meerut Institute of Technology & Science",
-      hostCity: "Meerut",
+      hostCollegeId: hostColId,
+      hostCollegeName: hostCol ? hostCol.name : currentUser.collegeName,
+      hostCity: hostCol ? hostCol.city : "Meerut",
       ...eventData
     };
 
+    // Generate formal cross-campus invitation logs
+    if (newEvent.targetScope === 'SELECTED_COLLEGES' && newEvent.targetColleges?.length > 0) {
+      const newInvites = newEvent.targetColleges.map((targetId, idx) => {
+        const targetCol = colleges.find(c => c.id === targetId);
+        return {
+          id: `inv-${Date.now()}-${idx}`,
+          fromCollegeId: hostColId,
+          fromCollegeName: hostCol ? hostCol.name : currentUser.collegeName,
+          toCollegeId: targetId,
+          toCollegeName: targetCol ? targetCol.name : "Partner Campus",
+          eventId: newId,
+          eventTitle: newEvent.title,
+          sentAt: new Date().toISOString(),
+          status: "INVITATION_DELIVERED",
+          studentsRegisteredCount: 0
+        };
+      });
+
+      setInvitations(prev => [...newInvites, ...prev]);
+    }
+
     setEvents(prev => [newEvent, ...prev]);
-    showToast(`Event "${newEvent.title}" published! Broadcasted to selected campuses.`, 'success');
+    showToast(`Event "${newEvent.title}" published! Official invitations sent to selected partner campuses.`, 'success');
     return newEvent;
   };
 
-  // Student Register for Event
+  // 7. REGISTER FOR EVENT
   const registerForEvent = (eventId) => {
     const event = events.find(e => e.id === eventId);
     if (!event) return { success: false, message: 'Event not found' };
@@ -203,11 +403,20 @@ export function AppProvider({ children }) {
     };
 
     setPasses(prev => [newPass, ...prev]);
+
+    // Update invitation counter if student registered
+    setInvitations(prev => prev.map(inv => {
+      if (inv.eventId === eventId && inv.toCollegeId === currentUser.collegeId) {
+        return { ...inv, studentsRegisteredCount: (inv.studentsRegisteredCount || 0) + 1 };
+      }
+      return inv;
+    }));
+
     showToast(`Registered successfully for ${event.title}! QR Pass generated.`, 'success');
     return { success: true, pass: newPass };
   };
 
-  // Check-In validation (DUPLICATE RESISTANT!)
+  // 8. CHECK-IN SCANNER (ATOMIC DUPLICATE RESISTANT)
   const checkInPass = (token) => {
     const trimmed = (token || '').trim();
     const pass = passes.find(p => p.token === trimmed);
@@ -229,7 +438,6 @@ export function AppProvider({ children }) {
       };
     }
 
-    // Mark as used atomically
     const now = new Date().toISOString();
     const updatedPass = {
       ...pass,
@@ -249,7 +457,7 @@ export function AppProvider({ children }) {
     };
   };
 
-  // Student Access Request to College
+  // 9. ACCESS REQUESTS
   const submitAccessRequest = ({ targetCollegeId, resourceId, resourceTitle, purpose }) => {
     const targetCol = colleges.find(c => c.id === targetCollegeId);
     const newReq = {
@@ -275,7 +483,6 @@ export function AppProvider({ children }) {
     return newReq;
   };
 
-  // College Admin Decision
   const decideAccessRequest = (requestId, decision, remarks = '') => {
     setAccessRequests(prev => prev.map(req => {
       if (req.id === requestId) {
@@ -295,7 +502,26 @@ export function AppProvider({ children }) {
     showToast(`Access request has been ${decision.toUpperCase()}!`, decision === 'approved' ? 'success' : 'info');
   };
 
-  // Team creation and joining
+  // 10. COMPARE
+  const toggleCompare = (collegeId) => {
+    if (compareList.includes(collegeId)) {
+      setCompareList(prev => prev.filter(id => id !== collegeId));
+      showToast('Removed from comparison', 'info');
+    } else {
+      if (compareList.length >= 3) {
+        showToast('Maximum 3 colleges can be compared at a time.', 'warning');
+        return;
+      }
+      setCompareList(prev => [...prev, collegeId]);
+      showToast('Added to side-by-side comparison!', 'success');
+    }
+  };
+
+  const clearCompare = () => {
+    setCompareList([]);
+  };
+
+  // 11. TEAMS
   const createTeam = (teamData) => {
     const newTeam = {
       id: `team-${Date.now()}`,
@@ -337,14 +563,13 @@ export function AppProvider({ children }) {
     }));
   };
 
-  // Reset to demo data if user wants fresh state
+  // 12. RESET TO FRESH DEMO
   const resetDemoData = () => {
-    localStorage.removeItem('cb_colleges');
-    localStorage.removeItem('cb_events');
-    localStorage.removeItem('cb_passes');
-    localStorage.removeItem('cb_access_requests');
-    localStorage.removeItem('cb_teams');
-    localStorage.removeItem('cb_compare_list');
+    try {
+      localStorage.clear();
+    } catch(e) {}
+    setUsers(DEMO_USERS);
+    setCurrentUserId(DEMO_USERS[0].id);
     setColleges(INITIAL_COLLEGES);
     setEvents(INITIAL_EVENTS);
     setPasses(INITIAL_PASSES);
@@ -358,12 +583,17 @@ export function AppProvider({ children }) {
     <AppContext.Provider
       value={{
         currentUser,
-        users: DEMO_USERS,
+        users,
         switchUser,
         colleges,
+        registerNewCollege,
+        claimCollege,
         updateCollege,
+        addCourseToCollege,
+        removeCourseFromCollege,
         events,
         createEvent,
+        invitations,
         passes,
         registerForEvent,
         checkInPass,

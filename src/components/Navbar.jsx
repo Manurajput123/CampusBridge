@@ -136,21 +136,19 @@ export default function Navbar({ activeTab, setActiveTab, onSelectCollege }) {
             AI Advisor
           </button>
 
-          {/* College Admin Portal Tab */}
-          {(isCollegeAdmin || isSuperAdmin) && (
-            <button
-              onClick={() => setActiveTab('admin')}
-              className={`px-3 py-2 rounded-lg transition flex items-center gap-1.5 ${activeTab === 'admin' ? 'bg-purple-600/20 text-purple-300 font-semibold border border-purple-500/30' : 'text-purple-300 hover:text-white hover:bg-purple-950/40'}`}
-            >
-              <Building2 className="w-4 h-4 text-purple-400" />
-              Admin Portal
-              {pendingRequestsForAdmin > 0 && (
-                <span className="px-1.5 py-0.2 rounded-full text-[10px] font-bold bg-rose-500 text-white animate-pulse">
-                  {pendingRequestsForAdmin}
-                </span>
-              )}
-            </button>
-          )}
+          {/* College Admin Portal / Partner Onboarding (Always Accessible) */}
+          <button
+            onClick={() => setActiveTab('admin')}
+            className={`px-3 py-2 rounded-lg transition flex items-center gap-1.5 ${activeTab === 'admin' ? 'bg-purple-600/30 text-purple-200 font-bold border border-purple-500/40' : 'text-purple-300 hover:text-white hover:bg-purple-950/50'}`}
+          >
+            <Building2 className="w-4 h-4 text-purple-400" />
+            <span>{isCollegeAdmin ? 'Admin Studio' : 'College Partner Portal'}</span>
+            {isCollegeAdmin && pendingRequestsForAdmin > 0 && (
+              <span className="px-1.5 py-0.2 rounded-full text-[10px] font-bold bg-rose-500 text-white animate-pulse">
+                {pendingRequestsForAdmin}
+              </span>
+            )}
+          </button>
 
           {/* Access Requests & Permissions */}
           <button
@@ -311,7 +309,7 @@ export default function Navbar({ activeTab, setActiveTab, onSelectCollege }) {
             onClick={() => { setActiveTab('admin'); setMobileMenuOpen(false); }}
             className="w-full text-left px-3 py-2 rounded-lg text-sm text-purple-300 hover:bg-slate-800 flex items-center gap-2"
           >
-            <Building2 className="w-4 h-4" /> College Admin Hub
+            <Building2 className="w-4 h-4" /> {isCollegeAdmin ? 'Admin Studio' : 'Register / Partner College'}
           </button>
           <button
             onClick={() => { setActiveTab('passes'); setMobileMenuOpen(false); }}

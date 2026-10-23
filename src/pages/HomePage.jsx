@@ -15,7 +15,8 @@ import {
   Radio,
   ExternalLink,
   Award,
-  GraduationCap
+  GraduationCap,
+  Plus
 } from 'lucide-react';
 
 export default function HomePage({ setActiveTab, setSelectedCollegeId, setSelectedEventId }) {
@@ -348,6 +349,15 @@ export default function HomePage({ setActiveTab, setSelectedCollegeId, setSelect
             >
               <Building2 className="w-4 h-4" />
               Switch to Meerut Admin
+            </button>
+            <button
+              onClick={() => {
+                setActiveTab('admin');
+              }}
+              className="px-4 py-2.5 rounded-xl bg-indigo-600/30 hover:bg-indigo-600/50 text-indigo-200 border border-indigo-500/40 font-semibold text-xs transition flex items-center gap-2"
+            >
+              <Plus className="w-4 h-4" />
+              Register Your College
             </button>
             <button
               onClick={() => {
