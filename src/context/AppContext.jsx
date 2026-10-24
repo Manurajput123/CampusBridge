@@ -133,6 +133,16 @@ export function AppProvider({ children }) {
   // Solid authentication state: user is logged in whenever currentUserId is valid and not 'guest'
   const isLoggedIn = Boolean(currentUserId && currentUserId !== 'guest');
 
+  const setIsLoggedIn = (val) => {
+    if (!val) {
+      setCurrentUserId('guest');
+      try { localStorage.setItem('cb_current_user_id', 'guest'); } catch(e) {}
+    } else if (currentUserId === 'guest') {
+      setCurrentUserId(DEMO_USERS[0].id);
+      try { localStorage.setItem('cb_current_user_id', DEMO_USERS[0].id); } catch(e) {}
+    }
+  };
+
   const currentUser = isLoggedIn
     ? (users.find(u => u.id === currentUserId) || users[0] || DEMO_USERS[0])
     : null;
@@ -815,7 +825,6 @@ export function AppProvider({ children }) {
     try {
       localStorage.clear();
     } catch(e) {}
-    setIsLoggedIn(true);
     setUsers(DEMO_USERS);
     setCurrentUserId(DEMO_USERS[0].id);
     setColleges(INITIAL_COLLEGES);
