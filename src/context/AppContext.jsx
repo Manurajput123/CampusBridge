@@ -123,24 +123,19 @@ export function AppProvider({ children }) {
     try {
       const stored = (typeof window !== 'undefined' && localStorage.getItem('cb_current_user_id'));
       if (stored === 'usr-aarav') return 'usr-student';
+      if (stored === 'guest') return 'guest';
       return stored || DEMO_USERS[0].id;
     } catch (e) {
       return DEMO_USERS[0].id;
     }
   });
 
-  // Logged-in session tracking (avoids displaying login bar after authenticating)
-  const [isLoggedIn, setIsLoggedIn] = useState(() => {
-    try {
-      const stored = typeof window !== 'undefined' && localStorage.getItem('cb_is_logged_in');
-      if (stored !== null) return stored === 'true';
-      return true; // Default session active for smooth initial exploration
-    } catch (e) {
-      return true;
-    }
-  });
+  // Solid authentication state: user is logged in whenever currentUserId is valid and not 'guest'
+  const isLoggedIn = Boolean(currentUserId && currentUserId !== 'guest');
 
-  const currentUser = users.find(u => u.id === currentUserId) || users[0] || DEMO_USERS[0];
+  const currentUser = isLoggedIn
+    ? (users.find(u => u.id === currentUserId) || users[0] || DEMO_USERS[0])
+    : null;
 
   // Colleges: Merges fresh default colleges with any user-created colleges from localStorage
   const [colleges, setColleges] = useState(() => {
@@ -258,7 +253,6 @@ export function AppProvider({ children }) {
     const target = users.find(u => u.id === userId);
     if (target) {
       setCurrentUserId(userId);
-      setIsLoggedIn(true);
       showToast(`Switched active view to: ${target.name} (${target.role === 'college_admin' ? '🏛️ ' + target.collegeName + ' Admin' : target.role === 'super_admin' ? '👑 Super Admin' : '🎓 Student'})`, 'success');
     }
   };
@@ -287,7 +281,6 @@ export function AppProvider({ children }) {
 
     setUsers(prev => [newStudentUser, ...prev]);
     setCurrentUserId(newStudentId);
-    setIsLoggedIn(true);
     showToast(`🎉 Student account created successfully! Welcome, ${name}.`, 'success');
     return newStudentUser;
   };
@@ -297,7 +290,6 @@ export function AppProvider({ children }) {
     const found = users.find(u => u.email.toLowerCase() === email.trim().toLowerCase());
     if (found) {
       setCurrentUserId(found.id);
-      setIsLoggedIn(true);
       showToast(`Welcome back, ${found.name}! Signed in as ${found.role === 'college_admin' ? 'College Admin' : 'Student'}.`, 'success');
       return { success: true, user: found };
     }
@@ -312,12 +304,11 @@ export function AppProvider({ children }) {
       year: "3rd Year",
       skills: "React, Python"
     });
-    setIsLoggedIn(true);
     return { success: true, user: defaultStudent };
   };
 
   const logoutUser = () => {
-    setIsLoggedIn(false);
+    setCurrentUserId('guest');
     showToast('Signed out of CampusBridge. Switched to Guest mode.', 'info');
   };
 

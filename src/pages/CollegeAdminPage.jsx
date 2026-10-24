@@ -355,13 +355,13 @@ export default function CollegeAdminPage({ setActiveTab, presetCity = 'Ghaziabad
               onClick={() => switchUser('admin-meerut')}
               className="px-3 py-1.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-semibold transition"
             >
-              🏛️ Login as Meerut Admin
+              🏛️ Switch to Meerut Admin
             </button>
             <button
               onClick={() => switchUser('admin-noida')}
               className="px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold transition"
             >
-              🏛️ Login as Noida Admin
+              🏛️ Switch to Noida Admin
             </button>
           </div>
         </div>
