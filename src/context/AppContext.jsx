@@ -129,6 +129,17 @@ export function AppProvider({ children }) {
     }
   });
 
+  // Logged-in session tracking (avoids displaying login bar after authenticating)
+  const [isLoggedIn, setIsLoggedIn] = useState(() => {
+    try {
+      const stored = typeof window !== 'undefined' && localStorage.getItem('cb_is_logged_in');
+      if (stored !== null) return stored === 'true';
+      return true; // Default session active for smooth initial exploration
+    } catch (e) {
+      return true;
+    }
+  });
+
   const currentUser = users.find(u => u.id === currentUserId) || users[0] || DEMO_USERS[0];
 
   // Colleges: Merges fresh default colleges with any user-created colleges from localStorage
@@ -220,6 +231,7 @@ export function AppProvider({ children }) {
   // Persistence effects
   useEffect(() => {
     try {
+      localStorage.setItem('cb_is_logged_in', String(isLoggedIn));
       localStorage.setItem('cb_current_user_id', currentUserId);
       localStorage.setItem('cb_users', JSON.stringify(users));
       localStorage.setItem('cb_colleges', JSON.stringify(colleges));
@@ -233,7 +245,7 @@ export function AppProvider({ children }) {
     } catch (err) {
       console.warn("Storage sync error", err);
     }
-  }, [currentUserId, users, colleges, events, notices, invitations, passes, accessRequests, teams, compareList]);
+  }, [isLoggedIn, currentUserId, users, colleges, events, notices, invitations, passes, accessRequests, teams, compareList]);
 
   const showToast = (message, type = 'info') => {
     setToast({ id: Date.now(), message, type });
@@ -246,6 +258,7 @@ export function AppProvider({ children }) {
     const target = users.find(u => u.id === userId);
     if (target) {
       setCurrentUserId(userId);
+      setIsLoggedIn(true);
       showToast(`Switched active view to: ${target.name} (${target.role === 'college_admin' ? '🏛️ ' + target.collegeName + ' Admin' : target.role === 'super_admin' ? '👑 Super Admin' : '🎓 Student'})`, 'success');
     }
   };
@@ -274,6 +287,7 @@ export function AppProvider({ children }) {
 
     setUsers(prev => [newStudentUser, ...prev]);
     setCurrentUserId(newStudentId);
+    setIsLoggedIn(true);
     showToast(`🎉 Student account created successfully! Welcome, ${name}.`, 'success');
     return newStudentUser;
   };
@@ -283,6 +297,7 @@ export function AppProvider({ children }) {
     const found = users.find(u => u.email.toLowerCase() === email.trim().toLowerCase());
     if (found) {
       setCurrentUserId(found.id);
+      setIsLoggedIn(true);
       showToast(`Welcome back, ${found.name}! Signed in as ${found.role === 'college_admin' ? 'College Admin' : 'Student'}.`, 'success');
       return { success: true, user: found };
     }
@@ -297,13 +312,13 @@ export function AppProvider({ children }) {
       year: "3rd Year",
       skills: "React, Python"
     });
+    setIsLoggedIn(true);
     return { success: true, user: defaultStudent };
   };
 
   const logoutUser = () => {
-    // Revert to default student account
-    setCurrentUserId(DEMO_USERS[0].id);
-    showToast('Signed out of current account. Active session reset.', 'info');
+    setIsLoggedIn(false);
+    showToast('Signed out of CampusBridge. Switched to Guest mode.', 'info');
   };
 
   // 3. REGISTER NEW COLLEGE (Self-Onboarding)
@@ -809,6 +824,7 @@ export function AppProvider({ children }) {
     try {
       localStorage.clear();
     } catch(e) {}
+    setIsLoggedIn(true);
     setUsers(DEMO_USERS);
     setCurrentUserId(DEMO_USERS[0].id);
     setColleges(INITIAL_COLLEGES);
@@ -825,6 +841,8 @@ export function AppProvider({ children }) {
   return (
     <AppContext.Provider
       value={{
+        isLoggedIn,
+        setIsLoggedIn,
         currentUser,
         users,
         switchUser,

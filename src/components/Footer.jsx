@@ -1,8 +1,10 @@
 import React from 'react';
 import { Shield } from 'lucide-react';
+import { useApp } from '../context/AppContext';
 import CampusBridgeGraphic from './CampusBridgeGraphic';
 
 export default function Footer({ setActiveTab }) {
+  const { isLoggedIn } = useApp();
   return (
     <footer className="border-t border-slate-800 bg-[#070b14] text-slate-400 relative z-10">
       <div className="container mx-auto px-4 sm:px-6 py-12">
@@ -58,7 +60,14 @@ export default function Footer({ setActiveTab }) {
             <div>
               <h4 className="font-bold text-white mb-2.5">Platform</h4>
               <ul className="space-y-1.5">
-                <li><button onClick={() => setActiveTab('auth')} className="hover:text-[#ff7043] transition">Student Sign Up</button></li>
+                <li>
+                  <button
+                    onClick={() => setActiveTab(isLoggedIn ? 'spatial' : 'auth')}
+                    className="hover:text-[#ff7043] transition"
+                  >
+                    {isLoggedIn ? '3D Campus Map' : 'Student Sign Up'}
+                  </button>
+                </li>
                 <li><button onClick={() => setActiveTab('teams')} className="hover:text-[#ff7043] transition">Team Finder</button></li>
                 <li><button onClick={() => setActiveTab('ai')} className="hover:text-[#ff7043] transition">AI Advisor</button></li>
               </ul>

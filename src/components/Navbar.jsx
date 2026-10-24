@@ -18,13 +18,16 @@ import {
   X,
   Menu,
   ChevronRight,
+  ChevronDown,
   ShieldCheck,
-  Radio
+  Radio,
+  User
 } from 'lucide-react';
 import CampusBridgeGraphic from './CampusBridgeGraphic';
 
 export default function Navbar({ activeTab, setActiveTab, onSelectCollege, onOpenSpatialNavigator }) {
   const {
+    isLoggedIn,
     currentUser,
     users,
     switchUser,
@@ -69,9 +72,26 @@ export default function Navbar({ activeTab, setActiveTab, onSelectCollege, onOpe
                 Reset Demo
               </button>
               <span className="text-slate-600">|</span>
-              <span className="text-[11px] font-mono text-orange-300">
-                User: <strong className="text-white uppercase">{currentUser?.name?.split(' ')[0] || 'Student'}</strong>
-              </span>
+              {isLoggedIn ? (
+                <div className="flex items-center gap-2">
+                  <span className="text-[11px] font-mono text-emerald-300 flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                    <span>Active: <strong className="text-white uppercase">{currentUser?.name}</strong></span>
+                    <span className="text-slate-400 text-[10px]">({isCollegeAdmin ? '🏛️ Admin' : '🎓 Student'})</span>
+                  </span>
+                  <button
+                    onClick={logoutUser}
+                    className="text-[10px] text-slate-400 hover:text-rose-300 underline transition ml-1"
+                    title="Sign out of current account"
+                  >
+                    Logout
+                  </button>
+                </div>
+              ) : (
+                <span className="text-[11px] text-slate-400">
+                  Guest Mode · <button onClick={() => setActiveTab('auth')} className="text-[#ff7043] font-bold hover:underline">Sign In</button>
+                </span>
+              )}
             </div>
           </div>
         </div>
@@ -159,18 +179,156 @@ export default function Navbar({ activeTab, setActiveTab, onSelectCollege, onOpe
             </button>
           </nav>
 
-          {/* Right Section: Single Unified Auth Button & Side Hub Drawer Trigger */}
+          {/* Right Section: 3D Map + User Profile / Login Button + Side Hub Drawer Trigger */}
           <div className="flex items-center gap-2 sm:gap-3 shrink-0">
             
-            {/* Single Unified Login / Sign Up Button */}
+            {/* Quick 3D Campus Map Button */}
             <button
-              onClick={() => setActiveTab('auth')}
-              className="flex items-center gap-1.5 px-3.5 sm:px-4 py-2 rounded-xl bg-gradient-to-r from-[#ff5722] to-[#ff7043] hover:brightness-110 text-white text-xs font-bold transition shadow-md shadow-[#ff5722]/30 active:scale-95"
-              title="Login or Sign Up to CampusBridge"
+              onClick={() => setActiveTab('spatial')}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-bold transition ${
+                activeTab === 'spatial'
+                  ? 'bg-gradient-to-r from-[#ff5722] to-[#ff7043] text-white border-[#ff5722] shadow-md shadow-orange-500/30'
+                  : 'bg-slate-900 border-slate-800 text-slate-300 hover:text-white hover:border-[#ff5722]/50'
+              }`}
+              title="3D Earth & Regional Campus Map Corridor"
             >
-              <LogIn className="w-3.5 h-3.5" />
-              <span className="whitespace-nowrap">Login / Sign Up</span>
+              <Globe className="w-3.5 h-3.5 text-[#ff7043]" />
+              <span className="hidden sm:inline">3D Map</span>
             </button>
+
+            {!isLoggedIn ? (
+              /* If NOT logged in: Show the Login / Sign Up Button */
+              <button
+                onClick={() => setActiveTab('auth')}
+                className="flex items-center gap-1.5 px-3.5 sm:px-4 py-2 rounded-xl bg-gradient-to-r from-[#ff5722] to-[#ff7043] hover:brightness-110 text-white text-xs font-bold transition shadow-md shadow-[#ff5722]/30 active:scale-95"
+                title="Login or Sign Up to CampusBridge"
+              >
+                <LogIn className="w-3.5 h-3.5" />
+                <span className="whitespace-nowrap">Login / Sign Up</span>
+              </button>
+            ) : (
+              /* If LOGGED IN: NO Login/Sign Up button! Instead show User Profile Menu */
+              <div className="relative">
+                <button
+                  onClick={() => setRoleSwitcherOpen(!roleSwitcherOpen)}
+                  className="flex items-center gap-2 px-2.5 sm:px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-800 hover:border-[#ff5722]/50 text-white text-xs font-semibold transition group shadow-sm"
+                  title="My Account & Profile Menu"
+                >
+                  <img
+                    src={currentUser?.avatar || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80"}
+                    alt={currentUser?.name}
+                    className="w-6 h-6 rounded-lg object-cover border border-[#ff5722]/50"
+                  />
+                  <div className="hidden sm:block text-left leading-tight">
+                    <div className="font-bold text-white text-xs flex items-center gap-1">
+                      <span>{currentUser?.name?.split(' ')[0]}</span>
+                      <span className="text-[10px] text-slate-400 font-normal">
+                        ({isCollegeAdmin ? 'Admin' : 'Student'})
+                      </span>
+                    </div>
+                  </div>
+                  <ChevronDown className="w-3.5 h-3.5 text-slate-400 group-hover:text-white transition" />
+                </button>
+
+                {/* Profile Dropdown */}
+                {roleSwitcherOpen && (
+                  <div className="absolute right-0 mt-2 w-64 bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl py-2 z-50 animate-fade-in text-xs">
+                    <div className="px-4 py-3 border-b border-slate-800 bg-slate-950/60">
+                      <p className="font-bold text-white text-sm">{currentUser?.name}</p>
+                      <p className="text-[11px] text-slate-400 truncate">{currentUser?.email}</p>
+                      <div className="mt-1.5 inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#ff5722]/20 text-[#ff7043] border border-[#ff5722]/30">
+                        {isCollegeAdmin ? `🏛️ ${currentUser.collegeName} Admin` : `🎓 ${currentUser.collegeName || 'Student'}`}
+                      </div>
+                    </div>
+
+                    <div className="py-1">
+                      <button
+                        onClick={() => {
+                          setActiveTab('spatial');
+                          setRoleSwitcherOpen(false);
+                        }}
+                        className="w-full px-4 py-2 text-left text-slate-300 hover:text-white hover:bg-slate-800 flex items-center gap-2.5 transition"
+                      >
+                        <Globe className="w-4 h-4 text-[#ff7043]" />
+                        <span>3D Spatial Campus Map</span>
+                      </button>
+
+                      <button
+                        onClick={() => {
+                          setActiveTab(isCollegeAdmin ? 'admin' : 'passes');
+                          setRoleSwitcherOpen(false);
+                        }}
+                        className="w-full px-4 py-2 text-left text-slate-300 hover:text-white hover:bg-slate-800 flex items-center gap-2.5 transition"
+                      >
+                        <QrCode className="w-4 h-4 text-[#ff7043]" />
+                        <span>{isCollegeAdmin ? 'Admin Gate Scanner' : 'My QR Passes & Visits'}</span>
+                      </button>
+
+                      <button
+                        onClick={() => {
+                          setActiveTab('explore');
+                          setRoleSwitcherOpen(false);
+                        }}
+                        className="w-full px-4 py-2 text-left text-slate-300 hover:text-white hover:bg-slate-800 flex items-center gap-2.5 transition"
+                      >
+                        <Building2 className="w-4 h-4 text-[#ff7043]" />
+                        <span>Browse Colleges & Fees</span>
+                      </button>
+                    </div>
+
+                    {/* Switch User Quick Links */}
+                    <div className="px-4 py-2 border-t border-slate-800 bg-slate-950/40">
+                      <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">Switch Demo Identity:</p>
+                      <div className="space-y-1">
+                        <button
+                          onClick={() => {
+                            switchUser('admin-akgec');
+                            setRoleSwitcherOpen(false);
+                          }}
+                          className="w-full text-left text-[11px] text-purple-300 hover:text-white py-0.5 transition flex items-center justify-between"
+                        >
+                          <span>Dr. Hemant (AKGEC Admin)</span>
+                          <span className="text-[9px] text-slate-500">🏛️</span>
+                        </button>
+                        <button
+                          onClick={() => {
+                            switchUser('admin-kiet');
+                            setRoleSwitcherOpen(false);
+                          }}
+                          className="w-full text-left text-[11px] text-purple-300 hover:text-white py-0.5 transition flex items-center justify-between"
+                        >
+                          <span>Dr. Manoj Goel (KIET Admin)</span>
+                          <span className="text-[9px] text-slate-500">🏛️</span>
+                        </button>
+                        <button
+                          onClick={() => {
+                            switchUser('usr-student');
+                            setRoleSwitcherOpen(false);
+                          }}
+                          className="w-full text-left text-[11px] text-indigo-300 hover:text-white py-0.5 transition flex items-center justify-between"
+                        >
+                          <span>Campus Student</span>
+                          <span className="text-[9px] text-slate-500">🎓</span>
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="pt-1 border-t border-slate-800">
+                      <button
+                        onClick={() => {
+                          logoutUser();
+                          setRoleSwitcherOpen(false);
+                        }}
+                        className="w-full px-4 py-2 text-left text-rose-400 hover:text-rose-300 hover:bg-rose-950/30 flex items-center gap-2.5 font-semibold transition"
+                      >
+                        <LogOut className="w-4 h-4" />
+                        <span>Logout / Sign Out</span>
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
 
             {/* Side Menu Drawer Button: Opens Slide-Over Hub for Secondary Features */}
             <button

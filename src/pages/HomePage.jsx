@@ -27,7 +27,7 @@ import {
 import CampusBridgeGraphic from '../components/CampusBridgeGraphic';
 
 export default function HomePage({ setActiveTab, setSelectedCollegeId, setSelectedEventId, onOpenSpatialNavigator }) {
-  const { colleges, events, passes, currentUser, switchUser, toggleCompare, compareList } = useApp();
+  const { colleges, events, passes, currentUser, switchUser, toggleCompare, compareList, isLoggedIn } = useApp();
   
   // Filter form state matching the design mock image
   const [selectedCity, setSelectedCity] = useState('All');
@@ -177,11 +177,20 @@ export default function HomePage({ setActiveTab, setSelectedCollegeId, setSelect
                 </button>
 
                 <button
-                  onClick={() => setActiveTab('auth')}
+                  onClick={() => setActiveTab(isLoggedIn ? 'spatial' : 'auth')}
                   className="px-3.5 py-1.5 rounded-xl bg-[#ff5722]/20 hover:bg-[#ff5722]/30 text-[#ff7043] border border-[#ff5722]/40 text-xs font-bold flex items-center gap-1.5 transition"
                 >
-                  <LogIn className="w-3.5 h-3.5" />
-                  <span>Student Sign Up</span>
+                  {isLoggedIn ? (
+                    <>
+                      <Globe className="w-3.5 h-3.5 text-[#ff7043]" />
+                      <span>3D Campus Map</span>
+                    </>
+                  ) : (
+                    <>
+                      <LogIn className="w-3.5 h-3.5" />
+                      <span>Student Sign Up</span>
+                    </>
+                  )}
                 </button>
               </div>
 
@@ -473,10 +482,10 @@ export default function HomePage({ setActiveTab, setSelectedCollegeId, setSelect
                 </button>
 
                 <button
-                  onClick={() => setActiveTab('auth')}
+                  onClick={() => setActiveTab(isLoggedIn ? 'spatial' : 'auth')}
                   className="px-5 py-3 rounded-xl bg-transparent hover:bg-black/10 text-white font-bold text-xs border border-white/60 transition"
                 >
-                  Join the inter-campus network
+                  {isLoggedIn ? 'Explore 3D Campus Corridor ➔' : 'Join the inter-campus network'}
                 </button>
               </div>
             </div>

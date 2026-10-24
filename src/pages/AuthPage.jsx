@@ -14,11 +14,23 @@ import {
   KeyRound,
   X,
   UserCheck,
-  ChevronDown
+  ChevronDown,
+  Globe,
+  LogOut
 } from 'lucide-react';
 
 export default function AuthPage({ setActiveTab }) {
-  const { colleges, registerStudent, loginUser, switchUser, users, currentUser, showToast } = useApp();
+  const {
+    isLoggedIn,
+    colleges,
+    registerStudent,
+    loginUser,
+    switchUser,
+    logoutUser,
+    users,
+    currentUser,
+    showToast
+  } = useApp();
 
   // Unified Form State (All in ONE single place)
   const [email, setEmail] = useState('');
@@ -55,7 +67,8 @@ export default function AuthPage({ setActiveTab }) {
       try {
         confetti({ particleCount: 60, spread: 50, origin: { y: 0.6 } });
       } catch (err) {}
-      setActiveTab(matchedUser.role === 'college_admin' ? 'admin' : 'explore');
+      // Directly enter the website / 3D map features!
+      setActiveTab('spatial');
       return;
     }
 
@@ -79,8 +92,48 @@ export default function AuthPage({ setActiveTab }) {
       confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
     } catch (err) {}
 
-    setActiveTab('explore');
+    // Directly enter the website / 3D map features!
+    setActiveTab('spatial');
   };
+
+  // If user is already authenticated, never show login/sign up form
+  if (isLoggedIn) {
+    return (
+      <div className="container mx-auto px-4 sm:px-6 py-20 max-w-xl text-center space-y-6 animate-fade-in">
+        <div className="w-16 h-16 rounded-2xl bg-emerald-500/20 text-emerald-400 mx-auto flex items-center justify-center font-bold text-3xl border border-emerald-500/40">
+          ✓
+        </div>
+        <div className="space-y-2">
+          <h2 className="text-2xl font-black text-white">You are Logged In!</h2>
+          <p className="text-xs text-slate-300">
+            Welcome back, <strong className="text-white">{currentUser?.name}</strong> ({currentUser?.role === 'college_admin' ? `Admin: ${currentUser.collegeName}` : 'Student'}).
+          </p>
+          <p className="text-[11px] text-[#ff7043]">You have full access to CampusBridge. No need to login again.</p>
+        </div>
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
+          <button
+            onClick={() => setActiveTab('spatial')}
+            className="w-full sm:w-auto px-6 py-3 rounded-2xl bg-gradient-to-r from-[#ff5722] to-[#ff7043] text-white text-xs font-bold shadow-lg shadow-orange-500/30 flex items-center justify-center gap-2"
+          >
+            <Globe className="w-4 h-4" />
+            <span>Enter 3D Campus Map ➔</span>
+          </button>
+          <button
+            onClick={() => setActiveTab('explore')}
+            className="w-full sm:w-auto px-6 py-3 rounded-2xl bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-700 text-xs font-semibold"
+          >
+            Explore Colleges
+          </button>
+          <button
+            onClick={logoutUser}
+            className="w-full sm:w-auto px-4 py-3 rounded-2xl bg-rose-950/40 hover:bg-rose-900/60 text-rose-300 border border-rose-500/30 text-xs font-semibold"
+          >
+            Sign Out
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto px-4 sm:px-6 py-10 max-w-4xl space-y-8 animate-fade-in">

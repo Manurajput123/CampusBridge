@@ -24,12 +24,20 @@ import InteractiveSpatialNavigator from './components/InteractiveSpatialNavigato
 import PageBackgroundBridge from './components/PageBackgroundBridge';
 
 function MainApp() {
+  const { isLoggedIn } = useApp();
   // Starting page is directly the full-page 3D Earth Gateway!
   const [activeTab, setActiveTab] = useState('spatial');
   const [selectedCollegeId, setSelectedCollegeId] = useState('col-meerut-1');
   const [selectedEventId, setSelectedEventId] = useState('evt-hackathon-meerut');
   const [spatialPresetCity, setSpatialPresetCity] = useState('Ghaziabad');
   const [spatialPresetState, setSpatialPresetState] = useState('Uttar Pradesh');
+
+  // If user is already logged in, never trap them on the login/sign up page
+  useEffect(() => {
+    if (isLoggedIn && activeTab === 'auth') {
+      setActiveTab('spatial');
+    }
+  }, [isLoggedIn, activeTab]);
 
   // Friendly title for current view
   const getPageTitle = (tab) => {
